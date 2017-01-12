@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CoffeeFinder</string>
+    <string name="title_activity_maps">CoffeeMap</string>
+</resources>
