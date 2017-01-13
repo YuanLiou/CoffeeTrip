@@ -14,6 +14,7 @@ buildscript {
 
 ext {
     support_version = '25.1.0'
+    gms_version = '10.0.1'
 }
 
 allprojects {
