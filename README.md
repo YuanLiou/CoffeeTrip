@@ -1,5 +1,5 @@
 # CoffeeTrip
-Find good coffee place in a city.
+Find a good coffee place in a city.
 
 ### How to build CoffeeTrip app?
 1. Clone this repository. <br>
