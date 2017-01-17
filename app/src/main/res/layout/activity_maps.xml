@@ -1,4 +1,4 @@
-<android.support.design.widget.coordinatorlayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -15,4 +15,4 @@
         tools:context="tw.com.louis383.coffeefinder.MapsActivity"
         />
 
-</android.support.design.widget.coordinatorlayout>
+</android.support.design.widget.CoordinatorLayout>
