@@ -8,4 +8,5 @@
     <string name="auth_yourself">You can authorize manually. Simply go to Setting -> Apps -> %1$s -> Permissions -> Enable %2$s.</string>
     <string name="auth_location">Location</string>
     <string name="auto_go">Take me there</string>
+    <string name="permission_needed">Needs Location Permission</string>
 </resources>

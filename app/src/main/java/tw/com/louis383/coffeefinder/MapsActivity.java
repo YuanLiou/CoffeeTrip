@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -32,10 +34,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MapsPresenter presenter;
     private GoogleApiClient googleApiClient;
 
+    private CoordinatorLayout rootView;
+    private Snackbar snackbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        rootView = (CoordinatorLayout) findViewById(R.id.map_rootview);
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -71,18 +77,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleApiClient.connect();
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case LOCATION_MANUAL_ENABLE:
-                if (googleApiClient.isConnected() && googleMap != null) {
-                    presenter.requestUserLocation();
+                if (isLocationPermissionGranted() && googleMap != null) {
+                    if (googleApiClient.isConnected()) {
+                        presenter.requestUserLocation();
+                    } else {
+                        googleApiClient.connect();
+                    }
+                } else {
+                    showSnackBar();
                 }
                 break;
             default:
@@ -105,10 +113,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .setPositiveButton(Utils.getResourceString(this, R.string.dialog_auth),
                                         (dialog, which) -> requestLocationPermission())
                                 .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel),
-                                        (dialog, which) -> {})
+                                        (dialog, which) -> showSnackBar())
                                 .create().show();
                     } else {
-                        // TODO:: make a SnackBar to display location permission is disabled.
+                        showSnackBar();
                         String appName = Utils.getResourceString(this, R.string.app_name);
                         String permissionName = Utils.getResourceString(this, R.string.auth_location);
 
@@ -117,10 +125,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .setMessage(getResources().getString(R.string.auth_yourself, appName, permissionName))
                                 .setPositiveButton(Utils.getResourceString(this, R.string.auto_go),
                                         (dialog, which) -> {
-                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                            intent.setData(uri);
-                                            startActivityForResult(intent, LOCATION_MANUAL_ENABLE);
+                                            openApplicaionSetting();
                                         })
                                 .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel), (dialog, which) -> {})
                                 .create().show();
@@ -157,6 +162,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void setupDetailedMapInterface() {
 
+    }
+
+    private void openApplicaionSetting() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, LOCATION_MANUAL_ENABLE);
+    }
+
+    private void showSnackBar() {
+        if (snackbar == null) {
+            snackbar = Snackbar.make(rootView, R.string.permission_needed, Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.dialog_auth, v -> openApplicaionSetting());
+        }
+        snackbar.show();
     }
 
     //region ConnectionCallback

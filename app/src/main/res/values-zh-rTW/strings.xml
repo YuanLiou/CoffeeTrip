@@ -9,4 +9,5 @@
     <string name="auth_yourself">你可以至 設定 -> 應用程式 -> %1$S -> 權限 -> %2$s 來授權</string>
     <string name="auth_location">位置</string>
     <string name="auto_go">帶我去</string>
+    <string name="permission_needed">需要位置權限</string>
 </resources>
