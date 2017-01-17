@@ -1,6 +1,8 @@
 package tw.com.louis383.coffeefinder.model;
 
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import retrofit2.Response;
 import retrofit2.http.GET;
@@ -13,5 +15,5 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 public interface CoffeeTripService {
     @GET("cafes/")
-    Observable<Response<CoffeeShop>> getCoffeeShops(@Query("latitude") double latitude, @Query("longitude") double longitude, @Query("range") int range);
+    Observable<Response<List<CoffeeShop>>> getCoffeeShops(@Query("latitude") double latitude, @Query("longitude") double longitude, @Query("range") int range);
 }

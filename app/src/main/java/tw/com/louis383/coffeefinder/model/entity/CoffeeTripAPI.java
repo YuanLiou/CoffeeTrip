@@ -2,6 +2,7 @@ package tw.com.louis383.coffeefinder.model.entity;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -52,7 +53,7 @@ public class CoffeeTripAPI {
         service = retrofit.create(CoffeeTripService.class);
     }
 
-    public Observable<Response<CoffeeShop>> getCoffeeShops(double latitude, double longitude, int range) {
+    public Observable<Response<List<CoffeeShop>>> getCoffeeShops(double latitude, double longitude, int range) {
         return service.getCoffeeShops(latitude, longitude, range)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread());

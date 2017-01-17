@@ -9,4 +9,6 @@
     <string name="auth_location">Location</string>
     <string name="auto_go">Take me there</string>
     <string name="permission_needed">Needs Location Permission</string>
+    <string name="service_unavailable">Service is not available</string>
+    <string name="high_accuracy_recommand">Please turn on location and toggle high accuracy mode.</string>
 </resources>

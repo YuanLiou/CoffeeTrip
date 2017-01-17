@@ -2,6 +2,7 @@ package tw.com.louis383.coffeefinder;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
+    private static final int LOCATION_SETTING_RESOLUTION = 2;
 
     private GoogleMap googleMap;
     private MapsPresenter presenter;
@@ -91,6 +94,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 } else {
                     showSnackBar();
+                }
+                break;
+            case LOCATION_SETTING_RESOLUTION:
+                if (resultCode == RESULT_OK) {
+                    presenter.requestUserLocation();
+                } else {
+                    snackbar = Snackbar.make(rootView, R.string.high_accuracy_recommand, Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
                 break;
             default:
@@ -164,6 +175,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    @Override
+    public void locationSettingNeedsResolution(Status status) {
+        try {
+            status.startResolutionForResult(this, LOCATION_SETTING_RESOLUTION);
+        } catch (IntentSender.SendIntentException e) {
+            Log.e("MapsActivity", Log.getStackTraceString(e));
+        }
+    }
+
+    @Override
+    public void showServiceUnavaliableSnackBar() {
+        snackbar = Snackbar.make(rootView, R.string.service_unavailable, Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+    }
+
     private void openApplicaionSetting() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -182,9 +208,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //region ConnectionCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (isLocationPermissionGranted()) {
-            presenter.requestUserLocation();
-        }
+        presenter.requestUserLocation();
     }
 
     @Override
