@@ -4,6 +4,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,21 +41,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CoordinatorLayout rootView;
     private Snackbar snackbar;
 
+    private boolean mapInterfaceInitiated;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         rootView = (CoordinatorLayout) findViewById(R.id.map_rootview);
 
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
+        buildGoogleAPIClient();
 
-        presenter = new MapsPresenter();
+        presenter = new MapsPresenter(googleApiClient);
         presenter.attachView(this);
-        presenter.setGoogleApiClient(googleApiClient);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -71,9 +69,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.activityResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.activityPause();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         googleApiClient.disconnect();
+    }
+
+    private synchronized void buildGoogleAPIClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -92,6 +110,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     } else {
                         googleApiClient.connect();
                     }
+
+                    if (snackbar != null && snackbar.isShown()) {
+                        snackbar.dismiss();
+                    }
+
                 } else {
                     showSnackBar();
                 }
@@ -136,7 +159,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .setMessage(getResources().getString(R.string.auth_yourself, appName, permissionName))
                                 .setPositiveButton(Utils.getResourceString(this, R.string.auto_go),
                                         (dialog, which) -> {
-                                            openApplicaionSetting();
+                                            openApplicationSetting();
                                         })
                                 .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel), (dialog, which) -> {})
                                 .create().show();
@@ -167,12 +190,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void moveCamera(LatLng latLng, float zoom) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+        if (!mapInterfaceInitiated) {
+            mapInterfaceInitiated = true;
+            setupDetailedMapInterface();
+        }
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        googleMap.animateCamera(cameraUpdate);
     }
 
+    @SuppressWarnings("MissingPermission")
     @Override
     public void setupDetailedMapInterface() {
-
+        googleMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -190,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         snackbar.show();
     }
 
-    private void openApplicaionSetting() {
+    private void openApplicationSetting() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
@@ -200,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void showSnackBar() {
         if (snackbar == null) {
             snackbar = Snackbar.make(rootView, R.string.permission_needed, Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction(R.string.dialog_auth, v -> openApplicaionSetting());
+            snackbar.setAction(R.string.dialog_auth, v -> openApplicationSetting());
         }
         snackbar.show();
     }

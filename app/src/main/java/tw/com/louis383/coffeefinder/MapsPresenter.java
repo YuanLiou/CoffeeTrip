@@ -3,6 +3,7 @@ package tw.com.louis383.coffeefinder;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
@@ -17,12 +18,21 @@ import android.util.Log;
  * Created by louis383 on 2017/1/13.
  */
 
-public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> {
+public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements LocationListener {
 
-    private static final float ZOOM_RATE = 15f;
+    private static final float ZOOM_RATE = 16f;
+    private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
+    private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
 
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
+
+    private Location currentLocation;
+    private boolean isRequestingLocation;
+
+    public MapsPresenter(GoogleApiClient googleApiClient) {
+        this.googleApiClient = googleApiClient;
+    }
 
     @Override
     public void attachView(MapView view) {
@@ -35,16 +45,27 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> {
 
     public void requestUserLocation() {
         if (view.isLocationPermissionGranted()) {
-            Location lastLocation = getLastLocation();
-            if (lastLocation != null) {
-                LatLng lastLatLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+            currentLocation = getLastLocation();
+            if (currentLocation != null) {
+                LatLng lastLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                 view.moveCamera(lastLatLng, ZOOM_RATE);
-                view.setupDetailedMapInterface();
 
                 Log.i("MapsPresenter", "lastLocation latitude: " + lastLatLng.latitude + ", longitude: " + lastLatLng.longitude);
             }
 
-            checkAccurateLocationRequestAbility();
+            tryToGetAccurateLocation();
+        }
+    }
+
+    public void activityResume() {
+        if (googleApiClient.isConnected() && isRequestingLocation) {
+            requestUserLocation();
+        }
+    }
+
+    public void activityPause() {
+        if (googleApiClient.isConnected()) {
+            stopLocationUpdate();
         }
     }
 
@@ -59,12 +80,18 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> {
         return null;
     }
 
-    private void checkAccurateLocationRequestAbility() {
+    private void buildLocationRequest() {
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void tryToGetAccurateLocation() {
         if (googleApiClient != null) {
-            locationRequest = new LocationRequest();
-            locationRequest.setInterval(10000);    // 10 Sec
-            locationRequest.setFastestInterval(5000);    // 5 Sec
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            if (locationRequest == null) {
+                buildLocationRequest();
+            }
 
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                     .addLocationRequest(locationRequest);
@@ -75,22 +102,47 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> {
 
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        // initialize Location Here
+                        if (!isRequestingLocation) {
+                            startLocationUpdate();
+                        }
+                        Log.i("MapsPresenter", "Succeed.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         view.locationSettingNeedsResolution(status);
+                        Log.i("MapsPresenter", "Resolution Required");
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         view.showServiceUnavaliableSnackBar();
+                        Log.i("MapsPresenter", "unavailable.");
                         break;
                 }
             });
         }
     }
 
-    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
-        this.googleApiClient = googleApiClient;
+    @SuppressWarnings("MissingPermission")
+    private void startLocationUpdate() {
+        isRequestingLocation = true;
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
+
+    private void stopLocationUpdate() {
+        isRequestingLocation = false;
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+    }
+
+    //region LocationListener
+    @Override
+    public void onLocationChanged(Location location) {
+        this.currentLocation = location;
+        stopLocationUpdate();    // Only get one time accurate position.
+
+        LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        Log.i("MapsPresenter", "Location Updated latitude: " + currentLatLng.latitude + ", longitude: " + currentLatLng.longitude);
+
+        view.moveCamera(currentLatLng, ZOOM_RATE);
+    }
+    //endregion
 
     public interface MapView {
         boolean isLocationPermissionGranted();
