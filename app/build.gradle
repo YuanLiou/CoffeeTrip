@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: "${rootDir}/gradle/build-script.gradle"
 
 android {
     compileSdkVersion 25
@@ -6,8 +7,8 @@ android {
     defaultConfig {
         applicationId "tw.com.louis383.coffeefinder"
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionCodeTimeStamps()
+        versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         jackOptions {
@@ -49,8 +50,25 @@ android {
             }
 
             signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources false
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            manifestPlaceholders = [ googleMapKeys: googleMapKey_release ]
+        }
+        nightdream {
+            defaultConfig {
+                minSdkVersion 21
+            }
+
+            versionNameSuffix "-night-dream"
+
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources false
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             manifestPlaceholders = [ googleMapKeys: googleMapKey_release ]
         }

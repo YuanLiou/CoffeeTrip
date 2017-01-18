@@ -16,10 +16,39 @@
 #   public *;
 #}
 
+-optimizations 5
+
+-keep class tw.com.louis383.coffeefinder.model.entity.** { *; }
+-keep class tw.com.louis383.coffeefinder.model.domain.** { *; }
+-keep interface tw.com.louis383.coffeefinder.model.CoffeeTripService { *; }
+
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Google Play Service
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+
+# Gson
+-keepattributes *Annotation*
+
+# Retrofit 2
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# OkHttp 3
+-dontwarn okhttp3.**
+-keep class okhttp3.** { *; }
+-dontwarn okio.*
+
