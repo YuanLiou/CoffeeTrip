@@ -12,4 +12,7 @@
     <string name="permission_needed">需要位置權限</string>
     <string name="service_unavailable">目前無法使用</string>
     <string name="high_accuracy_recommand">請開啟定位，並使用高精確度模式</string>
+    <string name="dialog_no_coffeeshop_title">哎呀！</string>
+    <string name="dialog_no_coffeeshop_message">這附近還沒有咖啡店資料呢\\n 也許走走能發現一些意外驚喜。</string>
+    <string name="dialog_no_coffeeshop_ok">去走走</string>
 </resources>

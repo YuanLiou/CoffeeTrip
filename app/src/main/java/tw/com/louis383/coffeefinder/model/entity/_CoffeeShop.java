@@ -43,10 +43,10 @@ public class _CoffeeShop {
     protected String address;
     @SerializedName("latitude")
     @Expose
-    protected String latitude;
+    protected double latitude;
     @SerializedName("longitude")
     @Expose
-    protected String longitude;
+    protected double longitude;
 
     public String getId() {
         return id;
@@ -136,19 +136,19 @@ public class _CoffeeShop {
         this.address = address;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }

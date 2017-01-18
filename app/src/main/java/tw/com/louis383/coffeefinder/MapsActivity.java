@@ -9,7 +9,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,6 +29,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+
+import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -50,8 +54,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rootView = (CoordinatorLayout) findViewById(R.id.map_rootview);
 
         buildGoogleAPIClient();
+        CoffeeTripAPI coffeeTripAPI = new CoffeeTripAPI();
 
-        presenter = new MapsPresenter(googleApiClient);
+        presenter = new MapsPresenter(googleApiClient, coffeeTripAPI);
         presenter.attachView(this);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -184,8 +189,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void addMakers(LatLng latLng, String title) {
-//        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+    public void addMakers(LatLng latLng, String title, String snippet) {
+        googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(snippet));
     }
 
     @Override
@@ -203,6 +208,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void setupDetailedMapInterface() {
         googleMap.setMyLocationEnabled(true);
+        googleMap.setBuildingsEnabled(true);
+
+        UiSettings mapUISettings = googleMap.getUiSettings();
+        mapUISettings.setRotateGesturesEnabled(false);
+        mapUISettings.setTiltGesturesEnabled(false);
     }
 
     @Override
@@ -215,9 +225,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void showServiceUnavaliableSnackBar() {
-        snackbar = Snackbar.make(rootView, R.string.service_unavailable, Snackbar.LENGTH_INDEFINITE);
+    public void showServiceUnavailableMessage() {
+        String message = getResources().getString(R.string.service_unavailable);
+        makeCustomSnackbar(message);
+    }
+
+    @Override
+    public void makeCustomSnackbar(String message) {
+        snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
         snackbar.show();
+    }
+
+    @Override
+    public void showNoCoffeeShopDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(getResources().getString(R.string.dialog_no_coffeeshop_title));
+        alertDialogBuilder.setMessage(getResources().getString(R.string.dialog_no_coffeeshop_message));
+        alertDialogBuilder.setPositiveButton(getResources().getString(R.string.dialog_no_coffeeshop_ok), (dialog, which) -> {});
+        alertDialogBuilder.create();
+        alertDialogBuilder.show();
     }
 
     private void openApplicationSetting() {

@@ -29,8 +29,8 @@ public class CoffeeShop extends _CoffeeShop implements Parcelable {
         dest.writeInt(this.music);
         dest.writeString(this.url);
         dest.writeString(this.address);
-        dest.writeString(this.latitude);
-        dest.writeString(this.longitude);
+        dest.writeDouble(this.latitude);
+        dest.writeDouble(this.longitude);
     }
 
     public CoffeeShop() {
@@ -48,8 +48,8 @@ public class CoffeeShop extends _CoffeeShop implements Parcelable {
         this.music = in.readInt();
         this.url = in.readString();
         this.address = in.readString();
-        this.latitude = in.readString();
-        this.longitude = in.readString();
+        this.latitude = in.readDouble();
+        this.longitude = in.readDouble();
     }
 
     public static final Parcelable.Creator<CoffeeShop> CREATOR = new Parcelable.Creator<CoffeeShop>() {

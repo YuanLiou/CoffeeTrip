@@ -11,4 +11,7 @@
     <string name="permission_needed">Needs Location Permission</string>
     <string name="service_unavailable">Service is not available</string>
     <string name="high_accuracy_recommand">Please turn on location and toggle high accuracy mode.</string>
+    <string name="dialog_no_coffeeshop_title">Oops!</string>
+    <string name="dialog_no_coffeeshop_message">There\'re none of coffee shops here, maybe you might walk around to find out some surprise.</string>
+    <string name="dialog_no_coffeeshop_ok">Okay</string>
 </resources>

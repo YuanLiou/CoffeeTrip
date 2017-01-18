@@ -14,6 +14,11 @@ import com.google.android.gms.maps.model.LatLng;
 import android.location.Location;
 import android.util.Log;
 
+import java.util.List;
+
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
+import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
+
 /**
  * Created by louis383 on 2017/1/13.
  */
@@ -24,14 +29,18 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
 
+    private static final int RANGE = 2000;    // 2m
+
     private GoogleApiClient googleApiClient;
+    private CoffeeTripAPI coffeeTripAPI;
     private LocationRequest locationRequest;
 
     private Location currentLocation;
     private boolean isRequestingLocation;
 
-    public MapsPresenter(GoogleApiClient googleApiClient) {
+    public MapsPresenter(GoogleApiClient googleApiClient, CoffeeTripAPI coffeeTripAPI) {
         this.googleApiClient = googleApiClient;
+        this.coffeeTripAPI = coffeeTripAPI;
     }
 
     @Override
@@ -66,6 +75,29 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public void activityPause() {
         if (googleApiClient.isConnected()) {
             stopLocationUpdate();
+        }
+    }
+
+    public void fetchCoffeeShop() {
+        if (currentLocation != null) {
+            coffeeTripAPI.getCoffeeShops(currentLocation.getLatitude(), currentLocation.getLongitude(), RANGE)
+                    .subscribe(listResponse -> {
+                        if (listResponse.isSuccessful()) {
+                            List<CoffeeShop> coffeeShops = listResponse.body();
+
+                            if (!coffeeShops.isEmpty()) {
+                                for (CoffeeShop shop : coffeeShops) {
+                                    LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
+                                    view.addMakers(latLng, shop.getName(), shop.getAddress());
+                                }
+                            } else {
+                                view.showNoCoffeeShopDialog();
+                            }
+                        }
+                    }, throwable -> {
+                        view.makeCustomSnackbar(throwable.getLocalizedMessage());
+                        Log.e("fetchingCoffeeShop", Log.getStackTraceString(throwable));
+                    });
         }
     }
 
@@ -112,7 +144,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
                         Log.i("MapsPresenter", "Resolution Required");
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        view.showServiceUnavaliableSnackBar();
+                        view.showServiceUnavailableMessage();
                         Log.i("MapsPresenter", "unavailable.");
                         break;
                 }
@@ -137,6 +169,8 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         this.currentLocation = location;
         stopLocationUpdate();    // Only get one time accurate position.
 
+        fetchCoffeeShop();
+
         LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
         Log.i("MapsPresenter", "Location Updated latitude: " + currentLatLng.latitude + ", longitude: " + currentLatLng.longitude);
 
@@ -147,10 +181,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public interface MapView {
         boolean isLocationPermissionGranted();
         void requestLocationPermission();
-        void addMakers(LatLng latLng, String title);
+        void addMakers(LatLng latLng, String title, String snippet);
         void moveCamera(LatLng latLng, float zoom);
         void setupDetailedMapInterface();
         void locationSettingNeedsResolution(Status status);
-        void showServiceUnavaliableSnackBar();
+        void showServiceUnavailableMessage();
+        void makeCustomSnackbar(String message);
+        void showNoCoffeeShopDialog();
     }
 }
