@@ -59,7 +59,7 @@ android {
         }
         nightdream {
             defaultConfig {
-                minSdkVersion 21
+                minSdkVersion 19
             }
 
             versionNameSuffix "-night-dream"
@@ -83,6 +83,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:${support_version}"
     compile "com.android.support:design:${support_version}"
+
     compile "com.google.android.gms:play-services-location:${gms_version}"
     compile "com.google.android.gms:play-services-maps:${gms_version}"
 
