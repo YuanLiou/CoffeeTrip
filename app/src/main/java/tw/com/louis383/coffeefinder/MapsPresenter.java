@@ -88,7 +88,9 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
                             if (!coffeeShops.isEmpty()) {
                                 for (CoffeeShop shop : coffeeShops) {
                                     LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
-                                    view.addMakers(latLng, shop.getName(), shop.getAddress());
+
+                                    int distance = (int) shop.getDistance();
+                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance));
                                 }
                             } else {
                                 view.showNoCoffeeShopDialog();

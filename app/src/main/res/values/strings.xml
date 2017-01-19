@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">CoffeeFinder</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">CoffeeTrip</string>
+    <string name="title_activity_maps">Café Nearby</string>
     <string name="request_location">We need your location to find out where are you.</string>
     <string name="dialog_auth">Auth</string>
     <string name="dialog_cancel">Cancel</string>
@@ -14,4 +14,5 @@
     <string name="dialog_no_coffeeshop_title">Oops!</string>
     <string name="dialog_no_coffeeshop_message">There\'re none of coffee shops here, maybe you might walk around to find out some surprise.</string>
     <string name="dialog_no_coffeeshop_ok">Okay</string>
+    <string name="unit_m">%1$s m</string>
 </resources>

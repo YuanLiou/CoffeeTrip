@@ -19,22 +19,22 @@ public class _CoffeeShop {
     protected String city;
     @SerializedName("wifi")
     @Expose
-    protected int wifi;
+    protected float wifi;
     @SerializedName("seat")
     @Expose
-    protected int seat;
+    protected float seat;
     @SerializedName("quiet")
     @Expose
-    protected int quiet;
+    protected float quiet;
     @SerializedName("tasty")
     @Expose
-    protected int tasty;
+    protected float tasty;
     @SerializedName("cheap")
     @Expose
-    protected int cheap;
+    protected float cheap;
     @SerializedName("music")
     @Expose
-    protected int music;
+    protected float music;
     @SerializedName("url")
     @Expose
     protected String url;
@@ -47,6 +47,9 @@ public class _CoffeeShop {
     @SerializedName("longitude")
     @Expose
     protected double longitude;
+    @SerializedName("distance")
+    @Expose
+    protected double distance;
 
     public String getId() {
         return id;
@@ -72,51 +75,51 @@ public class _CoffeeShop {
         this.city = city;
     }
 
-    public int getWifi() {
+    public float getWifi() {
         return wifi;
     }
 
-    public void setWifi(int wifi) {
+    public void setWifi(float wifi) {
         this.wifi = wifi;
     }
 
-    public int getSeat() {
+    public float getSeat() {
         return seat;
     }
 
-    public void setSeat(int seat) {
+    public void setSeat(float seat) {
         this.seat = seat;
     }
 
-    public int getQuiet() {
+    public float getQuiet() {
         return quiet;
     }
 
-    public void setQuiet(int quiet) {
+    public void setQuiet(float quiet) {
         this.quiet = quiet;
     }
 
-    public int getTasty() {
+    public float getTasty() {
         return tasty;
     }
 
-    public void setTasty(int tasty) {
+    public void setTasty(float tasty) {
         this.tasty = tasty;
     }
 
-    public int getCheap() {
+    public float getCheap() {
         return cheap;
     }
 
-    public void setCheap(int cheap) {
+    public void setCheap(float cheap) {
         this.cheap = cheap;
     }
 
-    public int getMusic() {
+    public float getMusic() {
         return music;
     }
 
-    public void setMusic(int music) {
+    public void setMusic(float music) {
         this.music = music;
     }
 
@@ -150,5 +153,13 @@ public class _CoffeeShop {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

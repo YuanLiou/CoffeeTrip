@@ -21,16 +21,17 @@ public class CoffeeShop extends _CoffeeShop implements Parcelable {
         dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeString(this.city);
-        dest.writeInt(this.wifi);
-        dest.writeInt(this.seat);
-        dest.writeInt(this.quiet);
-        dest.writeInt(this.tasty);
-        dest.writeInt(this.cheap);
-        dest.writeInt(this.music);
+        dest.writeFloat(this.wifi);
+        dest.writeFloat(this.seat);
+        dest.writeFloat(this.quiet);
+        dest.writeFloat(this.tasty);
+        dest.writeFloat(this.cheap);
+        dest.writeFloat(this.music);
         dest.writeString(this.url);
         dest.writeString(this.address);
         dest.writeDouble(this.latitude);
         dest.writeDouble(this.longitude);
+        dest.writeDouble(this.distance);
     }
 
     public CoffeeShop() {
@@ -40,16 +41,17 @@ public class CoffeeShop extends _CoffeeShop implements Parcelable {
         this.id = in.readString();
         this.name = in.readString();
         this.city = in.readString();
-        this.wifi = in.readInt();
-        this.seat = in.readInt();
-        this.quiet = in.readInt();
-        this.tasty = in.readInt();
-        this.cheap = in.readInt();
-        this.music = in.readInt();
+        this.wifi = in.readFloat();
+        this.seat = in.readFloat();
+        this.quiet = in.readFloat();
+        this.tasty = in.readFloat();
+        this.cheap = in.readFloat();
+        this.music = in.readFloat();
         this.url = in.readString();
         this.address = in.readString();
         this.latitude = in.readDouble();
         this.longitude = in.readDouble();
+        this.distance = in.readDouble();
     }
 
     public static final Parcelable.Creator<CoffeeShop> CREATOR = new Parcelable.Creator<CoffeeShop>() {

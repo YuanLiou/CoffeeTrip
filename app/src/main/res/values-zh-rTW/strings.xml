@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CoffeeFinder</string>
-    <string name="title_activity_maps">地圖</string>
+    <string name="app_name">CoffeeTrip</string>
+    <string name="title_activity_maps">近鄰咖啡店</string>
     <string name="request_location">我們需要你的地理位置來尋找附近的店</string>
     <string name="dialog_auth">授權</string>
     <string name="dialog_cancel">取消</string>
@@ -15,4 +15,5 @@
     <string name="dialog_no_coffeeshop_title">哎呀！</string>
     <string name="dialog_no_coffeeshop_message">這附近還沒有咖啡店資料呢\\n 也許走走能發現一些意外驚喜。</string>
     <string name="dialog_no_coffeeshop_ok">去走走</string>
+    <string name="unit_m">%1$s 公尺</string>
 </resources>

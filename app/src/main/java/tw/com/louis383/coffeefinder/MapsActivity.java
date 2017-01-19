@@ -190,7 +190,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void addMakers(LatLng latLng, String title, String snippet) {
-        googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(snippet));
+        String distance = getResources().getString(R.string.unit_m, snippet);
+        googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(distance));
     }
 
     @Override
