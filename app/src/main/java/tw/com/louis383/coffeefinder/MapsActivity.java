@@ -11,6 +11,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.Manifest;
@@ -22,6 +23,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -103,6 +105,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleApiClient.connect();
+
+        presenter.setGoogleMap(googleMap);
     }
 
     @Override
@@ -189,9 +193,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void addMakers(LatLng latLng, String title, String snippet) {
+    public void addMakers(LatLng latLng, String title, String snippet, String id) {
         String distance = getResources().getString(R.string.unit_m, snippet);
-        googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(distance));
+        Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(distance));
+        marker.setTag(id);
     }
 
     @Override
@@ -203,6 +208,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
         googleMap.animateCamera(cameraUpdate);
+    }
+
+    @Override
+    public void openWebsite(Uri uri) {
+        CustomTabsIntent.Builder customTabBuilder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabIntent = customTabBuilder.build();
+        customTabIntent.launchUrl(this, uri);
     }
 
     @SuppressWarnings("MissingPermission")

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CoffeeTrip</string>
+    <string name="app_name">卡布摩卡</string>
     <string name="title_activity_maps">近鄰咖啡店</string>
     <string name="request_location">我們需要你的地理位置來尋找附近的店</string>
     <string name="dialog_auth">授權</string>

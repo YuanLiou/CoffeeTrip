@@ -9,9 +9,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.List;
@@ -23,20 +26,23 @@ import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
  * Created by louis383 on 2017/1/13.
  */
 
-public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements LocationListener {
+public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener {
 
     private static final float ZOOM_RATE = 16f;
     private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
+    private static final String CAFE_NOMAD_PATH = "https://cafenomad.tw/shop/";
 
     private static final int RANGE = 2000;    // 2m
 
     private GoogleApiClient googleApiClient;
+    private GoogleMap googleMap;
     private CoffeeTripAPI coffeeTripAPI;
     private LocationRequest locationRequest;
 
     private Location currentLocation;
     private boolean isRequestingLocation;
+    private List<CoffeeShop> coffeeShops;
 
     public MapsPresenter(GoogleApiClient googleApiClient, CoffeeTripAPI coffeeTripAPI) {
         this.googleApiClient = googleApiClient;
@@ -83,14 +89,14 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
             coffeeTripAPI.getCoffeeShops(currentLocation.getLatitude(), currentLocation.getLongitude(), RANGE)
                     .subscribe(listResponse -> {
                         if (listResponse.isSuccessful()) {
-                            List<CoffeeShop> coffeeShops = listResponse.body();
+                            coffeeShops = listResponse.body();
 
                             if (!coffeeShops.isEmpty()) {
                                 for (CoffeeShop shop : coffeeShops) {
                                     LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
 
                                     int distance = (int) shop.getDistance();
-                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance));
+                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance), shop.getId());
                                 }
                             } else {
                                 view.showNoCoffeeShopDialog();
@@ -101,6 +107,13 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
                         Log.e("fetchingCoffeeShop", Log.getStackTraceString(throwable));
                     });
         }
+    }
+
+    public void setGoogleMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -180,15 +193,32 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
     //endregion
 
+    //region GoogleMap OnInfoWindowClickListener
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        String url = CAFE_NOMAD_PATH + marker.getTag();
+        view.openWebsite(Uri.parse(url));
+    }
+    //endregion
+
+    //region GoogleMap OnMarkerClickListener
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.i("MapsPresenter", "onMarkerClick: name => " + marker.getTitle());
+        return false;
+    }
+    //endregion
+
     public interface MapView {
         boolean isLocationPermissionGranted();
         void requestLocationPermission();
-        void addMakers(LatLng latLng, String title, String snippet);
+        void addMakers(LatLng latLng, String title, String snippet, String id);
         void moveCamera(LatLng latLng, float zoom);
         void setupDetailedMapInterface();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
         void makeCustomSnackbar(String message);
         void showNoCoffeeShopDialog();
+        void openWebsite(Uri uri);
     }
 }
