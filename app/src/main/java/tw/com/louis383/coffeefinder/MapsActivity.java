@@ -33,6 +33,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -43,6 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap googleMap;
     private MapsPresenter presenter;
     private GoogleApiClient googleApiClient;
+    private ChromeCustomTabsHelper customTabsHelper;
 
     private CoordinatorLayout rootView;
     private Snackbar snackbar;
@@ -65,11 +67,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        customTabsHelper = new ChromeCustomTabsHelper();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        customTabsHelper.bindCustomTabsServices(this);
         if (googleMap != null) {
             googleApiClient.connect();
         }
@@ -90,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onStop() {
         super.onStop();
+        customTabsHelper.unbindCustomTabsServices(this);
         googleApiClient.disconnect();
     }
 
@@ -214,7 +220,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void openWebsite(Uri uri) {
         CustomTabsIntent.Builder customTabBuilder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabIntent = customTabBuilder.build();
-        customTabIntent.launchUrl(this, uri);
+
+        ChromeCustomTabsHelper.openCustomTab(this, customTabIntent, uri, (activity, uri1) -> {
+            // TODO:: a webview page to open a link.
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri1);
+            startActivity(intent);
+        });
     }
 
     @SuppressWarnings("MissingPermission")
