@@ -32,7 +32,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -237,6 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         UiSettings mapUISettings = googleMap.getUiSettings();
         mapUISettings.setRotateGesturesEnabled(false);
         mapUISettings.setTiltGesturesEnabled(false);
+        mapUISettings.setMapToolbarEnabled(false);
     }
 
     @Override

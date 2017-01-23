@@ -20,7 +20,7 @@ import android.util.Log;
 import java.util.List;
 
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
-import tw.com.louis383.coffeefinder.model.entity.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 
 /**
  * Created by louis383 on 2017/1/13.

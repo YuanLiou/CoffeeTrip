@@ -14,6 +14,7 @@ android {
         jackOptions {
             enabled true
         }
+        vectorDrawables.useSupportLibrary = true
 
         buildConfigField 'String', 'HOST', APIHost
     }

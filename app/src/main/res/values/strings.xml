@@ -9,10 +9,15 @@
     <string name="auth_location">Location</string>
     <string name="auto_go">Take me there</string>
     <string name="permission_needed">Needs Location Permission</string>
-    <string name="service_unavailable">Service is not available</string>
     <string name="high_accuracy_recommand">Please turn on location and toggle high accuracy mode.</string>
     <string name="dialog_no_coffeeshop_title">Oops!</string>
     <string name="dialog_no_coffeeshop_message">There\'re none of coffee shops here, maybe you might walk around to find out some surprise.</string>
     <string name="dialog_no_coffeeshop_ok">Okay</string>
     <string name="unit_m">%1$s m</string>
+    <string name="dialog_navigate">Navigate</string>
+    <string name="service_unavailable">Service is not available</string>
+    <string name="wifi_value">WiFi Quality: %1$s</string>
+    <string name="cheap_value">Cost Cheapness: %1$s</string>
+    <string name="seat_value">Seat Availablity: %1$s</string>
+    <string name="quiet_value">Quiet: %1$s</string>
 </resources>

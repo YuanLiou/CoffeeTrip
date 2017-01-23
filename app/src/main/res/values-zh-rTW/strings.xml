@@ -16,4 +16,9 @@
     <string name="dialog_no_coffeeshop_message">這附近還沒有咖啡店資料呢\\n 也許走走能發現一些意外驚喜。</string>
     <string name="dialog_no_coffeeshop_ok">去走走</string>
     <string name="unit_m">%1$s 公尺</string>
+    <string name="dialog_navigate">導航</string>
+    <string name="wifi_value">WiFi 穩定: %1$s</string>
+    <string name="cheap_value">價格便宜: %1$s</string>
+    <string name="seat_value">通常有位: %1$s</string>
+    <string name="quiet_value">安靜程度: %1$s</string>
 </resources>

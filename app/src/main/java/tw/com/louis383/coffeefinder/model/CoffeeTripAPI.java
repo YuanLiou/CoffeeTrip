@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.model.entity;
+package tw.com.louis383.coffeefinder.model;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -15,7 +15,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import tw.com.louis383.coffeefinder.BuildConfig;
 import tw.com.louis383.coffeefinder.Utils;
-import tw.com.louis383.coffeefinder.model.CoffeeTripService;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
