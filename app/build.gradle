@@ -74,6 +74,10 @@ android {
             manifestPlaceholders = [ googleMapKeys: googleMapKey_release ]
         }
     }
+
+    dataBinding {
+        enabled true
+    }
 }
 
 ext {

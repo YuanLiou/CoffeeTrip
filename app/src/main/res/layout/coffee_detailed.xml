@@ -29,7 +29,7 @@
         tools:text="有心咖啡A Thoughtful Place"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@id/coffee_detailed_open_web"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         tools:text="210 公尺"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/coffee_detailed_wifi"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -83,7 +83,7 @@
         style="@style/ProgressValue"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/coffee_detailed_cheap"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -119,7 +119,7 @@
         style="@style/ProgressValue"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/coffee_detailed_seat"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -155,7 +155,7 @@
         style="@style/ProgressValue"
         />
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:id="@+id/coffee_detailed_quiet"
         android:layout_width="30dp"
         android:layout_height="30dp"

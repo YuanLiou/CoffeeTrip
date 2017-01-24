@@ -34,8 +34,10 @@ import android.util.Log;
 
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
+import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CoffeeDetailDialog.Callback {
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
@@ -48,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private CoordinatorLayout rootView;
     private Snackbar snackbar;
+    private CoffeeDetailDialog detailDialog;
 
     private boolean mapInterfaceInitiated;
 
@@ -271,6 +274,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         alertDialogBuilder.show();
     }
 
+    @Override
+    public void openCoffeeDetailDialog(CoffeeShopViewModel viewModel) {
+        if (detailDialog == null) {
+            detailDialog = new CoffeeDetailDialog(this, viewModel, this);
+        } else if (detailDialog.isShowing()) {
+            detailDialog.dismiss();
+        } else {
+            detailDialog.setupCoffeeShop(viewModel);
+        }
+
+        detailDialog.show();
+    }
+
+    @Override
+    public void cleanMap() {
+        if (googleMap != null) {
+            googleMap.clear();
+        }
+    }
+
     private void openApplicationSetting() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -302,6 +325,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("MapsActivity", "onConnectionFailed: " + connectionResult.getErrorMessage());
+    }
+    //endregion
+
+    //region CoffeeDetailDialog Callback
+    @Override
+    public void onNavigationTextClicked(CoffeeShopViewModel viewModel) {
+
+    }
+
+    @Override
+    public void onOpenWebsiteButtonClicked(CoffeeShopViewModel viewModel) {
+        openWebsite(viewModel.getDetailUri());
     }
     //endregion
 }

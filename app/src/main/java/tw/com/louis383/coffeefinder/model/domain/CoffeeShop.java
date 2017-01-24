@@ -4,12 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import tw.com.louis383.coffeefinder.model.entity._CoffeeShop;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
  * Created by louis383 on 2017/1/16.
  */
 
 public class CoffeeShop extends _CoffeeShop implements Parcelable {
+
+    public CoffeeShopViewModel getViewModel() {
+        return new CoffeeShopViewModel(this);
+    }
 
     @Override
     public int describeContents() {

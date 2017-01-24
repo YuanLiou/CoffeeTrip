@@ -17,26 +17,26 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
  * Created by louis383 on 2017/1/13.
  */
 
-public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements LocationListener, GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener {
+public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements LocationListener, GoogleMap.OnMarkerClickListener {
 
     private static final float ZOOM_RATE = 16f;
     private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
-    private static final String CAFE_NOMAD_PATH = "https://cafenomad.tw/shop/";
 
     private static final int RANGE = 2000;    // 2m
 
     private GoogleApiClient googleApiClient;
-    private GoogleMap googleMap;
     private CoffeeTripAPI coffeeTripAPI;
     private LocationRequest locationRequest;
 
@@ -47,6 +47,8 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public MapsPresenter(GoogleApiClient googleApiClient, CoffeeTripAPI coffeeTripAPI) {
         this.googleApiClient = googleApiClient;
         this.coffeeTripAPI = coffeeTripAPI;
+
+        coffeeShops = new ArrayList<>();
     }
 
     @Override
@@ -86,17 +88,25 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public void fetchCoffeeShop() {
         if (currentLocation != null) {
+            if (!coffeeShops.isEmpty()) {
+                view.cleanMap();
+                coffeeShops = new ArrayList<>();
+            }
+
             coffeeTripAPI.getCoffeeShops(currentLocation.getLatitude(), currentLocation.getLongitude(), RANGE)
                     .subscribe(listResponse -> {
                         if (listResponse.isSuccessful()) {
                             coffeeShops = listResponse.body();
 
                             if (!coffeeShops.isEmpty()) {
+                                int index = 0;
                                 for (CoffeeShop shop : coffeeShops) {
                                     LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
 
                                     int distance = (int) shop.getDistance();
-                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance), shop.getId());
+                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance), String.valueOf(index));
+
+                                    index++;
                                 }
                             } else {
                                 view.showNoCoffeeShopDialog();
@@ -110,9 +120,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     public void setGoogleMap(GoogleMap googleMap) {
-        this.googleMap = googleMap;
-
-        googleMap.setOnInfoWindowClickListener(this);
         googleMap.setOnMarkerClickListener(this);
     }
 
@@ -193,18 +200,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
     //endregion
 
-    //region GoogleMap OnInfoWindowClickListener
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        String url = CAFE_NOMAD_PATH + marker.getTag();
-        view.openWebsite(Uri.parse(url));
-    }
-    //endregion
-
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.i("MapsPresenter", "onMarkerClick: name => " + marker.getTitle());
+        int index = Integer.parseInt((String) marker.getTag());
+        CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
+        view.openCoffeeDetailDialog(viewModel);
         return false;
     }
     //endregion
@@ -220,5 +221,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         void makeCustomSnackbar(String message);
         void showNoCoffeeShopDialog();
         void openWebsite(Uri uri);
+        void openCoffeeDetailDialog(CoffeeShopViewModel viewModel);
+        void cleanMap();
     }
 }

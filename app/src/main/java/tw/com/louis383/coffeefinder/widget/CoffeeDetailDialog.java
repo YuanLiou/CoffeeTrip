@@ -1,7 +1,6 @@
 package tw.com.louis383.coffeefinder.widget;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import tw.com.louis383.coffeefinder.R;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
  * Created by louis383 on 2017/1/23.
@@ -26,9 +26,10 @@ public class CoffeeDetailDialog {
     private TextView shopName, shopDistance;
     private ImageView openBrowser, wifi;
 
+    private CoffeeShopViewModel coffeeShopViewModel;
     private CoffeeDetailDialog.Callback callback;
 
-    public CoffeeDetailDialog(Context context, CoffeeDetailDialog.Callback callback) {
+    public CoffeeDetailDialog(Context context, CoffeeShopViewModel coffeeShopViewModel, CoffeeDetailDialog.Callback callback) {
         this.context = context.getApplicationContext();
         this.callback = callback;
 
@@ -45,19 +46,27 @@ public class CoffeeDetailDialog {
         shopName = (TextView) dialogView.findViewById(R.id.coffee_detailed_title);
         shopDistance = (TextView) dialogView.findViewById(R.id.coffee_detailed_distance);
         openBrowser = (ImageView) dialogView.findViewById(R.id.coffee_detailed_open_web);
-        openBrowser.setOnClickListener(v -> callback.onOpenWebsiteButtonClicked());
+        openBrowser.setOnClickListener(v -> callback.onOpenWebsiteButtonClicked(coffeeShopViewModel));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(dialogView);
         builder.setNegativeButton(getString(R.string.dialog_cancel), (dialog, which) -> dismiss());
-        builder.setPositiveButton(getString(R.string.dialog_navigate), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                callback.onNavigationTextClicked();
-            }
-        });
+        builder.setPositiveButton(getString(R.string.dialog_navigate), (dialog, which) -> callback.onNavigationTextClicked(coffeeShopViewModel));
 
         coffeeDialog = builder.create();
+
+        setupCoffeeShop(coffeeShopViewModel);
+    }
+
+    public void setupCoffeeShop(CoffeeShopViewModel viewModel) {
+        this.coffeeShopViewModel = viewModel;
+
+        setTitle(viewModel.getShopName());
+        setDistance(viewModel.getDistances());
+        setWifiPoint(viewModel.getWifiPoints());
+        setCheapPoint(viewModel.getCheapPoints());
+        setSeatPoint(viewModel.getSeatPoints());
+        setQuietPoint(viewModel.getQueitPoints());
     }
 
     public void show() {
@@ -74,9 +83,16 @@ public class CoffeeDetailDialog {
         }
 
         if (point > 0f) {
+            if (point == 5.0) {
+                wifi.setImageResource(R.drawable.ic_signal_wifi_4_bar_black_24px);
+            } else {
+                wifi.setImageResource(R.drawable.ic_network_wifi_black_24px);
+            }
+
             int progress = getProgressIntegerValue(point);
             wifiProgress.setProgress(progress);
         } else {
+            wifiProgress.setProgress(0);
             wifi.setImageResource(R.drawable.ic_signal_wifi_off_black_24px);
         }
 
@@ -115,6 +131,14 @@ public class CoffeeDetailDialog {
         shopDistance.setText(context.getResources().getString(R.string.unit_m, String.valueOf(distance)));
     }
 
+    public boolean isShowing() {
+        if (coffeeDialog != null) {
+            return coffeeDialog.isShowing();
+        }
+
+        return false;
+    }
+
     private String getString(int resStringId) {
         String result = context.getResources().getString(resStringId);
         return !TextUtils.isEmpty(result) ? result : "";
@@ -125,7 +149,7 @@ public class CoffeeDetailDialog {
     }
 
     public interface Callback {
-        void onNavigationTextClicked();
-        void onOpenWebsiteButtonClicked();
+        void onNavigationTextClicked(CoffeeShopViewModel viewModel);
+        void onOpenWebsiteButtonClicked(CoffeeShopViewModel viewModel);
     }
 }
