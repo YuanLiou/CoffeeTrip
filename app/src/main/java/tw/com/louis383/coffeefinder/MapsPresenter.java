@@ -10,6 +10,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
@@ -20,8 +21,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
@@ -44,11 +45,11 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     private boolean isRequestingLocation;
     private List<CoffeeShop> coffeeShops;
 
+    private Marker lastMarker;
+
     public MapsPresenter(GoogleApiClient googleApiClient, CoffeeTripAPI coffeeTripAPI) {
         this.googleApiClient = googleApiClient;
         this.coffeeTripAPI = coffeeTripAPI;
-
-        coffeeShops = new ArrayList<>();
     }
 
     @Override
@@ -60,7 +61,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         }
     }
 
-    public void requestUserLocation() {
+    public void requestUserLocation(boolean force) {
+        // Prevent request twice current location
+        if (currentLocation != null && !force) {
+            return;
+        }
+
         if (view.isLocationPermissionGranted()) {
             currentLocation = getLastLocation();
             if (currentLocation != null) {
@@ -75,9 +81,9 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     public void activityResume() {
-        if (googleApiClient.isConnected() && isRequestingLocation) {
-            requestUserLocation();
-        }
+//        if (googleApiClient.isConnected() && isRequestingLocation) {
+//            requestUserLocation();
+//        }
     }
 
     public void activityPause() {
@@ -88,17 +94,15 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public void fetchCoffeeShop() {
         if (currentLocation != null) {
-            if (!coffeeShops.isEmpty()) {
-                view.cleanMap();
-                coffeeShops = new ArrayList<>();
-            }
-
             coffeeTripAPI.getCoffeeShops(currentLocation.getLatitude(), currentLocation.getLongitude(), RANGE)
                     .subscribe(listResponse -> {
                         if (listResponse.isSuccessful()) {
-                            coffeeShops = listResponse.body();
+                            coffeeShops = new ArrayList<>();
+                            coffeeShops.addAll(listResponse.body());
 
                             if (!coffeeShops.isEmpty()) {
+                                view.cleanMap();
+
                                 int index = 0;
                                 for (CoffeeShop shop : coffeeShops) {
                                     LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
@@ -121,6 +125,16 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public void setGoogleMap(GoogleMap googleMap) {
         googleMap.setOnMarkerClickListener(this);
+    }
+
+    private void highlightMarker(Marker marker, boolean isHighlight) {
+        if (isHighlight) {
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+            marker.setZIndex(1.0f);
+        } else {
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker());
+            marker.setZIndex(0.0f);
+        }
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -203,10 +217,19 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (lastMarker != null) {
+            // Restore last marker's color and zIndex
+            highlightMarker(lastMarker, false);
+        }
+
         int index = Integer.parseInt((String) marker.getTag());
         CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
         view.openCoffeeDetailDialog(viewModel);
-        return false;
+        view.moveCamera(marker.getPosition(), null);
+        highlightMarker(marker, true);
+
+        this.lastMarker = marker;
+        return true;    // disable snippet
     }
     //endregion
 
@@ -214,7 +237,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         boolean isLocationPermissionGranted();
         void requestLocationPermission();
         void addMakers(LatLng latLng, String title, String snippet, String id);
-        void moveCamera(LatLng latLng, float zoom);
+        void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();

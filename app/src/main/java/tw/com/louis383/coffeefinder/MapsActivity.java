@@ -124,7 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case LOCATION_MANUAL_ENABLE:
                 if (isLocationPermissionGranted() && googleMap != null) {
                     if (googleApiClient.isConnected()) {
-                        presenter.requestUserLocation();
+                        presenter.requestUserLocation(true);
                     } else {
                         googleApiClient.connect();
                     }
@@ -139,7 +139,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 break;
             case LOCATION_SETTING_RESOLUTION:
                 if (resultCode == RESULT_OK) {
-                    presenter.requestUserLocation();
+                    presenter.requestUserLocation(true);
                 } else {
                     snackbar = Snackbar.make(rootView, R.string.high_accuracy_recommand, Snackbar.LENGTH_LONG);
                     snackbar.show();
@@ -156,7 +156,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case LOCATION_PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (googleApiClient.isConnected() && googleMap != null) {
-                        presenter.requestUserLocation();
+                        presenter.requestUserLocation(true);
                     }
                 } else {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -209,13 +209,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void moveCamera(LatLng latLng, float zoom) {
+    public void moveCamera(LatLng latLng, Float zoom) {
         if (!mapInterfaceInitiated) {
             mapInterfaceInitiated = true;
             setupDetailedMapInterface();
         }
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        CameraUpdate cameraUpdate;
+        if (zoom != null) {
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom);
+        } else {
+            cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
+        }
         googleMap.animateCamera(cameraUpdate);
     }
 
@@ -312,7 +317,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //region ConnectionCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        presenter.requestUserLocation();
+        presenter.requestUserLocation(false);
     }
 
     @Override
