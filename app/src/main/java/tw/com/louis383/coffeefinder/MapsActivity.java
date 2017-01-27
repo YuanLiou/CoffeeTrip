@@ -260,12 +260,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void showServiceUnavailableMessage() {
         String message = getResources().getString(R.string.service_unavailable);
-        makeCustomSnackbar(message);
+        makeCustomSnackbar(message, true);
     }
 
     @Override
-    public void makeCustomSnackbar(String message) {
-        snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
+    public void showNeedsGoogleMapMessage() {
+        String message = getResources().getString(R.string.googlemap_not_install);
+        makeCustomSnackbar(message, false);
+    }
+
+    @Override
+    public void makeCustomSnackbar(String message, boolean infinity) {
+        int duration = infinity ? Snackbar.LENGTH_INDEFINITE : Snackbar.LENGTH_LONG;
+        snackbar = Snackbar.make(rootView, message, duration);
         snackbar.show();
     }
 
@@ -302,6 +309,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void navigateToLocation(Intent intent) {
         startActivity(intent);
+    }
+
+    @Override
+    public boolean isGoogleMapInstalled(String packageName) {
+        PackageManager packageManager = getPackageManager();
+        try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     private void openApplicationSetting() {

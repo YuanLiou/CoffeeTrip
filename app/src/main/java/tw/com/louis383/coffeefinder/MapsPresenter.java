@@ -41,6 +41,8 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     private static final int RANGE = 2000;    // 2m
     private static final int CAMERA_MOVE_DELAY = 250;
 
+    public static final String GOOGLE_MAP_PACKAGE = "com.google.android.apps.maps";
+
     private GoogleApiClient googleApiClient;
     private CoffeeTripAPI coffeeTripAPI;
     private LocationRequest locationRequest;
@@ -121,7 +123,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
                             }
                         }
                     }, throwable -> {
-                        view.makeCustomSnackbar(throwable.getLocalizedMessage());
+                        view.makeCustomSnackbar(throwable.getLocalizedMessage(), true);
                         Log.e("fetchingCoffeeShop", Log.getStackTraceString(throwable));
                     });
         }
@@ -132,12 +134,17 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     public void prepareNavigation() {
+        if (!view.isGoogleMapInstalled(GOOGLE_MAP_PACKAGE)) {
+            view.showNeedsGoogleMapMessage();
+            return;
+        }
+
         String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f",
                 lastMarker.getPosition().latitude, lastMarker.getPosition().longitude,
                 currentLocation.getLatitude(), currentLocation.getLongitude());
 
         Intent intent = new Intent();
-        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        intent.setClassName(GOOGLE_MAP_PACKAGE, "com.google.android.maps.MapsActivity");
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(urlString));
 
@@ -253,13 +260,15 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public interface MapView {
         boolean isLocationPermissionGranted();
+        boolean isGoogleMapInstalled(String packageName);
         void requestLocationPermission();
         void addMakers(LatLng latLng, String title, String snippet, String id);
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
         void locationSettingNeedsResolution(Status status);
+        void showNeedsGoogleMapMessage();
         void showServiceUnavailableMessage();
-        void makeCustomSnackbar(String message);
+        void makeCustomSnackbar(String message, boolean infinity);
         void showNoCoffeeShopDialog();
         void openWebsite(Uri uri);
         void openCoffeeDetailDialog(CoffeeShopViewModel viewModel);
