@@ -299,6 +299,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public void navigateToLocation(Intent intent) {
+        startActivity(intent);
+    }
+
     private void openApplicationSetting() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -336,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //region CoffeeDetailDialog Callback
     @Override
     public void onNavigationTextClicked(CoffeeShopViewModel viewModel) {
-
+        presenter.prepareNavigation();
     }
 
     @Override

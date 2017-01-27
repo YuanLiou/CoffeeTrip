@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
+import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
@@ -127,6 +129,19 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public void setGoogleMap(GoogleMap googleMap) {
         googleMap.setOnMarkerClickListener(this);
+    }
+
+    public void prepareNavigation() {
+        String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f",
+                lastMarker.getPosition().latitude, lastMarker.getPosition().longitude,
+                currentLocation.getLatitude(), currentLocation.getLongitude());
+
+        Intent intent = new Intent();
+        intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(urlString));
+
+        view.navigateToLocation(intent);
     }
 
     private void highlightMarker(Marker marker, boolean isHighlight) {
@@ -249,5 +264,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         void openWebsite(Uri uri);
         void openCoffeeDetailDialog(CoffeeShopViewModel viewModel);
         void cleanMap();
+        void navigateToLocation(Intent intent);
     }
 }
