@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import android.location.Location;
 import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
 
     private static final int RANGE = 2000;    // 2m
+    private static final int CAMERA_MOVE_DELAY = 250;
 
     private GoogleApiClient googleApiClient;
     private CoffeeTripAPI coffeeTripAPI;
@@ -223,9 +225,10 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         }
 
         int index = Integer.parseInt((String) marker.getTag());
-        CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
-        view.openCoffeeDetailDialog(viewModel);
+        final CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
         view.moveCamera(marker.getPosition(), null);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> view.openCoffeeDetailDialog(viewModel), CAMERA_MOVE_DELAY);
         highlightMarker(marker, true);
 
         this.lastMarker = marker;
