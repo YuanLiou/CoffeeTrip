@@ -132,7 +132,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     public void prepareNavigation() {
-        String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?saddr=%f,%f&daddr=%f,%f",
+        String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f",
                 lastMarker.getPosition().latitude, lastMarker.getPosition().longitude,
                 currentLocation.getLatitude(), currentLocation.getLongitude());
 

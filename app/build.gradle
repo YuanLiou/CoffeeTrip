@@ -8,7 +8,7 @@ android {
         applicationId "tw.com.louis383.coffeefinder"
         targetSdkVersion 25
         versionCode getVersionCodeTimeStamps()
-        versionName "0.1"
+        versionName "0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         jackOptions {

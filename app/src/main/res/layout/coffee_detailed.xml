@@ -27,6 +27,7 @@
         android:ellipsize="end"
         android:singleLine="true"
         tools:text="有心咖啡A Thoughtful Place"
+        style="@style/DialogTitle"
         />
 
     <android.support.v7.widget.AppCompatImageView
@@ -45,6 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/coffee_detailed_open_web"
         tools:text="210 公尺"
+        style="@style/Distance"
         />
 
     <android.support.v7.widget.AppCompatImageView

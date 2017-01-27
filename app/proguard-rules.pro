@@ -34,6 +34,9 @@
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
 
+# Android Support Library
+-keep public class android.support.** { *; }
+
 # Gson
 -keepattributes *Annotation*
 

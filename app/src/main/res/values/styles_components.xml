@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="DialogTitle">
+        <item name="android:textColor">@color/gray_21</item>
+    </style>
+
+    <style name="Distance">
+        <item name="android:textColor">@color/gray_75</item>
+    </style>
+
     <style name="ProgressValue">
         <item name="android:textSize">@dimen/textSizeSmaller</item>
+        <item name="android:textColor">@color/gray_75</item>
     </style>
 
 </resources>
