@@ -18,6 +18,11 @@ googleMapKey_release = <Your Google Map API Key used for release>
 APIHost = "https://coffeetrip.yuer.tw/"
 ```
 
-Special thanks @passerbyid wrote a light and fast backend.
+### Trello
+[Go!](https://trello.com/b/6Qpz4fIq/coffeetrip)
+
+#### Special thanks
+[@80ssundries](https://twitter.com/80ssundries) designed an elegant UI.<br>
+[@passerbyid](https://twitter.com/passerbyid) wrote a light and fast backend.
 
 Informations of coffee shops is provided by [Cafe Nomad](https://cafenomad.tw/).
