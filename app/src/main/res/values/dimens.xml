@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="default_activity_margin_size">16dp</dimen>
+
     <dimen name="textSizeSmaller">11sp</dimen>
 </resources>

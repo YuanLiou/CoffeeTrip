@@ -254,6 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapUISettings.setRotateGesturesEnabled(false);
         mapUISettings.setTiltGesturesEnabled(false);
         mapUISettings.setMapToolbarEnabled(false);
+        mapUISettings.setMyLocationButtonEnabled(false);
     }
 
     @Override
