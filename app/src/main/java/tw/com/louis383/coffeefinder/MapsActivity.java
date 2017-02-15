@@ -10,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -18,6 +19,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -202,9 +204,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void addMakers(LatLng latLng, String title, String snippet, String id) {
+    public void addMakers(LatLng latLng, String title, String snippet, String id, BitmapDescriptor icon) {
         String distance = getResources().getString(R.string.unit_m, snippet);
-        Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(title).snippet(distance));
+        MarkerOptions options = new MarkerOptions();
+        options.position(latLng);
+        options.title(title);
+        options.snippet(distance);
+        options.icon(icon);
+
+        Marker marker = googleMap.addMarker(options);
         marker.setTag(id);
     }
 
@@ -320,6 +328,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    @Override
+    public Drawable getResourceDrawable(int resId) {
+        return ContextCompat.getDrawable(this, resId);
     }
 
     private void openApplicationSetting() {

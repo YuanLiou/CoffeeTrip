@@ -10,11 +10,15 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
@@ -110,11 +114,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
                                 view.cleanMap();
 
                                 int index = 0;
+                                BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_pin);
                                 for (CoffeeShop shop : coffeeShops) {
                                     LatLng latLng = new LatLng(shop.getLatitude(), shop.getLongitude());
 
                                     int distance = (int) shop.getDistance();
-                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance), String.valueOf(index));
+                                    view.addMakers(latLng, shop.getName(), String.valueOf(distance), String.valueOf(index), normalMarker);
 
                                     index++;
                                 }
@@ -149,6 +154,18 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         intent.setData(Uri.parse(urlString));
 
         view.navigateToLocation(intent);
+    }
+
+    private BitmapDescriptor getDrawableBitmapDescriptor(int resId) {
+        Drawable drawable = view.getResourceDrawable(resId);
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        drawable.setBounds(0, 0, width, height);
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     private void highlightMarker(Marker marker, boolean isHighlight) {
@@ -261,8 +278,9 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public interface MapView {
         boolean isLocationPermissionGranted();
         boolean isGoogleMapInstalled(String packageName);
+        Drawable getResourceDrawable(int resId);
         void requestLocationPermission();
-        void addMakers(LatLng latLng, String title, String snippet, String id);
+        void addMakers(LatLng latLng, String title, String snippet, String id, BitmapDescriptor icon);
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
         void locationSettingNeedsResolution(Status status);
