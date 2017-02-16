@@ -27,19 +27,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CoffeeDetailDialog.Callback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CoffeeDetailDialog.Callback, View.OnClickListener {
 
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
@@ -53,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CoordinatorLayout rootView;
     private Snackbar snackbar;
     private CoffeeDetailDialog detailDialog;
+    private FloatingActionButton myLocationButton;
 
     private boolean mapInterfaceInitiated;
 
@@ -61,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         rootView = (CoordinatorLayout) findViewById(R.id.map_rootview);
+        myLocationButton = (FloatingActionButton) findViewById(R.id.my_location_button);
 
         buildGoogleAPIClient();
         CoffeeTripAPI coffeeTripAPI = new CoffeeTripAPI();
@@ -74,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         customTabsHelper = new ChromeCustomTabsHelper();
+        myLocationButton.setOnClickListener(this);
     }
 
     @Override
@@ -381,4 +386,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         openWebsite(viewModel.getDetailUri());
     }
     //endregion
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.my_location_button:
+                presenter.moveCameraToMyLocation();
+                break;
+        }
+    }
 }

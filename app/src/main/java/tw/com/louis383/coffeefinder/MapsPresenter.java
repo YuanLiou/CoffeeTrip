@@ -90,6 +90,18 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         }
     }
 
+    public void moveCameraToMyLocation() {
+        if (googleApiClient == null) {
+            return;
+        }
+
+        Location lastLocation = getLastLocation();
+        if (lastLocation != null) {
+            LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+            view.moveCamera(latLng, null);
+        }
+    }
+
     public void activityResume() {
 //        if (googleApiClient.isConnected() && isRequestingLocation) {
 //            requestUserLocation();
@@ -166,16 +178,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         Canvas canvas = new Canvas(bitmap);
         drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    private void highlightMarker(Marker marker, boolean isHighlight) {
-        if (isHighlight) {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
-            marker.setZIndex(1.0f);
-        } else {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker());
-            marker.setZIndex(0.0f);
-        }
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -258,17 +260,11 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (lastMarker != null) {
-            // Restore last marker's color and zIndex
-            highlightMarker(lastMarker, false);
-        }
-
         int index = Integer.parseInt((String) marker.getTag());
         final CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
         view.moveCamera(marker.getPosition(), null);
         Handler handler = new Handler();
         handler.postDelayed(() -> view.openCoffeeDetailDialog(viewModel), CAMERA_MOVE_DELAY);
-        highlightMarker(marker, true);
 
         this.lastMarker = marker;
         return true;    // disable snippet
