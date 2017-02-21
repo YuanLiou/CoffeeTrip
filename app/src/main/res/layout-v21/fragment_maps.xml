@@ -1,4 +1,4 @@
-<android.support.design.widget.CoordinatorLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,12 +7,11 @@
     android:layout_height="match_parent"
     >
 
-    <fragment
-        android:id="@+id/map"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        tools:context="tw.com.louis383.coffeefinder.MapsActivity"
+        tools:background="#757575"
         />
 
     <android.support.design.widget.FloatingActionButton
@@ -27,4 +26,4 @@
         app:elevation="5dp"
         />
 
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

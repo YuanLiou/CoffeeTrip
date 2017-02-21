@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder;
+package tw.com.louis383.coffeefinder.maps;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import tw.com.louis383.coffeefinder.BasePresenter;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
@@ -57,7 +58,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 //                currentLocation.getLatitude(), currentLocation.getLongitude());
 
 //        Intent intent = new Intent();
-//        intent.setClassName(GOOGLE_MAP_PACKAGE, "com.google.android.maps.MapsActivity");
+//        intent.setClassName(GOOGLE_MAP_PACKAGE, "com.google.android.maps.MapsFragment");
 //        intent.setAction(Intent.ACTION_VIEW);
 //        intent.setData(Uri.parse(urlString));
 

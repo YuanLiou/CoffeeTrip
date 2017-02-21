@@ -1,10 +1,10 @@
-package tw.com.louis383.coffeefinder;
+package tw.com.louis383.coffeefinder.maps;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
@@ -16,22 +16,27 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, MapsPresenter.MapView, CoffeeDetailDialog.Callback, View.OnClickListener {
+public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPresenter.MapView, CoffeeDetailDialog.Callback, View.OnClickListener {
 
     private GoogleMap googleMap;
+    private MapView mapView;
     private MapsPresenter presenter;
 
     private FrameLayout rootView;
@@ -41,20 +46,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private boolean mapInterfaceInitiated;
 
+    public MapsFragment() {}
+
+    public static MapsFragment newInstance() {
+
+        Bundle args = new Bundle();
+
+        MapsFragment fragment = new MapsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        rootView = (FrameLayout) findViewById(R.id.map_rootview);
-        myLocationButton = (FloatingActionButton) findViewById(R.id.my_location_button);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_maps, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        rootView = (FrameLayout) view.findViewById(R.id.map_rootview);
+        mapView = (MapView) view.findViewById(R.id.map_view);
+        myLocationButton = (FloatingActionButton) view.findViewById(R.id.my_location_button);
 
         presenter = new MapsPresenter();
         presenter.attachView(this);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        mapView.onCreate(savedInstanceState);
+        mapView.onResume();
+        mapView.getMapAsync(this);
 
         myLocationButton.setOnClickListener(this);
     }
@@ -99,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CustomTabsIntent.Builder customTabBuilder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabIntent = customTabBuilder.build();
 
-        ChromeCustomTabsHelper.openCustomTab(this, customTabIntent, uri, (activity, uri1) -> {
+        ChromeCustomTabsHelper.openCustomTab(getActivity(), customTabIntent, uri, (activity, uri1) -> {
             // TODO:: a webview page to open a link.
             Intent intent = new Intent(Intent.ACTION_VIEW, uri1);
             startActivity(intent);
@@ -134,7 +155,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void showNoCoffeeShopDialog() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setTitle(getResources().getString(R.string.dialog_no_coffeeshop_title));
         alertDialogBuilder.setMessage(getResources().getString(R.string.dialog_no_coffeeshop_message));
         alertDialogBuilder.setPositiveButton(getResources().getString(R.string.dialog_no_coffeeshop_ok), (dialog, which) -> {});
@@ -145,7 +166,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void openCoffeeDetailDialog(CoffeeShopViewModel viewModel) {
         if (detailDialog == null) {
-            detailDialog = new CoffeeDetailDialog(this, viewModel, this);
+            detailDialog = new CoffeeDetailDialog(getContext(), viewModel, this);
         } else if (detailDialog.isShowing()) {
             detailDialog.dismiss();
         } else {
@@ -169,7 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public boolean isGoogleMapInstalled(String packageName) {
-        PackageManager packageManager = getPackageManager();
+        PackageManager packageManager = getActivity().getPackageManager();
         try {
             packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
             return true;
@@ -180,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public Drawable getResourceDrawable(int resId) {
-        return ContextCompat.getDrawable(this, resId);
+        return ContextCompat.getDrawable(getContext(), resId);
     }
 
     //region CoffeeDetailDialog Callback

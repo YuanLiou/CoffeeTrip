@@ -10,22 +10,34 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import tw.com.louis383.coffeefinder.R;
-import tw.com.louis383.coffeefinder.Utils;
+import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
+import tw.com.louis383.coffeefinder.list.ListFragment;
+import tw.com.louis383.coffeefinder.maps.MapsFragment;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
+import tw.com.louis383.coffeefinder.utils.Utils;
 
 /**
  * Created by louis383 on 2017/2/17.
@@ -42,13 +54,20 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
     private MainPresenter presenter;
 
     private CoordinatorLayout rootView;
+    private Toolbar toolbar;
     private Snackbar snackbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rootView = (CoordinatorLayout) findViewById(R.id.main_rootview);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        tabLayout = (TabLayout) findViewById(R.id.main_tabbar);
+        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+        init();
 
         buildGoogleAPIClient();
         CoffeeTripAPI coffeeTripAPI = new CoffeeTripAPI();
@@ -57,6 +76,25 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
         presenter.attachView(this);
 
         customTabsHelper = new ChromeCustomTabsHelper();
+
+    }
+
+    private void init() {
+        List<Fragment> fragments = new ArrayList<>();
+        MapsFragment mapsFragment = MapsFragment.newInstance();
+        fragments.add(mapsFragment);
+        ListFragment listFragment = ListFragment.newInstance();
+        fragments.add(listFragment);
+
+        tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_map)));
+        tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_list)));
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+
+        toolbar.setTitle(getResourceString(R.string.app_name));
     }
 
     @Override
@@ -184,6 +222,13 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
         snackbar.show();
     }
 
+    @Override
+    public void setStatusBarDarkIndicator() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+    }
+
     private synchronized void buildGoogleAPIClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -207,6 +252,10 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
         startActivityForResult(intent, LOCATION_MANUAL_ENABLE);
     }
 
+    private String getResourceString(int stringId) {
+        return getResources().getString(stringId);
+    }
+
     //region GoogleAPIClient.ConnectionCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -222,7 +271,7 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
     //region GoogleAPIClient.OnConnectionFailedListener
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i("MapsActivity", "onConnectionFailed: " + connectionResult.getErrorMessage());
+        Log.i("MapsFragment", "onConnectionFailed: " + connectionResult.getErrorMessage());
     }
     //endregion
 }

@@ -48,6 +48,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     @Override
     public void attachView(MainView view) {
         super.attachView(view);
+        view.setStatusBarDarkIndicator();
 
         coffeeShops = new ArrayList<>();
         if (!view.isLocationPermissionGranted()) {
@@ -172,5 +173,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
         void makeSnackBar(String message, boolean infinity);
+        void setStatusBarDarkIndicator();
     }
 }

@@ -22,4 +22,6 @@
     <string name="seat_value">通常有位: %1$s</string>
     <string name="quiet_value">安靜程度: %1$s</string>
     <string name="googlemap_not_install">沒有安裝 Google Map, 請先去 Play 商店安裝</string>
+    <string name="tab_title_map">地圖</string>
+    <string name="tab_title_list">列表</string>
 </resources>
