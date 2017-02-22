@@ -4,11 +4,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,6 +54,7 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
     private ChromeCustomTabsHelper customTabsHelper;
 
     private MainPresenter presenter;
+    private ViewPagerAdapter adapter;
 
     private CoordinatorLayout rootView;
     private Toolbar toolbar;
@@ -76,20 +79,21 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
         presenter.attachView(this);
 
         customTabsHelper = new ChromeCustomTabsHelper();
-
     }
 
     private void init() {
         List<Fragment> fragments = new ArrayList<>();
+
         MapsFragment mapsFragment = MapsFragment.newInstance();
-        fragments.add(mapsFragment);
+        fragments.add(ViewPagerAdapter.MAP_FRAGMENT, mapsFragment);
+
         ListFragment listFragment = ListFragment.newInstance();
-        fragments.add(listFragment);
+        fragments.add(ViewPagerAdapter.LIST_FRAGMENT, listFragment);
 
         tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_map)));
         tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_list)));
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
@@ -227,6 +231,16 @@ public class MainActivity extends FragmentActivity implements MainPresenter.Main
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+    }
+
+    public Location getCurrentLocation() {
+        return presenter.getCurrentLocation();
+    }
+
+    @Override
+    public void moveCameraToCurrentPosition(LatLng latLng) {
+        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
+        mapsFragment.moveCamera(latLng, MapsFragment.ZOOM_RATE);
     }
 
     private synchronized void buildGoogleAPIClient() {

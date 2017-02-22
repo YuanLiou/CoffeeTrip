@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 
 import tw.com.louis383.coffeefinder.BasePresenter;
@@ -29,16 +30,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     @Override
     public void attachView(MapView view) {
         super.attachView(view);
-    }
-
-
-    public void moveCameraToMyLocation() {
-        //TODO :: Request MainPresnter to get current location.
-//        Location lastLocation = getLastLocation();
-//        if (lastLocation != null) {
-//            LatLng latLng = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-//            view.moveCamera(latLng, null);
-//        }
     }
 
     public void setGoogleMap(GoogleMap googleMap) {
@@ -94,6 +85,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public interface MapView {
         boolean isGoogleMapInstalled(String packageName);
         Drawable getResourceDrawable(int resId);
+        Location getCurrentLocation();
         void addMakers(LatLng latLng, String title, String snippet, String id, BitmapDescriptor icon);
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();

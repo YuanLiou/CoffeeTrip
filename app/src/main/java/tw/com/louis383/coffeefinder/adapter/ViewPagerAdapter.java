@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,10 +13,14 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
+    public static final int MAP_FRAGMENT = 0;
+    public static final int LIST_FRAGMENT = 1;
+
     private List<Fragment> fragments;
 
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
+        fragments = new ArrayList<>();
     }
 
     public ViewPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
@@ -36,6 +41,10 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public void setFragments(List<Fragment> fragments) {
         this.fragments = fragments;
         notifyDataSetChanged();
+    }
+
+    public void addFragment(Fragment fragment, int order) {
+        fragments.add(order, fragment);
     }
 
     public void clean() {

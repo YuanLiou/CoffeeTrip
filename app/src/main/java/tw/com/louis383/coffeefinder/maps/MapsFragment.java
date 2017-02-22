@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,11 +30,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import tw.com.louis383.coffeefinder.R;
+import tw.com.louis383.coffeefinder.mainpage.MainActivity;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPresenter.MapView, CoffeeDetailDialog.Callback, View.OnClickListener {
+
+    public static final float ZOOM_RATE = 16f;
 
     private GoogleMap googleMap;
     private MapView mapView;
@@ -200,6 +204,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     }
 
     @Override
+    public Location getCurrentLocation() {
+        return ((MainActivity) getActivity()).getCurrentLocation();
+    }
+
+    @Override
     public Drawable getResourceDrawable(int resId) {
         return ContextCompat.getDrawable(getContext(), resId);
     }
@@ -220,7 +229,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.my_location_button:
-                presenter.moveCameraToMyLocation();
+                Location currentLocation = getCurrentLocation();
+                if (currentLocation != null) {
+                    LatLng lastLatlng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    moveCamera(lastLatlng, null);
+                }
                 break;
         }
     }

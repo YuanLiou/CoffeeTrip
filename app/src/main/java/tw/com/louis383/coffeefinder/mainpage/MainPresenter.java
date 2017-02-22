@@ -14,12 +14,8 @@ import com.google.android.gms.maps.model.LatLng;
 import android.location.Location;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import tw.com.louis383.coffeefinder.BasePresenter;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
  * Created by louis383 on 2017/2/17.
@@ -38,8 +34,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     private Location currentLocation;
     private boolean isRequestingLocation;
 
-    private List<CoffeeShop> coffeeShops;
-
     public MainPresenter(GoogleApiClient apiClient, CoffeeTripAPI coffeeTripAPI) {
         this.apiClient = apiClient;
         this.coffeeTripAPI = coffeeTripAPI;
@@ -50,7 +44,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         super.attachView(view);
         view.setStatusBarDarkIndicator();
 
-        coffeeShops = new ArrayList<>();
         if (!view.isLocationPermissionGranted()) {
             view.requestLocationPermission();
         }
@@ -66,7 +59,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             currentLocation = getLastLocation();
             if (currentLocation != null) {
                 LatLng lastLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                // TODO:: Move Google Map Camera
+                view.moveCameraToCurrentPosition(lastLatLng);
                 Log.i("MainPresenter", "lastLocation latitude: " + lastLatLng.latitude + ", longitude: " + lastLatLng.longitude);
             }
 
@@ -131,19 +124,8 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         }
     }
 
-    public void fetchCoffeeShop() {
-        if (currentLocation != null) {
-            coffeeTripAPI.getCoffeeShops(currentLocation.getLatitude(), currentLocation.getLongitude(), RANGE)
-                    .subscribe(listResponse -> {
-                        if (listResponse.isSuccessful()) {
-                            coffeeShops = new ArrayList<>();
-                            coffeeShops.addAll(listResponse.body());
-
-                        }
-                    }, throwable -> {
-                        Log.e("fetchingCoffeeShop", Log.getStackTraceString(throwable));
-                    });
-        }
+    public Location getCurrentLocation() {
+        return currentLocation;
     }
 
     @SuppressWarnings("MissingPermission")
@@ -174,5 +156,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showServiceUnavailableMessage();
         void makeSnackBar(String message, boolean infinity);
         void setStatusBarDarkIndicator();
+
+        void moveCameraToCurrentPosition(LatLng latLng);
     }
 }
