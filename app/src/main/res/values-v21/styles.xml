@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/primary_orange</item>
+        <item name="android:statusBarColor">@color/white</item>
         <item name="android:alertDialogTheme">@style/LightDialogTheme</item>
         <item name="alertDialogTheme">@style/LightDialogTheme</item>
 

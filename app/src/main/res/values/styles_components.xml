@@ -14,4 +14,29 @@
         <item name="android:textColor">@color/gray_75</item>
     </style>
 
+    <style name="TabBar" parent="Widget.Design.TabLayout">
+        <item name="tabMode">fixed</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicatorColor">@color/primary_orange</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabBackground">?selectableItemBackground</item>
+        <item name="tabTextAppearance">@style/TabBar.Text</item>
+        <item name="tabSelectedTextColor">@color/primary_orange</item>
+    </style>
+
+    <style name="TabBar.Text" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Toolbar">
+        <item name="titleTextAppearance">@style/ToolbarTitle</item>
+    </style>
+
+    <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
 </resources>

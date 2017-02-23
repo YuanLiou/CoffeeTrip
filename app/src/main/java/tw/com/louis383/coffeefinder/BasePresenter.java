@@ -14,12 +14,12 @@ public abstract class BasePresenter<T> {
     }
 
     public void detachView() {
-        if (viewAttached) {
+        if (isViewAttached()) {
             this.view = null;
         }
     }
 
     public boolean isViewAttached() {
-        return viewAttached;
+        return view != null;
     }
 }

@@ -14,7 +14,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import tw.com.louis383.coffeefinder.BuildConfig;
-import tw.com.louis383.coffeefinder.Utils;
+import tw.com.louis383.coffeefinder.utils.Utils;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**

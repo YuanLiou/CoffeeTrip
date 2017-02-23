@@ -21,4 +21,6 @@
     <string name="seat_value">Seat Availablity: %1$s</string>
     <string name="quiet_value">Quiet: %1$s</string>
     <string name="googlemap_not_install">Google Map is not install, Please go to Play Store to install it.</string>
+    <string name="tab_title_map">Map</string>
+    <string name="tab_title_list">List</string>
 </resources>

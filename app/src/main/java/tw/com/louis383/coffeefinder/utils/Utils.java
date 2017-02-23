@@ -1,6 +1,8 @@
-package tw.com.louis383.coffeefinder;
+package tw.com.louis383.coffeefinder.utils;
 
 import android.content.Context;
+
+import tw.com.louis383.coffeefinder.BuildConfig;
 
 /**
  * Created by louis383 on 2017/1/13.
