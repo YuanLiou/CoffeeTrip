@@ -29,8 +29,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import javax.inject.Inject;
+
+import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.mainpage.MainActivity;
+import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
@@ -74,14 +78,23 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
         mapView = (MapView) view.findViewById(R.id.map_view);
         myLocationButton = (FloatingActionButton) view.findViewById(R.id.my_location_button);
 
-        presenter = new MapsPresenter();
-        presenter.attachView(this);
-
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
+    }
 
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        ((CoffeeTripApplication) getActivity().getApplication()).getAppComponent().inject(this);
+
+        presenter.attachView(this);
         myLocationButton.setOnClickListener(this);
+    }
+
+    @Inject
+    public void initPresenter(CoffeeShopListManager coffeeShopListManager) {
+        presenter = new MapsPresenter(coffeeShopListManager);
     }
 
     @Override
@@ -106,8 +119,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     @Override
     public void moveCamera(LatLng latLng, Float zoom) {
         if (!mapInterfaceInitiated) {
-            mapInterfaceInitiated = true;
+            // First time initiate interface
+            presenter.fetchCoffeeShops();
             setupDetailedMapInterface();
+
+            mapInterfaceInitiated = true;
         }
 
         CameraUpdate cameraUpdate;
