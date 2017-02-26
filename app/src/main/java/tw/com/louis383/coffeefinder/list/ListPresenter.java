@@ -1,6 +1,9 @@
 package tw.com.louis383.coffeefinder.list;
 
+import java.util.List;
+
 import tw.com.louis383.coffeefinder.BasePresenter;
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
  * Created by louis383 on 2017/2/21.
@@ -8,6 +11,16 @@ import tw.com.louis383.coffeefinder.BasePresenter;
 
 public class ListPresenter extends BasePresenter<ListPresenter.ViewHandler> {
 
+    public void prepareToShowCoffeeShops(List<CoffeeShop> coffeeShops) {
+        if (!coffeeShops.isEmpty()) {
+            view.setItems(coffeeShops);
+        } else {
+            view.showNoCoffeeShopMessage();
+        }
+    }
+
     public interface ViewHandler {
+        void showNoCoffeeShopMessage();
+        void setItems(List<CoffeeShop> items);
     }
 }

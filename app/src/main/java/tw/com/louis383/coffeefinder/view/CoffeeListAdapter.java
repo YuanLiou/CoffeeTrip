@@ -44,9 +44,10 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         CoffeeShopViewModel coffeeShopViewModel = coffeeShops.get(position).getViewModel();
         holder.title.setText(coffeeShopViewModel.getShopName());
-        holder.distance.setText(coffeeShopViewModel.getDistances());
+        String distanceString = context.getResources().getString(R.string.unit_m, String.valueOf(coffeeShopViewModel.getDistances()));
+        holder.distance.setText(distanceString);
         holder.chairPossibility.setText(String.valueOf(coffeeShopViewModel.getSeatPoints()));
-        holder.expenseChart.setRating(1 - coffeeShopViewModel.getCheapPoints());
+        holder.expenseChart.setRating(5.0f - coffeeShopViewModel.getCheapPoints());
 
         if (coffeeShopViewModel.getWifiPoints() > 0) {
             holder.wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN);
@@ -58,6 +59,11 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
     @Override
     public int getItemCount() {
         return coffeeShops.size();
+    }
+
+    public void setItems(List<CoffeeShop> coffeeShops) {
+        this.coffeeShops.addAll(coffeeShops);
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

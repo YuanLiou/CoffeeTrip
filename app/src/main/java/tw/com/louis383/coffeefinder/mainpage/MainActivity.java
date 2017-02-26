@@ -254,6 +254,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     public void onCoffeeShopFetched(List<CoffeeShop> coffeeShops) {
         MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
         mapsFragment.prepareCoffeeShops(coffeeShops);
+
+        ListFragment listFragment = (ListFragment) adapter.getItem(ViewPagerAdapter.LIST_FRAGMENT);
+        listFragment.prepareCoffeeShops(coffeeShops);
     }
 
     private synchronized void buildGoogleAPIClient() {
