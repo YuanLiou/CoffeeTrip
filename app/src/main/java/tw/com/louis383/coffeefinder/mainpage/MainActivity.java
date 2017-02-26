@@ -33,11 +33,15 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
 import tw.com.louis383.coffeefinder.list.ListFragment;
 import tw.com.louis383.coffeefinder.maps.MapsFragment;
-import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.utils.Utils;
 
@@ -66,18 +70,15 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
+
         rootView = (CoordinatorLayout) findViewById(R.id.main_rootview);
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         tabLayout = (TabLayout) findViewById(R.id.main_tabbar);
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         init();
 
-        buildGoogleAPIClient();
-        CoffeeTripAPI coffeeTripAPI = new CoffeeTripAPI();
-
-        presenter = new MainPresenter(googleApiClient, coffeeTripAPI);
         presenter.attachView(this);
-
         customTabsHelper = new ChromeCustomTabsHelper();
     }
 
@@ -99,6 +100,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         toolbar.setTitle(getResourceString(R.string.app_name));
+    }
+
+    @Inject
+    public void initPresenter(CoffeeShopListManager coffeeShopListManager) {
+        buildGoogleAPIClient();
+        presenter = new MainPresenter(googleApiClient, coffeeShopListManager);
     }
 
     @Override
@@ -241,6 +248,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     public void moveCameraToCurrentPosition(LatLng latLng) {
         MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
         mapsFragment.moveCamera(latLng, MapsFragment.ZOOM_RATE);
+    }
+
+    @Override
+    public void onCoffeeShopFetched(List<CoffeeShop> coffeeShops) {
+        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
+        mapsFragment.prepareCoffeeShops(coffeeShops);
     }
 
     private synchronized void buildGoogleAPIClient() {

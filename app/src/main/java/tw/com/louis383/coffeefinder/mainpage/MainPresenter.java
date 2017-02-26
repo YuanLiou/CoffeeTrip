@@ -14,29 +14,33 @@ import com.google.android.gms.maps.model.LatLng;
 import android.location.Location;
 import android.util.Log;
 
+import java.util.List;
+
 import tw.com.louis383.coffeefinder.BasePresenter;
-import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
-public class MainPresenter extends BasePresenter<MainPresenter.MainView> implements LocationListener {
+public class MainPresenter extends BasePresenter<MainPresenter.MainView> implements LocationListener, CoffeeShopListManager.Callback {
 
     private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
-    private static final int RANGE = 2000;    // 2m
+    private static final int RANGE = 3000;    // 3m
 
     private GoogleApiClient apiClient;
-    private CoffeeTripAPI coffeeTripAPI;
     private LocationRequest locationRequest;
+    private CoffeeShopListManager coffeeShopListManager;
 
     private Location currentLocation;
-    private boolean isRequestingLocation;
+    private boolean isRequestingLocation, isWaitingAccurateLocation;
 
-    public MainPresenter(GoogleApiClient apiClient, CoffeeTripAPI coffeeTripAPI) {
+    public MainPresenter(GoogleApiClient apiClient, CoffeeShopListManager coffeeShopListManager) {
         this.apiClient = apiClient;
-        this.coffeeTripAPI = coffeeTripAPI;
+        this.coffeeShopListManager = coffeeShopListManager;
+        this.coffeeShopListManager.setCallback(this);
     }
 
     @Override
@@ -60,7 +64,10 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             if (currentLocation != null) {
                 LatLng lastLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
                 view.moveCameraToCurrentPosition(lastLatLng);
+                fetchCoffeeShops();
                 Log.i("MainPresenter", "lastLocation latitude: " + lastLatLng.latitude + ", longitude: " + lastLatLng.longitude);
+            } else {
+                isWaitingAccurateLocation = true;
             }
 
             tryToGetAccurateLocation();
@@ -71,6 +78,10 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         if (apiClient.isConnected()) {
             stopLocationUpdate();
         }
+    }
+
+    public void fetchCoffeeShops() {
+        coffeeShopListManager.fetch(currentLocation, RANGE);
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -143,9 +154,27 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     @Override
     public void onLocationChanged(Location location) {
         this.currentLocation = location;
-//        stopLocationUpdate();    // Only get one time accurate position.
-        LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-        Log.i("MainPresenter", "Location Updated latitude: " + currentLatLng.latitude + ", longitude: " + currentLatLng.longitude);
+        stopLocationUpdate();    // Only get one time accurate position.
+
+        if (isWaitingAccurateLocation) {
+            isWaitingAccurateLocation = false;
+
+            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+            view.moveCameraToCurrentPosition(currentLatLng);
+            fetchCoffeeShops();
+        }
+    }
+    //endregion
+
+    //region CoffeeShopListManager Callback
+    @Override
+    public void onCoffeeShopFetchedComplete(List<CoffeeShop> coffeeShops) {
+        view.onCoffeeShopFetched(coffeeShops);
+    }
+
+    @Override
+    public void onCoffeeShopFetchedFailed(String message) {
+        view.makeSnackBar(message, false);
     }
     //endregion
 
@@ -156,7 +185,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showServiceUnavailableMessage();
         void makeSnackBar(String message, boolean infinity);
         void setStatusBarDarkIndicator();
-
         void moveCameraToCurrentPosition(LatLng latLng);
+        void onCoffeeShopFetched(List<CoffeeShop> coffeeShops);
     }
 }

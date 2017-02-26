@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -29,17 +28,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
+import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.mainpage.MainActivity;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
-import tw.com.louis383.coffeefinder.widget.CoffeeDetailDialog;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPresenter.MapView, CoffeeDetailDialog.Callback, View.OnClickListener {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, View.OnClickListener {
 
     public static final float ZOOM_RATE = 16f;
 
@@ -49,7 +50,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
 
     private FrameLayout rootView;
     private Snackbar snackbar;
-    private CoffeeDetailDialog detailDialog;
     private FloatingActionButton myLocationButton;
 
     private boolean mapInterfaceInitiated;
@@ -98,6 +98,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     }
 
     @Override
+    public void prepareCoffeeShops(List<CoffeeShop> coffeeShops) {
+        presenter.prepareToShowCoffeeShops(coffeeShops);
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         presenter.setGoogleMap(googleMap);
@@ -120,10 +125,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     public void moveCamera(LatLng latLng, Float zoom) {
         if (!mapInterfaceInitiated) {
             // First time initiate interface
-            presenter.fetchCoffeeShops();
             setupDetailedMapInterface();
-
             mapInterfaceInitiated = true;
+        }
+
+        float currentZoomLevel = googleMap.getCameraPosition().zoom;
+        if (zoom == null && currentZoomLevel < 15f) {
+            zoom = ZOOM_RATE;
         }
 
         CameraUpdate cameraUpdate;
@@ -184,19 +192,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     }
 
     @Override
-    public void openCoffeeDetailDialog(CoffeeShopViewModel viewModel) {
-        if (detailDialog == null) {
-            detailDialog = new CoffeeDetailDialog(getContext(), viewModel, this);
-        } else if (detailDialog.isShowing()) {
-            detailDialog.dismiss();
-        } else {
-            detailDialog.setupCoffeeShop(viewModel);
-        }
-
-        detailDialog.show();
-    }
-
-    @Override
     public void cleanMap() {
         if (googleMap != null) {
             googleMap.clear();
@@ -228,18 +223,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, MapsPr
     public Drawable getResourceDrawable(int resId) {
         return ContextCompat.getDrawable(getContext(), resId);
     }
-
-    //region CoffeeDetailDialog Callback
-    @Override
-    public void onNavigationTextClicked(CoffeeShopViewModel viewModel) {
-        presenter.prepareNavigation();
-    }
-
-    @Override
-    public void onOpenWebsiteButtonClicked(CoffeeShopViewModel viewModel) {
-        openWebsite(viewModel.getDetailUri());
-    }
-    //endregion
 
     @Override
     public void onClick(View v) {
