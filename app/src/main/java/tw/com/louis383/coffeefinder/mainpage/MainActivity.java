@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         List<Fragment> fragments = new ArrayList<>();
 
         MapsFragment mapsFragment = MapsFragment.newInstance();
+        mapsFragment.setRetainInstance(true);
         fragments.add(ViewPagerAdapter.MAP_FRAGMENT, mapsFragment);
 
         ListFragment listFragment = ListFragment.newInstance();

@@ -4,8 +4,10 @@ import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import tw.com.louis383.coffeefinder.model.comparator.DistanceComparator;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
@@ -33,6 +35,7 @@ public class CoffeeShopListManager {
                 .subscribe(listResponse -> {
                     List<CoffeeShop> coffeeShops = listResponse.body();
                     if (callback != null) {
+                        Collections.sort(coffeeShops, new DistanceComparator());
                         callback.onCoffeeShopFetchedComplete(coffeeShops);
                     }
                 }, throwable -> {

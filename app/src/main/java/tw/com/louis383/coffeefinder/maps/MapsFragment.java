@@ -106,6 +106,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         presenter.setGoogleMap(googleMap);
+        setupDetailedMapInterface();
     }
 
     @Override
@@ -123,12 +124,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
 
     @Override
     public void moveCamera(LatLng latLng, Float zoom) {
-        if (!mapInterfaceInitiated) {
-            // First time initiate interface
-            setupDetailedMapInterface();
-            mapInterfaceInitiated = true;
-        }
-
         float currentZoomLevel = googleMap.getCameraPosition().zoom;
         if (zoom == null && currentZoomLevel < 15f) {
             zoom = ZOOM_RATE;

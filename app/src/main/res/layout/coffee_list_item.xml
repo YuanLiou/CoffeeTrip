@@ -93,12 +93,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignTop="@id/list_chair_icon"
         android:layout_alignBottom="@id/list_chair_icon"
+        android:layout_marginBottom="4dp"
+        android:numStars="5"
         android:max="5"
         android:stepSize="1"
         android:isIndicator="true"
-        style="?android:attr/ratingBarStyleSmall"
+        style="@style/ExpenseRateBar"
         />
 
 </RelativeLayout>
