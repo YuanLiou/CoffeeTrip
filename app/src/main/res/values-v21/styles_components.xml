@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WhiteColorButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:colorButtonNormal">@color/white</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <style name="OrangeColorButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@color/white</item>
+        <item name="colorButtonNormal">@color/primary_orange</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+</resources>

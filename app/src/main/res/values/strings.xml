@@ -16,11 +16,15 @@
     <string name="unit_m">%1$s m</string>
     <string name="dialog_navigate">Navigate</string>
     <string name="service_unavailable">Service is not available</string>
-    <string name="wifi_value">WiFi Quality: %1$s</string>
-    <string name="cheap_value">Cost Cheapness: %1$s</string>
-    <string name="seat_value">Seat Availablity: %1$s</string>
-    <string name="quiet_value">Quiet: %1$s</string>
+    <string name="wifi_value">WiFi Quality</string>
+    <string name="seat_value">Seat Availablity</string>
     <string name="googlemap_not_install">Google Map is not install, Please go to Play Store to install it.</string>
     <string name="tab_title_map">Map</string>
     <string name="tab_title_list">List</string>
+    <string name="unit_m_words">m</string>
+    <string name="rating_progress_unit" translatable="false">/5</string>
+    <string name="add_to_bookmark">Add to my favorite</string>
+    <string name="im_here">Hey! I\'m here!</string>
+    <string name="share_this_shop">Share this coffee shop</string>
+    <string name="coffeeshop_info">Coffeeshop information</string>
 </resources>

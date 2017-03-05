@@ -5,6 +5,8 @@
     <color name="gray">#5B5B5B</color>
     <color name="light_gray">#BFBFBF</color>
     <color name="white">#FFFFFF</color>
+    <color name="gray_1e">#1E1E1E</color>
+    <color name="gray_cd">#CDCDCD</color>
 
     <color name="gray_21">#212121</color>
     <color name="gray_75">#757575</color>

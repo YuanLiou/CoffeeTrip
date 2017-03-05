@@ -17,11 +17,14 @@
     <string name="dialog_no_coffeeshop_ok">去走走</string>
     <string name="unit_m">%1$s 公尺</string>
     <string name="dialog_navigate">導航</string>
-    <string name="wifi_value">WiFi 穩定: %1$s</string>
-    <string name="cheap_value">價格便宜: %1$s</string>
-    <string name="seat_value">通常有位: %1$s</string>
-    <string name="quiet_value">安靜程度: %1$s</string>
+    <string name="wifi_value">WiFi 穩定</string>
+    <string name="seat_value">通常有位</string>
     <string name="googlemap_not_install">沒有安裝 Google Map, 請先去 Play 商店安裝</string>
     <string name="tab_title_map">地圖</string>
     <string name="tab_title_list">列表</string>
+    <string name="unit_m_words">公尺</string>
+    <string name="add_to_bookmark">收藏</string>
+    <string name="im_here">媽我在這</string>
+    <string name="share_this_shop">分享這間咖啡館</string>
+    <string name="coffeeshop_info">咖啡館資訊</string>
 </resources>
