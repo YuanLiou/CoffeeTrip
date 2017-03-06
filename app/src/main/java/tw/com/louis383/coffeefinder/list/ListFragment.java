@@ -20,11 +20,13 @@ import tw.com.louis383.coffeefinder.view.CoffeeListAdapter;
  * Created by louis383 on 2017/2/21.
  */
 
-public class ListFragment extends BaseFragment implements ListPresenter.ViewHandler {
+public class ListFragment extends BaseFragment implements ListPresenter.ViewHandler, ListTappedHandler {
 
     private ListPresenter presenter;
     private RecyclerView recyclerView;
     private CoffeeListAdapter adapter;
+
+    private Callback callback;
 
     public ListFragment() {}
 
@@ -44,7 +46,7 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        adapter = new CoffeeListAdapter(getActivity());
+        adapter = new CoffeeListAdapter(getActivity(), this);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         RecyclerViewDividerHelper dividerHelper = new RecyclerViewDividerHelper(getActivity(), RecyclerViewDividerHelper.VERTICAL_LIST, false, false);
         recyclerView.addItemDecoration(dividerHelper);
@@ -52,6 +54,10 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
 
         presenter = new ListPresenter();
         presenter.attachView(this);
+    }
+
+    public void setCallback(Callback callback) {
+        this.callback = callback;
     }
 
     @Override
@@ -68,5 +74,18 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     @Override
     public void setItems(List<CoffeeShop> items) {
         adapter.setItems(items);
+    }
+
+    //region ListTappedHandler
+    @Override
+    public void onItemTapped(CoffeeShop coffeeShop, int index) {
+        if (callback != null) {
+            callback.onItemTapped(coffeeShop);
+        }
+    }
+    //endregion
+
+    public interface Callback {
+        void onItemTapped(CoffeeShop coffeeShop);
     }
 }

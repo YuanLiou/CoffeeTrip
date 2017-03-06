@@ -27,4 +27,16 @@
     <string name="im_here">Hey! I\'m here!</string>
     <string name="share_this_shop">Share this coffee shop</string>
     <string name="coffeeshop_info">Coffeeshop information</string>
+    <string name="limit_time_yes">Limited Time</string>
+    <string name="limit_time_maybe">Sometimes will be limited time.</string>
+    <string name="limit_time_no">Unlimited Time!</string>
+    <string name="socket_yes">Socket Available</string>
+    <string name="socket_maybe">Some Seats Have Socket</string>
+    <string name="socket_no">No Socket!</string>
+    <string name="standing_desk_yes">Standing Desk Available</string>
+    <string name="standing_desk_no">No Standing Desk!</string>
+    <string name="maps_string_null">We have no idea!</string>
+    <string name="share_message">I\'m at %1$s. %2$s</string>
+    <string name="share_subject">Share with you</string>
+    <string name="share_title">Share</string>
 </resources>

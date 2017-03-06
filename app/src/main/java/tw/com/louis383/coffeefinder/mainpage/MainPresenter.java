@@ -11,20 +11,28 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
 
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Locale;
 
 import tw.com.louis383.coffeefinder.BasePresenter;
+import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
 public class MainPresenter extends BasePresenter<MainPresenter.MainView> implements LocationListener, CoffeeShopListManager.Callback {
+
+    private static final String GOOGLE_MAP_PACKAGE = "com.google.android.apps.maps";
 
     private static final int UPDATE_INTERVAL = 10000;    // 10 Sec
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
@@ -35,6 +43,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     private CoffeeShopListManager coffeeShopListManager;
 
     private Location currentLocation;
+    private CoffeeShop lastTappedCoffeeShop;
     private boolean isRequestingLocation, isWaitingAccurateLocation;
 
     public MainPresenter(GoogleApiClient apiClient, CoffeeShopListManager coffeeShopListManager) {
@@ -48,7 +57,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         super.attachView(view);
         view.setStatusBarDarkIndicator();
 
-        if (!view.isLocationPermissionGranted()) {
+        if (!view.checkLocationPermission()) {
             view.requestLocationPermission();
         }
     }
@@ -59,7 +68,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             return;
         }
 
-        if (view.isLocationPermissionGranted()) {
+        if (view.checkLocationPermission()) {
             currentLocation = getLastLocation();
             if (currentLocation != null) {
                 LatLng lastLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
@@ -82,6 +91,50 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
 
     public void fetchCoffeeShops() {
         coffeeShopListManager.fetch(currentLocation, RANGE);
+    }
+
+    public void prepareNavigation() {
+        if (!view.isApplicationInstalled(GOOGLE_MAP_PACKAGE)) {
+            view.showNeedsGoogleMapMessage();
+            return;
+        }
+
+        if (currentLocation != null && lastTappedCoffeeShop != null) {
+            String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
+                    lastTappedCoffeeShop.getLatitude(), lastTappedCoffeeShop.getLongitude(),
+                    currentLocation.getLatitude(), currentLocation.getLongitude());
+
+            Intent intent = new Intent();
+            intent.setPackage(GOOGLE_MAP_PACKAGE);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(urlString));
+            view.navigateToLocation(intent);
+        }
+    }
+
+    public void share(Context context) {
+        if (lastTappedCoffeeShop != null) {
+            CoffeeShopViewModel coffeeShopViewModel = lastTappedCoffeeShop.getViewModel();
+            String subject = context.getResources().getString(R.string.share_subject);
+            String message = context.getResources().getString(R.string.share_message, coffeeShopViewModel.getShopName(), coffeeShopViewModel.getAddress());
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_TEXT, message + "\n" + coffeeShopViewModel.getDetailUri());
+
+            view.shareCoffeeShop(intent);
+        }
+    }
+
+    public void setLastTappedCoffeeShop(CoffeeShop lastTappedCoffeeShop) {
+        this.lastTappedCoffeeShop = lastTappedCoffeeShop;
+    }
+
+    public void showDetailView() {
+        if (lastTappedCoffeeShop != null) {
+            view.showBottomSheetDetailView(lastTappedCoffeeShop.getViewModel());
+        }
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -179,7 +232,8 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     //endregion
 
     public interface MainView {
-        boolean isLocationPermissionGranted();
+        boolean isApplicationInstalled(String packageName);
+        boolean checkLocationPermission();
         void requestLocationPermission();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
@@ -187,5 +241,9 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void setStatusBarDarkIndicator();
         void moveCameraToCurrentPosition(LatLng latLng);
         void onCoffeeShopFetched(List<CoffeeShop> coffeeShops);
+        void navigateToLocation(Intent intent);
+        void showNeedsGoogleMapMessage();
+        void showBottomSheetDetailView(CoffeeShopViewModel viewModel);
+        void shareCoffeeShop(Intent shareIntent);
     }
 }

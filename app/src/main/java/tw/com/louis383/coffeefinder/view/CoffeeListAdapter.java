@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tw.com.louis383.coffeefinder.R;
+import tw.com.louis383.coffeefinder.list.ListTappedHandler;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
@@ -27,11 +28,13 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
     private Context context;
 
     private List<CoffeeShop> coffeeShops;
+    private ListTappedHandler handler;
 
-    public CoffeeListAdapter(Context context) {
+    public CoffeeListAdapter(Context context, ListTappedHandler handler) {
         coffeeShops = new ArrayList<>();
 
         this.context = context.getApplicationContext();
+        this.handler = handler;
     }
 
     @Override
@@ -42,7 +45,9 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        CoffeeShopViewModel coffeeShopViewModel = coffeeShops.get(position).getViewModel();
+        final int index = holder.getAdapterPosition();
+        final CoffeeShop coffeeShop = coffeeShops.get(index);
+        CoffeeShopViewModel coffeeShopViewModel = coffeeShop.getViewModel();
         holder.title.setText(coffeeShopViewModel.getShopName());
         String distanceString = context.getResources().getString(R.string.unit_m, String.valueOf(coffeeShopViewModel.getDistances()));
         holder.distance.setText(distanceString);
@@ -54,6 +59,12 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
         } else {
             holder.wifiIcon.setColorFilter(0);
         }
+
+        holder.rootView.setOnClickListener(v -> {
+            if (index != RecyclerView.NO_POSITION) {
+                handler.onItemTapped(coffeeShop, index);
+            }
+        });
     }
 
     @Override
@@ -74,7 +85,6 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             this.rootView = itemView;
 
             title = (TextView) itemView.findViewById(R.id.list_title);
@@ -84,7 +94,5 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
             bookmarkIcon = (ImageView) itemView.findViewById(R.id.list_bookmark_icon);
             expenseChart = (RatingBar) itemView.findViewById(R.id.list_chart_money);
         }
-
-
     }
 }

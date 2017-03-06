@@ -1,8 +1,13 @@
 package tw.com.louis383.coffeefinder.viewmodel;
 
+import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 /**
@@ -15,8 +20,29 @@ public class CoffeeShopViewModel {
 
     private CoffeeShop coffeeShop;
 
+    private Map<String, Integer> limitedTimeStringResources;
+    private Map<String, Integer> socketStringResources;
+    private Map<Boolean, Integer> standingDeskStringResources;
+
     public CoffeeShopViewModel(CoffeeShop coffeeShop) {
         this.coffeeShop = coffeeShop;
+        initStringMaps();
+    }
+
+    private void initStringMaps() {
+        limitedTimeStringResources = new HashMap<>();
+        limitedTimeStringResources.put("yes", R.string.limit_time_yes);
+        limitedTimeStringResources.put("maybe", R.string.limit_time_maybe);
+        limitedTimeStringResources.put("no", R.string.limit_time_no);
+
+        socketStringResources = new HashMap<>();
+        socketStringResources.put("yes", R.string.socket_yes);
+        socketStringResources.put("maybe", R.string.socket_maybe);
+        socketStringResources.put("no", R.string.socket_no);
+
+        standingDeskStringResources = new HashMap<>();
+        standingDeskStringResources.put(true, R.string.standing_desk_yes);
+        standingDeskStringResources.put(false, R.string.standing_desk_no);
     }
 
     public String getShopName() {
@@ -27,8 +53,9 @@ public class CoffeeShopViewModel {
         return Uri.parse(CAFE_NOMAD_PATH + coffeeShop.getId());
     }
 
-    public int getDistances() {
-        return (int) coffeeShop.getDistance();
+    public String getDistances() {
+        int distance = (int) coffeeShop.getDistance();
+        return String.valueOf(distance);
     }
 
     public float getWifiPoints() {
@@ -39,11 +66,43 @@ public class CoffeeShopViewModel {
         return coffeeShop.getSeat();
     }
 
-    public float getQueitPoints() {
-        return coffeeShop.getQuiet();
+    public float getCheapPoints() {
+        return (5.0f - coffeeShop.getCheap());
     }
 
-    public float getCheapPoints() {
-        return coffeeShop.getCheap();
+    public String getAddress() {
+        return coffeeShop.getAddress();
+    }
+
+    public String getOpenTimes() {
+        return TextUtils.isEmpty(coffeeShop.getOpenTime()) ? "" : coffeeShop.getOpenTime();
+    }
+
+    public String getMrtInfo() {
+        return TextUtils.isEmpty(coffeeShop.getMrt()) ? "" : coffeeShop.getMrt();
+    }
+
+    public String getLimitTimeString(Context context) {
+        String limitTimeString = coffeeShop.getLimitedTime();
+        if (limitTimeString != null) {
+            return getResourceString(context, limitedTimeStringResources.get(coffeeShop.getLimitedTime()));
+        }
+        return getResourceString(context, R.string.maps_string_null);
+    }
+
+    public String getSocketString(Context context) {
+        String socketString = coffeeShop.getSocket();
+        if (socketString != null) {
+            return getResourceString(context, socketStringResources.get(coffeeShop.getSocket()));
+        }
+        return getResourceString(context, R.string.maps_string_null);
+    }
+
+    public String getStandingDeskString(Context context) {
+        return getResourceString(context, standingDeskStringResources.get(coffeeShop.isStandingDesk()));
+    }
+
+    private String getResourceString(Context context, int stringResId) {
+        return context.getResources().getString(stringResId);
     }
 }

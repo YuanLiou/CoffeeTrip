@@ -27,4 +27,16 @@
     <string name="im_here">媽我在這</string>
     <string name="share_this_shop">分享這間咖啡館</string>
     <string name="coffeeshop_info">咖啡館資訊</string>
+    <string name="limit_time_yes">有限時</string>
+    <string name="limit_time_maybe">假日或客滿可能限時</string>
+    <string name="limit_time_no">不限時</string>
+    <string name="socket_yes">到處都是插座</string>
+    <string name="socket_maybe">部分座位有插座</string>
+    <string name="socket_no">完全沒有插座</string>
+    <string name="standing_desk_yes">有站立工作區</string>
+    <string name="standing_desk_no">沒有站立工作區</string>
+    <string name="maps_string_null">不知道！</string>
+    <string name="share_message">我在 %1$s，%2$s</string>
+    <string name="share_subject">與你分享</string>
+    <string name="share_title">我在這裡辣！</string>
 </resources>

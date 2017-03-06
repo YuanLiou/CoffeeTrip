@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -24,32 +25,42 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
 import tw.com.louis383.coffeefinder.list.ListFragment;
+import tw.com.louis383.coffeefinder.maps.MapsClickHandler;
 import tw.com.louis383.coffeefinder.maps.MapsFragment;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.utils.Utils;
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
-public class MainActivity extends AppCompatActivity implements MainPresenter.MainView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements MainPresenter.MainView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, MapsClickHandler, ListFragment.Callback {
+
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
     private static final int LOCATION_SETTING_RESOLUTION = 2;
@@ -59,27 +70,48 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     private MainPresenter presenter;
     private ViewPagerAdapter adapter;
-
-    private CoordinatorLayout rootView;
-    private Toolbar toolbar;
     private Snackbar snackbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private BottomSheetBehavior bottomSheetBehavior;
+
+    // Main Content
+    @BindView(R.id.main_rootview) CoordinatorLayout rootView;
+    @BindView(R.id.main_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_tabbar) TabLayout tabLayout;
+    @BindView(R.id.main_viewpager) ViewPager viewPager;
+    @BindView(R.id.main_bottom_sheet) NestedScrollView bottomSheet;
+
+    // Bottom Sheet
+    @BindView(R.id.detail_view_title) TextView bottomSheetTitle;
+    @BindView(R.id.detail_view_distance) TextView bottomSheetDistance;
+    @BindView(R.id.detail_view_wifi_score) TextView bottomSheetWifiScore;
+    @BindView(R.id.detail_view_seat_score) TextView bottomSheetSeatScore;
+    @BindView(R.id.detail_view_limited_time) TextView bottomSheetLimitedTime;
+    @BindView(R.id.detail_view_socket) TextView bottomSheetSocket;
+    @BindView(R.id.detail_view_standing_desk) TextView bottomSheetStandingDesk;
+    @BindView(R.id.detail_view_opentime) TextView bottomSheetOpenTime;
+    @BindView(R.id.detail_view_mrt) TextView bottomSheetMrt;
+    @BindView(R.id.detail_view_expense) AppCompatRatingBar bottomSheetExpensebar;
+    @BindView(R.id.detail_view_wifi_quality) ProgressBar bottomSheetWifiQuality;
+    @BindView(R.id.detail_view_seat_quality) ProgressBar bottomSheetSeatQuality;
+    @BindView(R.id.detail_view_button_navigate) Button bottomSheetNavigate;
+    @BindView(R.id.detail_view_button_share) Button bottomSheetShare;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
+        ButterKnife.bind(this);
 
-        rootView = (CoordinatorLayout) findViewById(R.id.main_rootview);
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.main_tabbar);
-        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         init();
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         presenter.attachView(this);
         customTabsHelper = new ChromeCustomTabsHelper();
+
+        bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
+        bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
     }
 
     private void init() {
@@ -87,9 +119,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         MapsFragment mapsFragment = MapsFragment.newInstance();
         mapsFragment.setRetainInstance(true);
+        mapsFragment.setMapClickHandler(this);
         fragments.add(ViewPagerAdapter.MAP_FRAGMENT, mapsFragment);
 
         ListFragment listFragment = ListFragment.newInstance();
+        listFragment.setCallback(this);
         fragments.add(ViewPagerAdapter.LIST_FRAGMENT, listFragment);
 
         tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_map)));
@@ -173,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
             case LOCATION_MANUAL_ENABLE:
-                if (isLocationPermissionGranted()) {
+                if (checkLocationPermission()) {
                     if (googleApiClient.isConnected()) {
                         presenter.requestUserLocation(true);
                     } else {
@@ -202,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    public boolean isLocationPermissionGranted() {
+    public boolean checkLocationPermission() {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -260,6 +294,34 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         listFragment.prepareCoffeeShops(coffeeShops);
     }
 
+    @Override
+    public boolean isApplicationInstalled(String packageName) {
+        PackageManager packageManager = getPackageManager();
+        try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void navigateToLocation(Intent intent) {
+        startActivity(intent);
+    }
+
+    @Override
+    public void showNeedsGoogleMapMessage() {
+        String message = getResources().getString(R.string.googlemap_not_install);
+        makeSnackBar(message, false);
+    }
+
+    @Override
+    public void shareCoffeeShop(Intent shareIntent) {
+        String title = getResourceString(R.string.share_title);
+        startActivity(Intent.createChooser(shareIntent, title));
+    }
+
     private synchronized void buildGoogleAPIClient() {
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -287,6 +349,29 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         return getResources().getString(stringId);
     }
 
+    @Override
+    public void showBottomSheetDetailView(CoffeeShopViewModel viewModel) {
+        if (bottomSheet != null && bottomSheetBehavior != null) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            bottomSheetTitle.setText(viewModel.getShopName());
+            bottomSheetDistance.setText(viewModel.getDistances());
+            bottomSheetExpensebar.setRating(viewModel.getCheapPoints());
+
+            bottomSheetWifiQuality.setProgress((int) viewModel.getWifiPoints() * 20);
+            bottomSheetWifiScore.setText(String.valueOf(viewModel.getWifiPoints()));
+            bottomSheetSeatQuality.setProgress((int) viewModel.getSeatPoints() * 20);
+            bottomSheetSeatScore.setText(String.valueOf(viewModel.getSeatPoints()));
+
+            bottomSheetOpenTime.setText(viewModel.getOpenTimes());
+            bottomSheetMrt.setText(viewModel.getMrtInfo());
+
+            bottomSheetLimitedTime.setText(viewModel.getLimitTimeString(this));
+            bottomSheetSocket.setText(viewModel.getSocketString(this));
+            bottomSheetStandingDesk.setText(viewModel.getStandingDeskString(this));
+        }
+    }
+
     //region GoogleAPIClient.ConnectionCallback
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -303,6 +388,22 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("MapsFragment", "onConnectionFailed: " + connectionResult.getErrorMessage());
+    }
+    //endregion
+
+    //region MapsClickHandler
+    @Override
+    public void onMarkerClicked(CoffeeShop coffeeShop) {
+        presenter.setLastTappedCoffeeShop(coffeeShop);
+        presenter.showDetailView();
+    }
+    //endregion
+
+    //region ListFragment.Callback
+    @Override
+    public void onItemTapped(CoffeeShop coffeeShop) {
+        presenter.setLastTappedCoffeeShop(coffeeShop);
+        presenter.showDetailView();
     }
     //endregion
 }

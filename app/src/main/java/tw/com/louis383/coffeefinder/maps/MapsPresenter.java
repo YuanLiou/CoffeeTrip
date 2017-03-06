@@ -6,7 +6,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -14,7 +13,6 @@ import android.location.Location;
 import android.net.Uri;
 
 import java.util.List;
-import java.util.Locale;
 
 import tw.com.louis383.coffeefinder.BasePresenter;
 import tw.com.louis383.coffeefinder.R;
@@ -27,11 +25,12 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
 public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements GoogleMap.OnMarkerClickListener {
 
-    public static final String GOOGLE_MAP_PACKAGE = "com.google.android.apps.maps";
     private static final int CAMERA_MOVE_DELAY = 250;
 
     private Marker lastMarker;
     private CoffeeShopListManager coffeeShopListManager;
+
+    private LatLng temporaryLatlang;
 
     public MapsPresenter(CoffeeShopListManager coffeeShopListManager) {
         this.coffeeShopListManager = coffeeShopListManager;
@@ -44,27 +43,15 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
 
     public void setGoogleMap(GoogleMap googleMap) {
         googleMap.setOnMarkerClickListener(this);
+
+        if (temporaryLatlang != null) {
+            view.moveCamera(temporaryLatlang, null);
+            temporaryLatlang = null;
+        }
     }
 
-    public void prepareNavigation() {
-        if (!view.isGoogleMapInstalled(GOOGLE_MAP_PACKAGE)) {
-            view.showNeedsGoogleMapMessage();
-            return;
-        }
-
-        Location currentLocation = view.getCurrentLocation();
-        if (currentLocation != null) {
-            String urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f",
-                    lastMarker.getPosition().latitude, lastMarker.getPosition().longitude,
-                    currentLocation.getLatitude(), currentLocation.getLongitude());
-
-            Intent intent = new Intent();
-            intent.setClassName(GOOGLE_MAP_PACKAGE, "com.google.android.maps.MapsFragment");
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(urlString));
-
-            view.navigateToLocation(intent);
-        }
+    public void setTemporaryLatlang(LatLng latLng) {
+        this.temporaryLatlang = latLng;
     }
 
     private BitmapDescriptor getDrawableBitmapDescriptor(int resId) {
@@ -82,11 +69,9 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
-//        int index = Integer.parseInt((String) marker.getTag());
-//        final CoffeeShopViewModel viewModel = coffeeShops.get(index).getViewModel();
-//        view.moveCamera(marker.getPosition(), null);
-//        Handler handler = new Handler();
-//        handler.postDelayed(() -> view.openCoffeeDetailDialog(viewModel), CAMERA_MOVE_DELAY);
+        CoffeeShop coffeeShop = (CoffeeShop) marker.getTag();
+        view.moveCamera(marker.getPosition(), null);
+        view.openDetailView(coffeeShop);
 
         this.lastMarker = marker;
         return true;    // disable snippet
@@ -97,15 +82,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         if (!coffeeShops.isEmpty()) {
             view.cleanMap();
 
-            int index = 0;
             BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_pin);
             for (CoffeeShop coffeeShop : coffeeShops) {
                 LatLng latLng = new LatLng(coffeeShop.getLatitude(), coffeeShop.getLongitude());
 
                 String distence = String.valueOf(coffeeShop.getDistance());
-                view.addMakers(latLng, coffeeShop.getName(), distence, String.valueOf(index), normalMarker);
-
-                index++;
+                view.addMakers(latLng, coffeeShop.getName(), distence, coffeeShop, normalMarker);
             }
         } else {
             view.showNoCoffeeShopDialog();
@@ -113,17 +95,15 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     public interface MapView {
-        boolean isGoogleMapInstalled(String packageName);
+        boolean checkLocationPermission();
         Drawable getResourceDrawable(int resId);
         Location getCurrentLocation();
-        void addMakers(LatLng latLng, String title, String snippet, String id, BitmapDescriptor icon);
+        void addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon);
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
-        void showNeedsGoogleMapMessage();
-        void makeCustomSnackbar(String message, boolean infinity);
         void showNoCoffeeShopDialog();
         void openWebsite(Uri uri);
         void cleanMap();
-        void navigateToLocation(Intent intent);
+        void openDetailView(CoffeeShop coffeeShop);
     }
 }

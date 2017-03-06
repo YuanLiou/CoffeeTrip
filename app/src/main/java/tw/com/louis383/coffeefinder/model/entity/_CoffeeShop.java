@@ -50,6 +50,21 @@ public class _CoffeeShop {
     @SerializedName("distance")
     @Expose
     protected double distance;
+    @SerializedName("limited_time")
+    @Expose
+    private String limitedTime;
+    @SerializedName("socket")
+    @Expose
+    private String socket;
+    @SerializedName("standing_desk")
+    @Expose
+    private boolean standingDesk;
+    @SerializedName("mrt")
+    @Expose
+    private String mrt;
+    @SerializedName("open_time")
+    @Expose
+    private String openTime;
 
     public String getId() {
         return id;
@@ -153,6 +168,46 @@ public class _CoffeeShop {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getLimitedTime() {
+        return limitedTime;
+    }
+
+    public void setLimitedTime(String limitedTime) {
+        this.limitedTime = limitedTime;
+    }
+
+    public String getSocket() {
+        return socket;
+    }
+
+    public void setSocket(String socket) {
+        this.socket = socket;
+    }
+
+    public boolean isStandingDesk() {
+        return standingDesk;
+    }
+
+    public void setStandingDesk(boolean standingDesk) {
+        this.standingDesk = standingDesk;
+    }
+
+    public String getMrt() {
+        return mrt;
+    }
+
+    public void setMrt(String mrt) {
+        this.mrt = mrt;
+    }
+
+    public String getOpenTime() {
+        return openTime;
+    }
+
+    public void setOpenTime(String openTime) {
+        this.openTime = openTime;
     }
 
     public double getDistance() {

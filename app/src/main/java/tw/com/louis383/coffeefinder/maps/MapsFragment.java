@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -52,7 +53,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     private Snackbar snackbar;
     private FloatingActionButton myLocationButton;
 
-    private boolean mapInterfaceInitiated;
+    private MapsClickHandler handler;
 
     public MapsFragment() {}
 
@@ -97,6 +98,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         presenter = new MapsPresenter(coffeeShopListManager);
     }
 
+    public void setMapClickHandler(MapsClickHandler handler) {
+        this.handler = handler;
+    }
+
     @Override
     public void prepareCoffeeShops(List<CoffeeShop> coffeeShops) {
         presenter.prepareToShowCoffeeShops(coffeeShops);
@@ -110,7 +115,22 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     }
 
     @Override
-    public void addMakers(LatLng latLng, String title, String snippet, String id, BitmapDescriptor icon) {
+    public boolean checkLocationPermission() {
+        return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void enableMyLocation() {
+        if (checkLocationPermission() && isMapReady() && !googleMap.isMyLocationEnabled()) {
+            googleMap.setMyLocationEnabled(true);
+        }
+    }
+
+    @Override
+    public void addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon) {
+        if (!isMapReady()) {
+            return;
+        }
+
         String distance = getResources().getString(R.string.unit_m, snippet);
         MarkerOptions options = new MarkerOptions();
         options.position(latLng);
@@ -119,11 +139,21 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         options.icon(icon);
 
         Marker marker = googleMap.addMarker(options);
-        marker.setTag(id);
+        marker.setTag(coffeeShop);
     }
 
     @Override
     public void moveCamera(LatLng latLng, Float zoom) {
+        if (!isMapReady()) {
+            // FIXME:: it's a dirty hack to prevent get google map on an asynchonous way and get null if not ready.
+            presenter.setTemporaryLatlang(latLng);
+            return;
+        }
+
+        if (!googleMap.isMyLocationEnabled()) {
+            enableMyLocation();
+        }
+
         float currentZoomLevel = googleMap.getCameraPosition().zoom;
         if (zoom == null && currentZoomLevel < 15f) {
             zoom = ZOOM_RATE;
@@ -139,6 +169,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     }
 
     @Override
+    public void openDetailView(CoffeeShop coffeeShop) {
+        if (handler != null && coffeeShop != null) {
+            handler.onMarkerClicked(coffeeShop);
+        }
+    }
+
+    @Override
     public void openWebsite(Uri uri) {
         CustomTabsIntent.Builder customTabBuilder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabIntent = customTabBuilder.build();
@@ -150,30 +187,18 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         });
     }
 
-    @SuppressWarnings("MissingPermission")
     @Override
     public void setupDetailedMapInterface() {
-        googleMap.setMyLocationEnabled(true);
-        googleMap.setBuildingsEnabled(true);
+        if (isMapReady()) {
+            enableMyLocation();
+            googleMap.setBuildingsEnabled(true);
 
-        UiSettings mapUISettings = googleMap.getUiSettings();
-        mapUISettings.setRotateGesturesEnabled(false);
-        mapUISettings.setTiltGesturesEnabled(false);
-        mapUISettings.setMapToolbarEnabled(false);
-        mapUISettings.setMyLocationButtonEnabled(false);
-    }
-
-    @Override
-    public void showNeedsGoogleMapMessage() {
-        String message = getResources().getString(R.string.googlemap_not_install);
-        makeCustomSnackbar(message, false);
-    }
-
-    @Override
-    public void makeCustomSnackbar(String message, boolean infinity) {
-        int duration = infinity ? Snackbar.LENGTH_INDEFINITE : Snackbar.LENGTH_LONG;
-        snackbar = Snackbar.make(rootView, message, duration);
-        snackbar.show();
+            UiSettings mapUISettings = googleMap.getUiSettings();
+            mapUISettings.setRotateGesturesEnabled(false);
+            mapUISettings.setTiltGesturesEnabled(false);
+            mapUISettings.setMapToolbarEnabled(false);
+            mapUISettings.setMyLocationButtonEnabled(false);
+        }
     }
 
     @Override
@@ -188,24 +213,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
 
     @Override
     public void cleanMap() {
-        if (googleMap != null) {
+        if (isMapReady()) {
             googleMap.clear();
-        }
-    }
-
-    @Override
-    public void navigateToLocation(Intent intent) {
-        startActivity(intent);
-    }
-
-    @Override
-    public boolean isGoogleMapInstalled(String packageName) {
-        PackageManager packageManager = getActivity().getPackageManager();
-        try {
-            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
         }
     }
 
@@ -230,5 +239,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
                 }
                 break;
         }
+    }
+
+    private boolean isMapReady() {
+        return googleMap != null;
     }
 }
