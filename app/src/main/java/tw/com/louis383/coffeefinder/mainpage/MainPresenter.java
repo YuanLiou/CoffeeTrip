@@ -134,6 +134,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public void showDetailView() {
         if (lastTappedCoffeeShop != null) {
             view.showBottomSheetDetailView(lastTappedCoffeeShop.getViewModel());
+            view.hideAppbar(false);
         }
     }
 
@@ -245,5 +246,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showNeedsGoogleMapMessage();
         void showBottomSheetDetailView(CoffeeShopViewModel viewModel);
         void shareCoffeeShop(Intent shareIntent);
+        void hideAppbar(boolean hide);
     }
 }

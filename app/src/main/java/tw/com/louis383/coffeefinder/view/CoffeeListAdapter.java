@@ -52,7 +52,7 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
         String distanceString = context.getResources().getString(R.string.unit_m, String.valueOf(coffeeShopViewModel.getDistances()));
         holder.distance.setText(distanceString);
         holder.chairPossibility.setText(String.valueOf(coffeeShopViewModel.getSeatPoints()));
-        holder.expenseChart.setRating(5.0f - coffeeShopViewModel.getCheapPoints());
+        holder.expenseChart.setRating(coffeeShopViewModel.getCheapPoints());
 
         if (coffeeShopViewModel.getWifiPoints() > 0) {
             holder.wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN);

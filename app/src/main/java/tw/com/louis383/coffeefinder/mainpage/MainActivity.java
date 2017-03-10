@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     // Main Content
     @BindView(R.id.main_rootview) CoordinatorLayout rootView;
     @BindView(R.id.main_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_appbar) AppBarLayout appbarLayout;
     @BindView(R.id.main_tabbar) TabLayout tabLayout;
     @BindView(R.id.main_viewpager) ViewPager viewPager;
     @BindView(R.id.main_bottom_sheet) NestedScrollView bottomSheet;
@@ -370,6 +372,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
             bottomSheetSocket.setText(viewModel.getSocketString(this));
             bottomSheetStandingDesk.setText(viewModel.getStandingDeskString(this));
         }
+    }
+
+    @Override
+    public void hideAppbar(boolean hide) {
+        appbarLayout.setExpanded(false, true);
     }
 
     //region GoogleAPIClient.ConnectionCallback

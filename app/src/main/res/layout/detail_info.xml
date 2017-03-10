@@ -56,6 +56,8 @@
             android:layout_marginTop="26dp"
             android:layout_toEndOf="@id/left_margin"
             android:layout_below="@id/detail_view_title"
+            android:numStars="5"
+            android:stepSize="0.1"
             android:max="5"
             style="@style/ExpenseRateBar"
             />

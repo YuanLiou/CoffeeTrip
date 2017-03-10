@@ -97,7 +97,7 @@
         android:layout_marginBottom="4dp"
         android:numStars="5"
         android:max="5"
-        android:stepSize="1"
+        android:stepSize="0.1"
         android:isIndicator="true"
         style="@style/ExpenseRateBar"
         />
