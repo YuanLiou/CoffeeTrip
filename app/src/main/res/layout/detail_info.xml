@@ -415,7 +415,8 @@
             android:layout_below="@id/detail_view_coffeeshop_info_divider"
             android:layout_alignStart="@id/detail_view_limited_time_icon"
             android:layout_alignEnd="@id/detail_view_limited_time_icon"
-            android:layout_marginTop="24dp"
+            android:paddingTop="1dp"
+            android:layout_marginTop="22dp"
             app:srcCompat="@drawable/ic_open_time"
             />
 
@@ -451,7 +452,8 @@
             android:layout_below="@id/detail_view_coffeeshop_info_divider2"
             android:layout_alignStart="@id/detail_view_opentime_icon"
             android:layout_alignEnd="@id/detail_view_opentime_icon"
-            android:layout_marginTop="29dp"
+            android:paddingTop="4dp"
+            android:layout_marginTop="25dp"
             app:srcCompat="@drawable/ic_mrt"
             />
 

@@ -66,12 +66,30 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
+    private void highlightMarker(Marker marker, boolean highlight) {
+        if (highlight) {
+            BitmapDescriptor highlightMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin_active);
+            marker.setZIndex(1.0f);
+            marker.setIcon(highlightMarker);
+        } else {
+            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin);
+            marker.setZIndex(0.0f);
+            marker.setIcon(normalMarker);
+        }
+    }
+
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (lastMarker != null) {
+            // Restore last marker's color and zIndex
+            highlightMarker(lastMarker, false);
+        }
+
         CoffeeShop coffeeShop = (CoffeeShop) marker.getTag();
         view.moveCamera(marker.getPosition(), null);
         view.openDetailView(coffeeShop);
+        highlightMarker(marker, true);
 
         this.lastMarker = marker;
         return true;    // disable snippet
@@ -82,7 +100,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         if (!coffeeShops.isEmpty()) {
             view.cleanMap();
 
-            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_pin);
+            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin);
             for (CoffeeShop coffeeShop : coffeeShops) {
                 LatLng latLng = new LatLng(coffeeShop.getLatitude(), coffeeShop.getLongitude());
 

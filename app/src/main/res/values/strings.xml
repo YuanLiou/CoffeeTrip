@@ -39,4 +39,6 @@
     <string name="share_message">I\'m at %1$s. %2$s</string>
     <string name="share_subject">Share with you</string>
     <string name="share_title">Share</string>
+    <string name="list_no_money_data">Currently no data</string>
+    <string name="opentime_mrt_none">No Information.</string>
 </resources>

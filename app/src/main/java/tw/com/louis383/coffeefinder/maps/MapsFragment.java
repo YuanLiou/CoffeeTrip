@@ -41,7 +41,7 @@ import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 
-public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, View.OnClickListener {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, View.OnClickListener, GoogleMap.OnMapClickListener {
 
     public static final float ZOOM_RATE = 16f;
 
@@ -110,6 +110,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        this.googleMap.setOnMapClickListener(this);
+
         presenter.setGoogleMap(googleMap);
         setupDetailedMapInterface();
     }
@@ -243,5 +245,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
 
     private boolean isMapReady() {
         return googleMap != null;
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        handler.onMapClicked();
     }
 }

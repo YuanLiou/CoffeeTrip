@@ -33,6 +33,8 @@ import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private Snackbar snackbar;
     private BottomSheetBehavior bottomSheetBehavior;
 
+    private boolean isAppbarVisible = false;
+
     // Main Content
     @BindView(R.id.main_rootview) CoordinatorLayout rootView;
     @BindView(R.id.main_toolbar) Toolbar toolbar;
@@ -110,10 +114,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         presenter.attachView(this);
-        customTabsHelper = new ChromeCustomTabsHelper();
+        presenter.setBottomSheetBehavior(bottomSheetBehavior);
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
+
+        customTabsHelper = new ChromeCustomTabsHelper();
     }
 
     private void init() {
@@ -365,8 +371,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
             bottomSheetSeatQuality.setProgress((int) viewModel.getSeatPoints() * 20);
             bottomSheetSeatScore.setText(String.valueOf(viewModel.getSeatPoints()));
 
-            bottomSheetOpenTime.setText(viewModel.getOpenTimes());
-            bottomSheetMrt.setText(viewModel.getMrtInfo());
+            bottomSheetOpenTime.setText(viewModel.getOpenTimes(this));
+            bottomSheetMrt.setText(viewModel.getMrtInfo(this));
 
             bottomSheetLimitedTime.setText(viewModel.getLimitTimeString(this));
             bottomSheetSocket.setText(viewModel.getSocketString(this));
@@ -376,7 +382,32 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     public void hideAppbar(boolean hide) {
-        appbarLayout.setExpanded(false, true);
+        isAppbarVisible = !hide;
+        if (hide) {
+            appbarLayout.animate().translationY(-appbarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+        } else {
+            appbarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
+    @Override
+    public boolean isAppbarVisible() {
+        return isAppbarVisible;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior != null) {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                return;
+            } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+        }
+
+        super.onBackPressed();
     }
 
     //region GoogleAPIClient.ConnectionCallback
@@ -399,6 +430,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     //endregion
 
     //region MapsClickHandler
+    @Override
+    public void onMapClicked() {
+        if (!isAppbarVisible && bottomSheetBehavior != null) {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    }
+
     @Override
     public void onMarkerClicked(CoffeeShop coffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop);

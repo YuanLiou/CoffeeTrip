@@ -39,4 +39,6 @@
     <string name="share_message">我在 %1$s，%2$s</string>
     <string name="share_subject">與你分享</string>
     <string name="share_title">我在這裡辣！</string>
+    <string name="list_no_money_data">尚無價位資料</string>
+    <string name="opentime_mrt_none">嗯～不知道</string>
 </resources>

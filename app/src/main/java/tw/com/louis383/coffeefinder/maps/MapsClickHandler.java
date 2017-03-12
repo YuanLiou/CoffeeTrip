@@ -7,5 +7,6 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
  */
 
 public interface MapsClickHandler {
+    void onMapClicked();
     void onMarkerClicked(CoffeeShop coffeeShop);
 }

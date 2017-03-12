@@ -15,7 +15,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
+import android.view.View;
 
 import java.util.List;
 import java.util.Locale;
@@ -134,8 +137,32 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public void showDetailView() {
         if (lastTappedCoffeeShop != null) {
             view.showBottomSheetDetailView(lastTappedCoffeeShop.getViewModel());
-            view.hideAppbar(false);
         }
+    }
+
+    public void setBottomSheetBehavior(BottomSheetBehavior bottomSheetBehavior) {
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        if (!view.isAppbarVisible()) {
+                            view.hideAppbar(false);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset > 0.1f && view.isAppbarVisible()) {
+                    view.hideAppbar(true);
+                } else if (slideOffset <= 0.4f && !view.isAppbarVisible()) {
+                    view.hideAppbar(false);
+                }
+//                Log.i("MainPresenter", "onSlide: " + slideOffset);
+            }
+        });
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -235,6 +262,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public interface MainView {
         boolean isApplicationInstalled(String packageName);
         boolean checkLocationPermission();
+        boolean isAppbarVisible();
         void requestLocationPermission();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();

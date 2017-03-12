@@ -1,5 +1,6 @@
 package tw.com.louis383.coffeefinder.list;
 
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -50,10 +51,19 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         RecyclerViewDividerHelper dividerHelper = new RecyclerViewDividerHelper(getActivity(), RecyclerViewDividerHelper.VERTICAL_LIST, false, false);
         recyclerView.addItemDecoration(dividerHelper);
+        recyclerView.setPadding(0, getActionBarHeight() * 2, 0, 0);
         recyclerView.setAdapter(adapter);
 
         presenter = new ListPresenter();
         presenter.attachView(this);
+    }
+
+    private int getActionBarHeight() {
+        final TypedArray styledAttribute = getContext().getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+        int actionBarSize = (int) styledAttribute.getDimension(0, 0);
+        styledAttribute.recycle();
+
+        return actionBarSize;
     }
 
     public void setCallback(Callback callback) {

@@ -74,12 +74,14 @@ public class CoffeeShopViewModel {
         return coffeeShop.getAddress();
     }
 
-    public String getOpenTimes() {
-        return TextUtils.isEmpty(coffeeShop.getOpenTime()) ? "" : coffeeShop.getOpenTime();
+    public String getOpenTimes(Context context) {
+        String noInfoString = getResourceString(context, R.string.opentime_mrt_none);
+        return TextUtils.isEmpty(coffeeShop.getOpenTime()) ? noInfoString : coffeeShop.getOpenTime();
     }
 
-    public String getMrtInfo() {
-        return TextUtils.isEmpty(coffeeShop.getMrt()) ? "" : coffeeShop.getMrt();
+    public String getMrtInfo(Context context) {
+        String noInfoString = getResourceString(context, R.string.opentime_mrt_none);
+        return TextUtils.isEmpty(coffeeShop.getMrt()) ? noInfoString : coffeeShop.getMrt();
     }
 
     public String getLimitTimeString(Context context) {
