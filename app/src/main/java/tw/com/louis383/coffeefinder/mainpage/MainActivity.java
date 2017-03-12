@@ -449,6 +449,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     public void onItemTapped(CoffeeShop coffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop);
         presenter.showDetailView();
+
+        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
+        mapsFragment.setMarkerActive(coffeeShop);
     }
     //endregion
 }

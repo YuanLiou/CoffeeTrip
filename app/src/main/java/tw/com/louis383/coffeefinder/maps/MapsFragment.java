@@ -102,6 +102,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         this.handler = handler;
     }
 
+    public void setMarkerActive(CoffeeShop coffeeShop) {
+        presenter.activeMarker(coffeeShop);
+    }
+
     @Override
     public void prepareCoffeeShops(List<CoffeeShop> coffeeShops) {
         presenter.prepareToShowCoffeeShops(coffeeShops);
@@ -128,9 +132,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     }
 
     @Override
-    public void addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon) {
+    public Marker addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon) {
         if (!isMapReady()) {
-            return;
+            return null;
         }
 
         String distance = getResources().getString(R.string.unit_m, snippet);
@@ -142,6 +146,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
 
         Marker marker = googleMap.addMarker(options);
         marker.setTag(coffeeShop);
+        return marker;
     }
 
     @Override
