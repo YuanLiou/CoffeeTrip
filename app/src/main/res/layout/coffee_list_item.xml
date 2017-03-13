@@ -10,6 +10,7 @@
     android:paddingEnd="16dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
+    android:background="?selectableItemBackground"
     >
 
     <TextView
