@@ -15,6 +15,14 @@
         tools:background="#757575"
         />
 
+    <View
+        android:id="@+id/main_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/shadow_layer"
+        />
+
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/main_bottom_sheet"
         android:layout_width="wrap_content"
@@ -29,6 +37,19 @@
         <include layout="@layout/detail_info" />
 
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/main_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/main_bottom_sheet"
+        app:layout_anchorGravity="end"
+        app:fabSize="normal"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:useCompatPadding="true"
+        app:srcCompat="@drawable/ic_direction"
+        />
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/main_appbar"

@@ -59,6 +59,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public void attachView(MainView view) {
         super.attachView(view);
         view.setStatusBarDarkIndicator();
+        view.showFab(false);
 
         if (!view.checkLocationPermission()) {
             view.requestLocationPermission();
@@ -147,7 +148,20 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
                         if (!view.isAppbarVisible()) {
-                            view.hideAppbar(false);
+                            view.showAppbar(true);
+                        }
+
+                        view.showFab(false);
+                        view.disableFeb();
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        if (!view.isFabVisible()) {
+                            view.showFab(true);
+                        }
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        if (view.isFabVisible()) {
+                            view.showFab(false);
                         }
                         break;
                 }
@@ -156,11 +170,12 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 if (slideOffset > 0.1f && view.isAppbarVisible()) {
-                    view.hideAppbar(true);
+                    view.showAppbar(false);
                 } else if (slideOffset <= 0.4f && !view.isAppbarVisible()) {
-                    view.hideAppbar(false);
+                    view.showAppbar(true);
                 }
-//                Log.i("MainPresenter", "onSlide: " + slideOffset);
+
+                view.setShadowAlpha(slideOffset);
             }
         });
     }
@@ -263,6 +278,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         boolean isApplicationInstalled(String packageName);
         boolean checkLocationPermission();
         boolean isAppbarVisible();
+        boolean isFabVisible();
         void requestLocationPermission();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
@@ -274,6 +290,9 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showNeedsGoogleMapMessage();
         void showBottomSheetDetailView(CoffeeShopViewModel viewModel);
         void shareCoffeeShop(Intent shareIntent);
-        void hideAppbar(boolean hide);
+        void showAppbar(boolean show);
+        void showFab(boolean show);
+        void setShadowAlpha(float offset);
+        void disableFeb();
     }
 }

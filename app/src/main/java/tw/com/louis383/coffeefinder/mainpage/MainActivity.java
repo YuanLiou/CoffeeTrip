@@ -7,6 +7,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +37,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private BottomSheetBehavior bottomSheetBehavior;
 
     private boolean isAppbarVisible = false;
+    private boolean isFabVisible = false;
 
     // Main Content
     @BindView(R.id.main_rootview) CoordinatorLayout rootView;
@@ -85,8 +89,10 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     @BindView(R.id.main_tabbar) TabLayout tabLayout;
     @BindView(R.id.main_viewpager) ViewPager viewPager;
     @BindView(R.id.main_bottom_sheet) NestedScrollView bottomSheet;
+    @BindView(R.id.main_shadow) View shadow;
 
     // Bottom Sheet
+    @BindView(R.id.main_fab) FloatingActionButton navigationFab;
     @BindView(R.id.detail_view_title) TextView bottomSheetTitle;
     @BindView(R.id.detail_view_distance) TextView bottomSheetDistance;
     @BindView(R.id.detail_view_wifi_score) TextView bottomSheetWifiScore;
@@ -118,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
+        navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
 
         customTabsHelper = new ChromeCustomTabsHelper();
     }
@@ -381,18 +388,65 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    public void hideAppbar(boolean hide) {
-        isAppbarVisible = !hide;
-        if (hide) {
-            appbarLayout.animate().translationY(-appbarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-        } else {
+    public void showAppbar(boolean show) {
+        isAppbarVisible = show;
+        if (show) {
             appbarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+        } else {
+            appbarLayout.animate().translationY(-appbarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
         }
+    }
+
+    @Override
+    public void showFab(boolean show) {
+        isFabVisible = show;
+        if (show) {
+            navigationFab.animate().scaleX(1).scaleY(1).setDuration(300)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            if (!navigationFab.isShown()) {
+                                navigationFab.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {}
+                        @Override
+                        public void onAnimationCancel(Animator animation) {}
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {}
+                    })
+                    .setInterpolator(new OvershootInterpolator())
+                    .start();
+        } else {
+            navigationFab.animate().scaleX(0).scaleY(0).setDuration(200).setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
+    @Override
+    public void disableFeb() {
+        navigationFab.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setShadowAlpha(float offset) {
+        if (offset > 0.0f) {
+            float alpha = offset * 0.4f;
+            shadow.setAlpha(alpha);
+            viewPager.setTranslationY(offset * -55);
+        }
+
+        shadow.setVisibility(offset > 0.0f ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public boolean isAppbarVisible() {
         return isAppbarVisible;
+    }
+
+    @Override
+    public boolean isFabVisible() {
+        return isFabVisible;
     }
 
     @Override
@@ -402,6 +456,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return;
             } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                showFab(false);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 return;
             }
@@ -432,7 +487,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     //region MapsClickHandler
     @Override
     public void onMapClicked() {
-        if (!isAppbarVisible && bottomSheetBehavior != null) {
+        if (bottomSheetBehavior != null) {
+            showFab(false);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         }
     }
