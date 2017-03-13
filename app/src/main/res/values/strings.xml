@@ -36,9 +36,22 @@
     <string name="standing_desk_yes">Standing Desk Available</string>
     <string name="standing_desk_no">No Standing Desk!</string>
     <string name="maps_string_null">We have no idea!</string>
-    <string name="share_message">I\'m at %1$s. %2$s</string>
+    <string name="share_message">I\'m at %1$s. %2$s.    via #CoffeeTrip</string>
     <string name="share_subject">Share with you</string>
     <string name="share_title">Share</string>
     <string name="list_no_money_data">Currently no data</string>
     <string name="opentime_mrt_none">No Information.</string>
+    <string name="internet_request_title">Internet Connection</string>
+    <string name="internet_request_message">We need internet connection to request coffee shop informations.</string>
+    <string name="menu_about">About</string>
+    <string name="no_any_coffee_shop">Found none of coffee shop around here!</string>
+    <string name="about_message">if you feel sleepy, did you have another cup of coffee?</string>
+    <string name="about_work">Worker</string>
+    <string name="about_designer">Designer</string>
+    <string name="about_backend">Backend and DevOps</string>
+    <string name="about_android">Android App</string>
+    <string name="about_licence">About coffee shops data</string>
+    <string name="about_data_comes_from">Special thanks Coffee Nomad for shops data.</string>
+    <string name="boss_hanashi">I\'m Smelly Head!!! \n The boss of these humans!!!</string>
+    <string name="boss_feed">Buy a coffee for Smelly!</string>
 </resources>

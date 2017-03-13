@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="message_about">
+        <item>If you feel sleepy, did you have another cup of coffee?</item>
+        <item>Give some water for your chili.</item>
+        <item>You've got a new house and some Higgs particles.</item>
+        <item>Why a little duck is so cute?</item>
+        <item>Write down some secrets secretly.</item>
+        <item>Open the radio in the room.</item>
+        <item>A discussion related to a banana.</item>
+        <item>Talking about The Angry Video Game Nerd with Siri.</item>
+        <item>Resolve a extremely hard math question below:</item>
+        <item>Did you heard about Show Lo before? No.</item>
+        <item>Bought a new bag for my new kettle.</item>
+        <item>Just bought stories of autumn.</item>
+        <item>Study the relationship between real estate and monitoring.</item>
+        <item>Hey Cortana! There is completely silent with my Mac.</item>
+        <item>What the weather tomorrow? Oh It's a wrong app.</item>
+        <item>Only you, Google and NSA know the coffee shop you go.</item>
+    </string-array>
+</resources>

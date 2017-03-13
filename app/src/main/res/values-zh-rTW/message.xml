@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="message_about">
+        <item>喝一杯還想睡，那你有喝第二杯嗎？</item>
+        <item>幫你的辣椒澆水。</item>
+        <item>討論新房屋, 與希格司玻色子。</item>
+        <item>解開鴨鴨可愛的謎題。</item>
+        <item>偷偷留下小暗號。</item>
+        <item>打開房間的收音機。</item>
+        <item>討論香蕉。</item>
+        <item>與犀利小姐對話, 主題是憤怒電玩宅。</item>
+        <item>試解二元一次聯立方程式。</item>
+        <item>金針哈牳冰豆花。</item>
+        <item>為了新水壺買了新的提袋。</item>
+        <item>購買秋天的故事。</item>
+        <item>研究不動產法與監聽的關係。</item>
+        <item>用單手把彗星彈開。</item>
+        <item>剛結束一場時空旅行。</item>
+        <item>正在改編「我最親愛的」。</item>
+    </string-array>
+</resources>

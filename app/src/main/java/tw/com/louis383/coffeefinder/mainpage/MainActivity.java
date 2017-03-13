@@ -8,10 +8,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +37,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -70,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
     private static final int LOCATION_SETTING_RESOLUTION = 2;
+    private static final int INTERNET_REQUEST = 3;
 
     private GoogleApiClient googleApiClient;
     private ChromeCustomTabsHelper customTabsHelper;
@@ -110,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
@@ -124,8 +132,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
-        navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
+//        navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
 
+        setSupportActionBar(toolbar);
         customTabsHelper = new ChromeCustomTabsHelper();
     }
 
@@ -220,19 +229,24 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode) {
+        switch (requestCode) {
+            case INTERNET_REQUEST:
+                if (isInternetAvailable()) {
+                    if (checkLocationPermission()) {
+                        forceRequestCoffeeShop();
+                    } else {
+                        showPermissionNeedSnackBar();
+                    }
+                } else {
+                    requestInternetConnection();
+                }
+                break;
             case LOCATION_MANUAL_ENABLE:
                 if (checkLocationPermission()) {
-                    if (googleApiClient.isConnected()) {
-                        presenter.requestUserLocation(true);
-                    } else {
-                        googleApiClient.connect();
-                    }
-
+                    forceRequestCoffeeShop();
                     if (snackbar != null && snackbar.isShown()) {
                         snackbar.dismiss();
                     }
-
                 } else {
                     showPermissionNeedSnackBar();
                 }
@@ -247,6 +261,32 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                // Go to about page!
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void forceRequestCoffeeShop() {
+        if (googleApiClient.isConnected()) {
+            presenter.requestUserLocation(true);
+        } else {
+            googleApiClient.connect();
         }
     }
 
@@ -288,6 +328,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+    }
+
+    @Override
+    public void requestInternetConnection() {
+        new AlertDialog.Builder(this)
+            .setTitle(getResourceString(R.string.internet_request_title))
+            .setMessage(getResourceString(R.string.internet_request_message))
+            .setPositiveButton(getResourceString(R.string.auto_go), (dialog, which) -> {
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivityForResult(intent, INTERNET_REQUEST);
+            }).create().show();
     }
 
     public Location getCurrentLocation() {
@@ -424,8 +475,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    public void disableFeb() {
-        navigationFab.setVisibility(View.GONE);
+    public void setFloatingActionButtonEnable(boolean enable) {
+        if (!enable) {
+            navigationFab.setOnClickListener(null);
+            navigationFab.setVisibility(View.GONE);
+        } else {
+            navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
+        }
+
+        navigationFab.setEnabled(enable);
+        navigationFab.setClickable(enable);
     }
 
     @Override
@@ -450,9 +509,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
+    public boolean isInternetAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected() && networkInfo.isAvailable();
+    }
+
+    @Override
     public void onBackPressed() {
         if (bottomSheetBehavior != null) {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheet.fullScroll(View.FOCUS_UP);
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return;
             } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {

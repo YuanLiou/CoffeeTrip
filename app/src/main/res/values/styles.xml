@@ -9,6 +9,11 @@
         <item name="android:textColorPrimary">@color/gray</item>
     </style>
 
+    <!-- Splash -->
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
     <!-- Dialog theme -->
     <style name="LightDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
     </style>

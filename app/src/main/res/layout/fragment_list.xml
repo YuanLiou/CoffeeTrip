@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,6 +17,39 @@
         android:scrollbarStyle="outsideOverlay"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/coffee_list_item"
+        tools:visibility="gone"
         />
 
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/list_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        tools:visibility="gone"
+        style="?android:attr/progressBarStyle"
+        />
+
+    <ImageView
+        android:id="@+id/list_none_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:src="@drawable/ic_figure_state_empty"
+        tools:visibility="visible"
+        />
+
+    <TextView
+        android:id="@+id/list_none_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:textSize="20sp"
+        android:textColor="@color/gray"
+        android:fontFamily="sans-serif-medium"
+        android:visibility="gone"
+        android:text="@string/no_any_coffee_shop"
+        />
+
+</FrameLayout>

@@ -60,9 +60,14 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         super.attachView(view);
         view.setStatusBarDarkIndicator();
         view.showFab(false);
+        view.setFloatingActionButtonEnable(false);
 
         if (!view.checkLocationPermission()) {
             view.requestLocationPermission();
+        }
+
+        if (!view.isInternetAvailable()) {
+            view.requestInternetConnection();
         }
     }
 
@@ -152,11 +157,12 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
                         }
 
                         view.showFab(false);
-                        view.disableFeb();
+                        view.setFloatingActionButtonEnable(false);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         if (!view.isFabVisible()) {
                             view.showFab(true);
+                            view.setFloatingActionButtonEnable(true);
                         }
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
@@ -279,6 +285,8 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         boolean checkLocationPermission();
         boolean isAppbarVisible();
         boolean isFabVisible();
+        boolean isInternetAvailable();
+        void requestInternetConnection();
         void requestLocationPermission();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
@@ -293,6 +301,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showAppbar(boolean show);
         void showFab(boolean show);
         void setShadowAlpha(float offset);
-        void disableFeb();
+        void setFloatingActionButtonEnable(boolean enable);
     }
 }

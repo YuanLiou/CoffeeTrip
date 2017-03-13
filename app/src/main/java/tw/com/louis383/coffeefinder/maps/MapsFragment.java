@@ -33,6 +33,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
@@ -45,13 +47,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
 
     public static final float ZOOM_RATE = 16f;
 
-    private GoogleMap googleMap;
-    private MapView mapView;
     private MapsPresenter presenter;
-
-    private FrameLayout rootView;
+    private GoogleMap googleMap;
     private Snackbar snackbar;
-    private FloatingActionButton myLocationButton;
+
+    @BindView(R.id.map_rootview) FrameLayout rootView;
+    @BindView(R.id.my_location_button) FloatingActionButton myLocationButton;
+    @BindView(R.id.map_view) MapView mapView;
 
     private MapsClickHandler handler;
 
@@ -69,16 +71,14 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_maps, container, false);
+        View view =inflater.inflate(R.layout.fragment_maps, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rootView = (FrameLayout) view.findViewById(R.id.map_rootview);
-        mapView = (MapView) view.findViewById(R.id.map_view);
-        myLocationButton = (FloatingActionButton) view.findViewById(R.id.my_location_button);
-
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
