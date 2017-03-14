@@ -13,6 +13,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/primary_orange"
         android:elevation="2dp"
+        style="@style/OrangeToolbar"
         />
 
     <ScrollView
@@ -53,6 +54,7 @@
                 android:layout_below="@id/boss_talk"
                 android:layout_marginTop="29dp"
                 android:text="@string/boss_feed"
+                android:visibility="gone"
                 style="@style/OrangeColorButton"
                 />
 
@@ -68,6 +70,7 @@
                 />
 
             <ImageView
+                android:id="@+id/boss_twitter_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/boss_twitter"

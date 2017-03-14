@@ -57,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
+import tw.com.louis383.coffeefinder.about.AboutActivity;
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
 import tw.com.louis383.coffeefinder.list.ListFragment;
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler;
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
-//        navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
 
         setSupportActionBar(toolbar);
         customTabsHelper = new ChromeCustomTabsHelper();
@@ -276,6 +276,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         switch (item.getItemId()) {
             case R.id.action_about:
                 // Go to about page!
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
                 break;
         }
 

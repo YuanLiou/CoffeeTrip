@@ -32,6 +32,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".about.AboutActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme" />
+        <activity android:name=".boss.BossActivity" android:screenOrientation="portrait" android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

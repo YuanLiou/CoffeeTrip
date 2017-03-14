@@ -14,6 +14,7 @@
         android:layout_height="?android:attr/actionBarSize"
         android:elevation="2dp"
         android:background="@color/primary_orange"
+        style="@style/OrangeToolbar"
         />
 
     <ScrollView
@@ -72,6 +73,7 @@
                 android:layout_below="@id/about_title"
                 android:layout_marginTop="8dp"
                 android:layout_centerHorizontal="true"
+                android:gravity="center"
                 android:textSize="14sp"
                 android:maxLines="2"
                 android:ellipsize="end"
