@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 
+import java.util.HashMap;
 import java.util.List;
 
 import tw.com.louis383.coffeefinder.BasePresenter;
@@ -31,9 +32,12 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     private CoffeeShopListManager coffeeShopListManager;
 
     private LatLng temporaryLatlang;
+    private HashMap<String, Marker> markerMap;
 
     public MapsPresenter(CoffeeShopListManager coffeeShopListManager) {
         this.coffeeShopListManager = coffeeShopListManager;
+
+        markerMap = new HashMap<>();
     }
 
     @Override
@@ -54,6 +58,13 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         this.temporaryLatlang = latLng;
     }
 
+    public void activeMarker(CoffeeShop coffeeShop) {
+        if (!markerMap.isEmpty() && markerMap.get(coffeeShop.getId()) != null) {
+            Marker marker = markerMap.get(coffeeShop.getId());
+            moveCameraToMarker(marker);
+        }
+    }
+
     private BitmapDescriptor getDrawableBitmapDescriptor(int resId) {
         Drawable drawable = view.getResourceDrawable(resId);
         int width = drawable.getIntrinsicWidth();
@@ -66,14 +77,36 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
+    private void highlightMarker(Marker marker, boolean highlight) {
+        if (highlight) {
+            BitmapDescriptor highlightMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin_active);
+            marker.setZIndex(1.0f);
+            marker.setIcon(highlightMarker);
+        } else {
+            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin);
+            marker.setZIndex(0.0f);
+            marker.setIcon(normalMarker);
+        }
+    }
+
+    private void moveCameraToMarker(Marker marker) {
+        if (lastMarker != null) {
+            // Restore last marker's color and zIndex
+            highlightMarker(lastMarker, false);
+        }
+
+        view.moveCamera(marker.getPosition(), null);
+        highlightMarker(marker, true);
+        this.lastMarker = marker;
+    }
+
     //region GoogleMap OnMarkerClickListener
     @Override
     public boolean onMarkerClick(Marker marker) {
-        CoffeeShop coffeeShop = (CoffeeShop) marker.getTag();
-        view.moveCamera(marker.getPosition(), null);
-        view.openDetailView(coffeeShop);
+        moveCameraToMarker(marker);
 
-        this.lastMarker = marker;
+        CoffeeShop coffeeShop = (CoffeeShop) marker.getTag();
+        view.openDetailView(coffeeShop);
         return true;    // disable snippet
     }
     //endregion
@@ -82,12 +115,15 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         if (!coffeeShops.isEmpty()) {
             view.cleanMap();
 
-            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_pin);
+            BitmapDescriptor normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin);
             for (CoffeeShop coffeeShop : coffeeShops) {
                 LatLng latLng = new LatLng(coffeeShop.getLatitude(), coffeeShop.getLongitude());
 
                 String distence = String.valueOf(coffeeShop.getDistance());
-                view.addMakers(latLng, coffeeShop.getName(), distence, coffeeShop, normalMarker);
+                Marker generatedMarker = view.addMakers(latLng, coffeeShop.getName(), distence, coffeeShop, normalMarker);
+                if (generatedMarker != null) {
+                    markerMap.put(coffeeShop.getId(), generatedMarker);
+                }
             }
         } else {
             view.showNoCoffeeShopDialog();
@@ -98,7 +134,8 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         boolean checkLocationPermission();
         Drawable getResourceDrawable(int resId);
         Location getCurrentLocation();
-        void addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon);
+        Marker addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon);
+
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
         void showNoCoffeeShopDialog();

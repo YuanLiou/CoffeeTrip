@@ -7,18 +7,24 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
@@ -31,7 +37,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
+import tw.com.louis383.coffeefinder.about.AboutActivity;
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
 import tw.com.louis383.coffeefinder.list.ListFragment;
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler;
@@ -64,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
     private static final int LOCATION_SETTING_RESOLUTION = 2;
+    private static final int INTERNET_REQUEST = 3;
 
     private GoogleApiClient googleApiClient;
     private ChromeCustomTabsHelper customTabsHelper;
@@ -73,14 +87,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private Snackbar snackbar;
     private BottomSheetBehavior bottomSheetBehavior;
 
+    private boolean isAppbarVisible = false;
+    private boolean isFabVisible = false;
+
     // Main Content
     @BindView(R.id.main_rootview) CoordinatorLayout rootView;
     @BindView(R.id.main_toolbar) Toolbar toolbar;
+    @BindView(R.id.main_appbar) AppBarLayout appbarLayout;
     @BindView(R.id.main_tabbar) TabLayout tabLayout;
     @BindView(R.id.main_viewpager) ViewPager viewPager;
     @BindView(R.id.main_bottom_sheet) NestedScrollView bottomSheet;
+    @BindView(R.id.main_shadow) View shadow;
 
     // Bottom Sheet
+    @BindView(R.id.main_fab) FloatingActionButton navigationFab;
     @BindView(R.id.detail_view_title) TextView bottomSheetTitle;
     @BindView(R.id.detail_view_distance) TextView bottomSheetDistance;
     @BindView(R.id.detail_view_wifi_score) TextView bottomSheetWifiScore;
@@ -98,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
@@ -108,10 +129,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         presenter.attachView(this);
-        customTabsHelper = new ChromeCustomTabsHelper();
+        presenter.setBottomSheetBehavior(bottomSheetBehavior);
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
+
+        setSupportActionBar(toolbar);
+        customTabsHelper = new ChromeCustomTabsHelper();
     }
 
     private void init() {
@@ -205,19 +229,24 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode) {
+        switch (requestCode) {
+            case INTERNET_REQUEST:
+                if (isInternetAvailable()) {
+                    if (checkLocationPermission()) {
+                        forceRequestCoffeeShop();
+                    } else {
+                        showPermissionNeedSnackBar();
+                    }
+                } else {
+                    requestInternetConnection();
+                }
+                break;
             case LOCATION_MANUAL_ENABLE:
                 if (checkLocationPermission()) {
-                    if (googleApiClient.isConnected()) {
-                        presenter.requestUserLocation(true);
-                    } else {
-                        googleApiClient.connect();
-                    }
-
+                    forceRequestCoffeeShop();
                     if (snackbar != null && snackbar.isShown()) {
                         snackbar.dismiss();
                     }
-
                 } else {
                     showPermissionNeedSnackBar();
                 }
@@ -232,6 +261,34 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.main_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_about:
+                // Go to about page!
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void forceRequestCoffeeShop() {
+        if (googleApiClient.isConnected()) {
+            presenter.requestUserLocation(true);
+        } else {
+            googleApiClient.connect();
         }
     }
 
@@ -273,6 +330,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
+    }
+
+    @Override
+    public void requestInternetConnection() {
+        new AlertDialog.Builder(this)
+            .setTitle(getResourceString(R.string.internet_request_title))
+            .setMessage(getResourceString(R.string.internet_request_message))
+            .setPositiveButton(getResourceString(R.string.auto_go), (dialog, which) -> {
+                Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                startActivityForResult(intent, INTERNET_REQUEST);
+            }).create().show();
     }
 
     public Location getCurrentLocation() {
@@ -363,13 +431,107 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
             bottomSheetSeatQuality.setProgress((int) viewModel.getSeatPoints() * 20);
             bottomSheetSeatScore.setText(String.valueOf(viewModel.getSeatPoints()));
 
-            bottomSheetOpenTime.setText(viewModel.getOpenTimes());
-            bottomSheetMrt.setText(viewModel.getMrtInfo());
+            bottomSheetOpenTime.setText(viewModel.getOpenTimes(this));
+            bottomSheetMrt.setText(viewModel.getMrtInfo(this));
 
             bottomSheetLimitedTime.setText(viewModel.getLimitTimeString(this));
             bottomSheetSocket.setText(viewModel.getSocketString(this));
             bottomSheetStandingDesk.setText(viewModel.getStandingDeskString(this));
         }
+    }
+
+    @Override
+    public void showAppbar(boolean show) {
+        isAppbarVisible = show;
+        if (show) {
+            appbarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+        } else {
+            appbarLayout.animate().translationY(-appbarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+        }
+    }
+
+    @Override
+    public void showFab(boolean show) {
+        isFabVisible = show;
+        if (show) {
+            navigationFab.animate().scaleX(1).scaleY(1).setDuration(300)
+                    .setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            if (!navigationFab.isShown()) {
+                                navigationFab.setVisibility(View.VISIBLE);
+                            }
+                        }
+                        @Override
+                        public void onAnimationEnd(Animator animation) {}
+                        @Override
+                        public void onAnimationCancel(Animator animation) {}
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {}
+                    })
+                    .setInterpolator(new OvershootInterpolator())
+                    .start();
+        } else {
+            navigationFab.animate().scaleX(0).scaleY(0).setDuration(200).setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
+    @Override
+    public void setFloatingActionButtonEnable(boolean enable) {
+        if (!enable) {
+            navigationFab.setOnClickListener(null);
+            navigationFab.setVisibility(View.GONE);
+        } else {
+            navigationFab.setOnClickListener(v -> presenter.prepareNavigation());
+        }
+
+        navigationFab.setEnabled(enable);
+        navigationFab.setClickable(enable);
+    }
+
+    @Override
+    public void setShadowAlpha(float offset) {
+        if (offset > 0.0f) {
+            float alpha = offset * 0.4f;
+            shadow.setAlpha(alpha);
+            viewPager.setTranslationY(offset * -55);
+        }
+
+        shadow.setVisibility(offset > 0.0f ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public boolean isAppbarVisible() {
+        return isAppbarVisible;
+    }
+
+    @Override
+    public boolean isFabVisible() {
+        return isFabVisible;
+    }
+
+    @Override
+    public boolean isInternetAvailable() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected() && networkInfo.isAvailable();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (bottomSheetBehavior != null) {
+            if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheet.fullScroll(View.FOCUS_UP);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                return;
+            } else if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                showFab(false);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                return;
+            }
+        }
+
+        super.onBackPressed();
     }
 
     //region GoogleAPIClient.ConnectionCallback
@@ -393,6 +555,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     //region MapsClickHandler
     @Override
+    public void onMapClicked() {
+        if (bottomSheetBehavior != null) {
+            showFab(false);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        }
+    }
+
+    @Override
     public void onMarkerClicked(CoffeeShop coffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop);
         presenter.showDetailView();
@@ -404,6 +574,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     public void onItemTapped(CoffeeShop coffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop);
         presenter.showDetailView();
+
+        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
+        mapsFragment.setMarkerActive(coffeeShop);
     }
     //endregion
 }

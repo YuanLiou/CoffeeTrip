@@ -24,6 +24,7 @@
         app:backgroundTint="@color/white"
         app:fabSize="normal"
         app:elevation="5dp"
+        app:pressedTranslationZ="11dp"
         />
 
 </FrameLayout>

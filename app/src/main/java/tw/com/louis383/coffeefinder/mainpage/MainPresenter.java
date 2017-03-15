@@ -15,7 +15,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
+import android.view.View;
 
 import java.util.List;
 import java.util.Locale;
@@ -56,9 +59,15 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public void attachView(MainView view) {
         super.attachView(view);
         view.setStatusBarDarkIndicator();
+        view.showFab(false);
+        view.setFloatingActionButtonEnable(false);
 
         if (!view.checkLocationPermission()) {
             view.requestLocationPermission();
+        }
+
+        if (!view.isInternetAvailable()) {
+            view.requestInternetConnection();
         }
     }
 
@@ -135,6 +144,46 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         if (lastTappedCoffeeShop != null) {
             view.showBottomSheetDetailView(lastTappedCoffeeShop.getViewModel());
         }
+    }
+
+    public void setBottomSheetBehavior(BottomSheetBehavior bottomSheetBehavior) {
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        if (!view.isAppbarVisible()) {
+                            view.showAppbar(true);
+                        }
+
+                        view.showFab(false);
+                        view.setFloatingActionButtonEnable(false);
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        if (!view.isFabVisible()) {
+                            view.showFab(true);
+                            view.setFloatingActionButtonEnable(true);
+                        }
+                        break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        if (view.isFabVisible()) {
+                            view.showFab(false);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset > 0.1f && view.isAppbarVisible()) {
+                    view.showAppbar(false);
+                } else if (slideOffset <= 0.4f && !view.isAppbarVisible()) {
+                    view.showAppbar(true);
+                }
+
+                view.setShadowAlpha(slideOffset);
+            }
+        });
     }
 
     // Doing permission checking at Activity. When the method is called, it must have granted location permission.
@@ -234,6 +283,10 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public interface MainView {
         boolean isApplicationInstalled(String packageName);
         boolean checkLocationPermission();
+        boolean isAppbarVisible();
+        boolean isFabVisible();
+        boolean isInternetAvailable();
+        void requestInternetConnection();
         void requestLocationPermission();
         void locationSettingNeedsResolution(Status status);
         void showServiceUnavailableMessage();
@@ -245,5 +298,9 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showNeedsGoogleMapMessage();
         void showBottomSheetDetailView(CoffeeShopViewModel viewModel);
         void shareCoffeeShop(Intent shareIntent);
+        void showAppbar(boolean show);
+        void showFab(boolean show);
+        void setShadowAlpha(float offset);
+        void setFloatingActionButtonEnable(boolean enable);
     }
 }

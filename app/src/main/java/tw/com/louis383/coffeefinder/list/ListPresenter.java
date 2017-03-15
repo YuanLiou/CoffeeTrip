@@ -14,12 +14,18 @@ public class ListPresenter extends BasePresenter<ListPresenter.ViewHandler> {
     public void prepareToShowCoffeeShops(List<CoffeeShop> coffeeShops) {
         if (!coffeeShops.isEmpty()) {
             view.setItems(coffeeShops);
+            view.setRecyclerViewVisibility(true);
         } else {
             view.showNoCoffeeShopMessage();
+            view.setNoCoffeeShopPictureVisibility(true);
         }
+        view.setLoadingProgressBarVisibility(false);
     }
 
     public interface ViewHandler {
+        void setLoadingProgressBarVisibility(boolean visible);
+        void setRecyclerViewVisibility(boolean visible);
+        void setNoCoffeeShopPictureVisibility(boolean visible);
         void showNoCoffeeShopMessage();
         void setItems(List<CoffeeShop> items);
     }

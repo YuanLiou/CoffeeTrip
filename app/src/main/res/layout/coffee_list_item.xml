@@ -10,6 +10,7 @@
     android:paddingEnd="16dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
+    android:background="?selectableItemBackground"
     >
 
     <TextView
@@ -47,41 +48,14 @@
         app:srcCompat="@drawable/ic_wifi"
         />
 
-    <ImageView
-        android:id="@+id/list_chair_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="12dp"
-        android:layout_below="@id/list_title"
-        android:layout_alignStart="@id/list_title"
-        app:srcCompat="@drawable/ic_seat"
-        />
-
-    <TextView
-        android:id="@+id/list_chair_possibility"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_alignTop="@id/list_chair_icon"
-        android:layout_alignBottom="@id/list_chair_icon"
-        android:layout_toEndOf="@id/list_chair_icon"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textColor="@color/gray"
-        android:textSize="14sp"
-        tools:text="3.5"
-        />
-    
     <TextView
         android:id="@+id/list_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/list_chair_icon"
-        android:layout_alignBottom="@id/list_chair_icon"
-        android:layout_toEndOf="@id/list_chair_icon"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/list_title"
+        android:layout_marginTop="15dp"
         android:gravity="center"
-        android:layout_marginStart="56dp"
         android:textColor="@color/gray"
         android:textStyle="bold"
         android:textSize="14sp"
@@ -93,13 +67,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@id/list_chair_icon"
+        android:layout_alignBottom="@id/list_distance"
         android:layout_marginBottom="4dp"
         android:numStars="5"
         android:max="5"
-        android:stepSize="1"
+        android:stepSize="0.1"
         android:isIndicator="true"
         style="@style/ExpenseRateBar"
+        />
+
+    <TextView
+        android:id="@+id/list_chart_money_nodata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/list_chart_money"
+        android:layout_alignBottom="@id/list_chart_money"
+        android:textSize="10sp"
+        android:textColor="@color/gray"
+        android:fontFamily="sans-serif"
+        android:text="@string/list_no_money_data"
+        android:visibility="gone"
+        tools:visibility="visible"
         />
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package tw.com.louis383.coffeefinder.list;
 
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -7,9 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
@@ -23,10 +29,13 @@ import tw.com.louis383.coffeefinder.view.CoffeeListAdapter;
 public class ListFragment extends BaseFragment implements ListPresenter.ViewHandler, ListTappedHandler {
 
     private ListPresenter presenter;
-    private RecyclerView recyclerView;
     private CoffeeListAdapter adapter;
-
     private Callback callback;
+
+    @BindView(R.id.recyclerview) RecyclerView recyclerView;
+    @BindView(R.id.list_progressbar) ProgressBar progressBar;
+    @BindView(R.id.list_none_picture) ImageView noCoffeeShopImage;
+    @BindView(R.id.list_none_message) TextView noCoffeeShopMessage;
 
     public ListFragment() {}
 
@@ -40,29 +49,35 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        ButterKnife.bind(this, view);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         adapter = new CoffeeListAdapter(getActivity(), this);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         RecyclerViewDividerHelper dividerHelper = new RecyclerViewDividerHelper(getActivity(), RecyclerViewDividerHelper.VERTICAL_LIST, false, false);
+        recyclerView.setVisibility(View.INVISIBLE);
         recyclerView.addItemDecoration(dividerHelper);
+        recyclerView.setPadding(0, getActionBarHeight() * 2, 0, 0);
         recyclerView.setAdapter(adapter);
 
         presenter = new ListPresenter();
         presenter.attachView(this);
     }
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
+    private int getActionBarHeight() {
+        final TypedArray styledAttribute = getContext().getTheme().obtainStyledAttributes(new int[] { android.R.attr.actionBarSize });
+        int actionBarSize = (int) styledAttribute.getDimension(0, 0);
+        styledAttribute.recycle();
+
+        return actionBarSize;
     }
 
-    @Override
-    public void prepareCoffeeShops(List<CoffeeShop> coffeeShops) {
-        presenter.prepareToShowCoffeeShops(coffeeShops);
+    public void setCallback(Callback callback) {
+        this.callback = callback;
     }
 
     @Override
@@ -75,6 +90,29 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     public void setItems(List<CoffeeShop> items) {
         adapter.setItems(items);
     }
+
+    @Override
+    public void setLoadingProgressBarVisibility(boolean visible) {
+        progressBar.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setRecyclerViewVisibility(boolean visible) {
+        recyclerView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public void setNoCoffeeShopPictureVisibility(boolean visible) {
+        noCoffeeShopImage.setVisibility(visible ? View.VISIBLE : View.GONE);
+        noCoffeeShopMessage.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    //region BaseFragment
+    @Override
+    public void prepareCoffeeShops(List<CoffeeShop> coffeeShops) {
+        presenter.prepareToShowCoffeeShops(coffeeShops);
+    }
+    //endregion
 
     //region ListTappedHandler
     @Override

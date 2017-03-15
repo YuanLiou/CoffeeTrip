@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/about_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/primary_orange"
+        style="@style/OrangeToolbar"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="34dp"
+            >
+
+            <ImageView
+                android:id="@+id/about_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_figure_coffeetrip_egg"
+                />
+
+            <TextView
+                android:id="@+id/about_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/about_logo"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/gray"
+                tools:text="CoffeeTrip V1"
+                />
+
+            <View
+                android:id="@+id/anchor"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="56dp"
+                />
+
+            <View
+                android:id="@+id/anchor_end"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginEnd="16dp"
+                android:layout_alignParentEnd="true"
+                />
+
+            <TextView
+                android:id="@+id/about_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_title"
+                android:layout_marginTop="8dp"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="@string/about_message"
+                />
+
+            <TextView
+                android:id="@+id/about_work_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_message"
+                android:layout_toEndOf="@id/anchor"
+                android:layout_marginTop="25dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/about_work"
+                />
+
+            <TextView
+                android:id="@+id/about_designer_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/about_work_title"
+                android:layout_below="@id/about_work_title"
+                android:layout_marginTop="12dp"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:text="@string/about_designer"
+                />
+
+            <ImageView
+                android:id="@+id/about_designer_twitter_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_designer_title"
+                android:layout_alignStart="@id/about_work_title"
+                app:srcCompat="@drawable/ic_twitter"
+                />
+
+            <TextView
+                android:id="@+id/about_designer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_designer_title"
+                android:layout_alignBottom="@id/about_designer_twitter_icon"
+                android:layout_toEndOf="@id/about_designer_twitter_icon"
+                android:layout_marginStart="4dp"
+                android:textSize="12sp"
+                android:textColor="@color/gray"
+                android:text="\@80ssundries"
+                />
+
+            <TextView
+                android:id="@+id/about_backend_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_designer"
+                android:layout_alignStart="@id/about_work_title"
+                android:layout_marginTop="12dp"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:text="@string/about_backend"
+                />
+
+            <ImageView
+                android:id="@+id/about_backend_twitter_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_backend_title"
+                android:layout_alignStart="@id/about_work_title"
+                app:srcCompat="@drawable/ic_twitter"
+                />
+
+            <TextView
+                android:id="@+id/about_backend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_backend_title"
+                android:layout_alignBottom="@id/about_backend_twitter_icon"
+                android:layout_toEndOf="@id/about_backend_twitter_icon"
+                android:layout_marginStart="4dp"
+                android:textSize="12sp"
+                android:textColor="@color/gray"
+                android:text="\@passerbyid"
+                />
+
+            <TextView
+                android:id="@+id/about_android_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/about_work_title"
+                android:layout_below="@id/about_backend"
+                android:layout_marginTop="12dp"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:text="@string/about_android"
+                />
+
+            <ImageView
+                android:id="@+id/about_android_twitter_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_android_title"
+                android:layout_alignStart="@id/about_work_title"
+                app:srcCompat="@drawable/ic_twitter"
+                />
+
+            <TextView
+                android:id="@+id/about_android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_android_title"
+                android:layout_alignBottom="@id/about_android_twitter_icon"
+                android:layout_toEndOf="@id/about_android_twitter_icon"
+                android:layout_marginStart="4dp"
+                android:textSize="12sp"
+                android:textColor="@color/gray"
+                android:text="\@YuanLiou"
+                />
+
+            <View
+                android:id="@+id/about_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/about_android"
+                android:layout_marginTop="21dp"
+                android:background="@color/light_gray"
+                android:layout_toEndOf="@id/anchor"
+                />
+
+            <TextView
+                android:id="@+id/about_licence_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_divider"
+                android:layout_marginTop="15dp"
+                android:layout_alignStart="@id/about_work_title"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:text="@string/about_licence"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_licence_title"
+                android:layout_alignStart="@id/about_work_title"
+                android:layout_marginTop="17dp"
+                android:textSize="14sp"
+                android:textColor="@color/gray"
+                android:text="@string/about_data_comes_from"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

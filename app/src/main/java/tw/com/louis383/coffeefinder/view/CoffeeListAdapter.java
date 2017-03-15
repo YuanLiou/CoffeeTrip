@@ -51,8 +51,7 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
         holder.title.setText(coffeeShopViewModel.getShopName());
         String distanceString = context.getResources().getString(R.string.unit_m, String.valueOf(coffeeShopViewModel.getDistances()));
         holder.distance.setText(distanceString);
-        holder.chairPossibility.setText(String.valueOf(coffeeShopViewModel.getSeatPoints()));
-        holder.expenseChart.setRating(5.0f - coffeeShopViewModel.getCheapPoints());
+        holder.expenseChart.setRating(coffeeShopViewModel.getCheapPoints());
 
         if (coffeeShopViewModel.getWifiPoints() > 0) {
             holder.wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN);
@@ -79,7 +78,7 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
 
     class ViewHolder extends RecyclerView.ViewHolder {
         View rootView;
-        TextView title, chairPossibility, distance;
+        TextView title, distance, expenseNoData;
         ImageView wifiIcon, bookmarkIcon;
         RatingBar expenseChart;
 
@@ -88,11 +87,12 @@ public class CoffeeListAdapter extends RecyclerView.Adapter<CoffeeListAdapter.Vi
             this.rootView = itemView;
 
             title = (TextView) itemView.findViewById(R.id.list_title);
-            chairPossibility = (TextView) itemView.findViewById(R.id.list_chair_possibility);
             distance = (TextView) itemView.findViewById(R.id.list_distance);
             wifiIcon = (ImageView) itemView.findViewById(R.id.list_wifi_icon);
             bookmarkIcon = (ImageView) itemView.findViewById(R.id.list_bookmark_icon);
             expenseChart = (RatingBar) itemView.findViewById(R.id.list_chart_money);
+            // TODO:: if expense doesnt't have data, needs to display text below
+            expenseNoData = (TextView) itemView.findViewById(R.id.list_chart_money_nodata);
         }
     }
 }

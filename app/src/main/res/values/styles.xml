@@ -6,8 +6,12 @@
         <item name="colorAccent">@color/primary_orange</item>
         <item name="android:alertDialogTheme">@style/LightDialogTheme</item>
         <item name="alertDialogTheme">@style/LightDialogTheme</item>
-
         <item name="android:textColorPrimary">@color/gray</item>
+    </style>
+
+    <!-- Splash -->
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
     <!-- Dialog theme -->
