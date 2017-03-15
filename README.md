@@ -1,9 +1,9 @@
 # CoffeeTrip
-Find a good coffee place in a city.
+Find a good coffee shop in a city.
 
 ### Download demo version
-You can download current demo apk file from [here](https://goo.gl/ID9Qcx) <br>
-just remember `CoffeeFinder` is under developing so this demo might buggy.
+You can download current demo apk file from [here](https://goo.gl/I0IMsr) <br>
+just remember `CoffeeTrip` is under developing so this demo might buggy.
 
 ### How to build CoffeeTrip app?
 1. Clone this repository. <br>
@@ -19,7 +19,8 @@ APIHost = "https://coffeetrip.yuer.tw/"
 ```
 
 ### Trello
-[Go!](https://trello.com/b/6Qpz4fIq/coffeetrip)
+~~[Go!](https://trello.com/b/6Qpz4fIq/coffeetrip)~~  <br>
+*Close temporary :(*
 
 #### Special thanks
 [@80ssundries](https://twitter.com/80ssundries) designed an elegant UI.<br>
