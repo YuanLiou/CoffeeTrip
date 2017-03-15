@@ -5,9 +5,11 @@ Find a good coffee shop in a city.
 You can download current demo apk file from [here](https://goo.gl/I0IMsr) <br>
 just remember `CoffeeTrip` is under developing so this demo might buggy.
 
+To try out this build, Your Android version needs at least on Kitkat. (>= 4.4)
+
 ### How to build CoffeeTrip app?
 1. Clone this repository. <br>
-`git clone https://github.com/YuanLiou/CoffeeFinder.git`
+`git clone https://github.com/YuanLiou/CoffeeTrip.git`
 
 2. Create a new file in project's root, and name this file `gradle.properties`
 
