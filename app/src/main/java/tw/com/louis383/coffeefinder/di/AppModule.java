@@ -8,6 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.PreferenceManager;
 
 /**
  * Created by louis383 on 2017/2/22.
@@ -34,5 +35,11 @@ public class AppModule {
     CoffeeShopListManager provideCoffeeShopListManager(CoffeeTripAPI coffeeTripAPI) {
         CoffeeShopListManager coffeeShopListManager = new CoffeeShopListManager(coffeeTripAPI);
         return coffeeShopListManager;
+    }
+
+    @Provides
+    @Singleton
+    PreferenceManager providePreferenceManager() {
+        return new PreferenceManager(application);
     }
 }
