@@ -2,7 +2,7 @@
 Find a good coffee shop in a city.
 
 ### Download demo version
-You can download current demo apk file from [here](https://goo.gl/I0IMsr) <br>
+You can download current demo apk file from [here](https://goo.gl/OETfod) <br>
 just remember `CoffeeTrip` is under developing so this demo might buggy.
 
 To try out this build, Your Android version needs at least on Kitkat. (>= 4.4)
