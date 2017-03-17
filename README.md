@@ -1,12 +1,11 @@
 # CoffeeTrip
 Find a good coffee shop in a city.
 
-### Download demo version
-You can download current demo apk file from [here](https://goo.gl/OETfod) <br>
-just remember `CoffeeTrip` is under developing so this demo might buggy.
+### Download
+You can install from [Google Play Store](https://play.google.com/store/apps/details?id=tw.com.louis383.coffeefinder) <br>
 
-To try out this build, Your Android version needs at least on Kitkat. (>= 4.4)
-
+To be better experiences, Android version above Kitkat (>= 4.4) is recommended.
+ 
 ### How to build CoffeeTrip app?
 1. Clone this repository. <br>
 `git clone https://github.com/YuanLiou/CoffeeTrip.git`
