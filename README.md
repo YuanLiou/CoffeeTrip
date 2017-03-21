@@ -2,7 +2,7 @@
 Find a good coffee shop in a city.
 
 ### Download
-You can install from [Google Play Store](https://play.google.com/store/apps/details?id=tw.com.louis383.coffeefinder) <br>
+You can install from [Google Play Store](https://goo.gl/HnUQWQ) <br>
 
 To be better experiences, Android version above Kitkat (>= 4.4) is recommended.
  
