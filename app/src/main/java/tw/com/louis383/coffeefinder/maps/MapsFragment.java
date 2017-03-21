@@ -115,6 +115,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         this.googleMap.setOnMapClickListener(this);
+        // Center Taiwan : 23.973875°N 120.982024°E
+        CameraUpdate defaultLocation = CameraUpdateFactory.newLatLngZoom(new LatLng(23.973875f, 120.982024f), ZOOM_RATE);
+        googleMap.moveCamera(defaultLocation);
 
         presenter.setGoogleMap(googleMap);
         setupDetailedMapInterface();

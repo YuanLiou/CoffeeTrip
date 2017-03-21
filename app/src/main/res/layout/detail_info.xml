@@ -452,15 +452,15 @@
             android:layout_below="@id/detail_view_coffeeshop_info_divider2"
             android:layout_alignStart="@id/detail_view_opentime_icon"
             android:layout_alignEnd="@id/detail_view_opentime_icon"
-            android:paddingTop="4dp"
             android:layout_marginTop="25dp"
-            app:srcCompat="@drawable/ic_mrt"
+            app:srcCompat="@drawable/ic_mass_transit"
             />
 
         <TextView
             android:id="@+id/detail_view_mrt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="1dp"
             android:paddingEnd="16dp"
             android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:layout_alignTop="@id/detail_view_mrt_icon"
