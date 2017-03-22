@@ -409,10 +409,50 @@
             />
 
         <ImageView
-            android:id="@+id/detail_view_opentime_icon"
+            android:id="@+id/detail_view_website_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/detail_view_coffeeshop_info_divider"
+            android:layout_alignStart="@id/detail_view_limited_time_icon"
+            android:layout_alignEnd="@id/detail_view_limited_time_icon"
+            android:paddingTop="1dp"
+            android:layout_marginTop="22dp"
+            app:srcCompat="@drawable/ic_house"
+            />
+
+        <TextView
+            android:id="@+id/detail_view_website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16dp"
+            android:layout_toEndOf="@+id/coffeeshop_info_left_margin"
+            android:layout_alignTop="@id/detail_view_website_icon"
+            android:layout_marginTop="2dp"
+            android:maxLines="2"
+            android:gravity="top"
+            android:ellipsize="end"
+            android:textColor="@color/gray"
+            android:textColorLink="@color/gray"
+            android:textSize="16sp"
+            android:autoLink="web"
+            tools:text="http://somewebsite.com"
+            />
+
+        <View
+            android:id="@+id/detail_view_coffeeshop_web_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/detail_view_website_icon"
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
+            android:layout_marginTop="26dp"
+            android:background="@color/gray_cd"
+            />
+
+        <ImageView
+            android:id="@+id/detail_view_opentime_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detail_view_coffeeshop_web_divider"
             android:layout_alignStart="@id/detail_view_limited_time_icon"
             android:layout_alignEnd="@id/detail_view_limited_time_icon"
             android:paddingTop="1dp"

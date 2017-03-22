@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 
 import java.util.HashMap;
 import java.util.List;
@@ -139,7 +138,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         void moveCamera(LatLng latLng, Float zoom);
         void setupDetailedMapInterface();
         void showNoCoffeeShopDialog();
-        void openWebsite(Uri uri);
         void cleanMap();
         void openDetailView(CoffeeShop coffeeShop);
     }

@@ -74,6 +74,11 @@ public class CoffeeShopViewModel {
         return coffeeShop.getAddress();
     }
 
+    public String getWebsiteURL(Context context) {
+        String noInfoString = getResourceString(context, R.string.opentime_mrt_none);
+        return TextUtils.isEmpty(coffeeShop.getUrl()) ? noInfoString : coffeeShop.getUrl();
+    }
+
     public String getOpenTimes(Context context) {
         String noInfoString = getResourceString(context, R.string.opentime_mrt_none);
         return TextUtils.isEmpty(coffeeShop.getOpenTime()) ? noInfoString : coffeeShop.getOpenTime();

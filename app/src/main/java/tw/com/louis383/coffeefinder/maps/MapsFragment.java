@@ -12,14 +12,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -41,7 +38,6 @@ import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.mainpage.MainActivity;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
-import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 
 public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, View.OnClickListener, GoogleMap.OnMapClickListener {
 
@@ -183,18 +179,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         if (handler != null && coffeeShop != null) {
             handler.onMarkerClicked(coffeeShop);
         }
-    }
-
-    @Override
-    public void openWebsite(Uri uri) {
-        CustomTabsIntent.Builder customTabBuilder = new CustomTabsIntent.Builder();
-        CustomTabsIntent customTabIntent = customTabBuilder.build();
-
-        ChromeCustomTabsHelper.openCustomTab(getActivity(), customTabIntent, uri, (activity, uri1) -> {
-            // TODO:: a webview page to open a link.
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri1);
-            startActivity(intent);
-        });
     }
 
     @Override

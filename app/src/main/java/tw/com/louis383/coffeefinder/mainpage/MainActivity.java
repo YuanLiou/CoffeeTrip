@@ -64,7 +64,6 @@ import tw.com.louis383.coffeefinder.maps.MapsClickHandler;
 import tw.com.louis383.coffeefinder.maps.MapsFragment;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
-import tw.com.louis383.coffeefinder.utils.ChromeCustomTabsHelper;
 import tw.com.louis383.coffeefinder.utils.Utils;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private static final int INTERNET_REQUEST = 3;
 
     private GoogleApiClient googleApiClient;
-    private ChromeCustomTabsHelper customTabsHelper;
 
     private MainPresenter presenter;
     private ViewPagerAdapter adapter;
@@ -109,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     @BindView(R.id.detail_view_socket) TextView bottomSheetSocket;
     @BindView(R.id.detail_view_standing_desk) TextView bottomSheetStandingDesk;
     @BindView(R.id.detail_view_opentime) TextView bottomSheetOpenTime;
+    @BindView(R.id.detail_view_website) TextView bottomSheetWebsite;
     @BindView(R.id.detail_view_mrt) TextView bottomSheetMrt;
     @BindView(R.id.detail_view_expense) AppCompatRatingBar bottomSheetExpensebar;
     @BindView(R.id.detail_view_wifi_quality) ProgressBar bottomSheetWifiQuality;
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
 
         setSupportActionBar(toolbar);
-        customTabsHelper = new ChromeCustomTabsHelper();
     }
 
     private void init() {
@@ -171,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     protected void onStart() {
         super.onStart();
         googleApiClient.connect();
-        customTabsHelper.bindCustomTabsServices(this);
     }
 
     @Override
@@ -184,7 +181,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     protected void onStop() {
         super.onStop();
         googleApiClient.disconnect();
-        customTabsHelper.unbindCustomTabsServices(this);
     }
 
     @Override
@@ -431,6 +427,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
             bottomSheetSeatQuality.setProgress((int) viewModel.getSeatPoints() * 20);
             bottomSheetSeatScore.setText(String.valueOf(viewModel.getSeatPoints()));
 
+            bottomSheetWebsite.setText(viewModel.getWebsiteURL(this));
             bottomSheetOpenTime.setText(viewModel.getOpenTimes(this));
             bottomSheetMrt.setText(viewModel.getMrtInfo(this));
 
