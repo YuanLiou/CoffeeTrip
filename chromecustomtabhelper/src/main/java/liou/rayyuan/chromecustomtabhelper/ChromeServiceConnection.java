@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.utils;
+package liou.rayyuan.chromecustomtabhelper;
 
 import android.content.ComponentName;
 import android.support.customtabs.CustomTabsClient;

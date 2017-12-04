@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.utils;
+package liou.rayyuan.chromecustomtabhelper;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,11 +7,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import tw.com.louis383.coffeefinder.BuildConfig;
 
 /**
  * Created by louis383 on 2017/1/20.
@@ -29,14 +26,14 @@ public class ChromeCustomTabsUtils {
 
     private static String packageNameToUse;
 
-    public static String getPackageNameToUse(Context context) {
+    public static String getPackageNameToUse(Context context, String urlString) {
         if (packageNameToUse != null) {
             return packageNameToUse;
         }
 
         PackageManager packageManager = context.getPackageManager();
         // get default VIEW intent handler
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(BuildConfig.HOST));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
         ResolveInfo defaultViewHandlerInfo = packageManager.resolveActivity(intent, 0);
         String defaultViewHandlerPackageName = null;
         if (defaultViewHandlerInfo != null) {

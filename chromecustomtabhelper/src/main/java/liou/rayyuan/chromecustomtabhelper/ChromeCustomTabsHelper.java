@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.utils;
+package liou.rayyuan.chromecustomtabhelper;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -17,7 +17,7 @@ public class ChromeCustomTabsHelper implements ChromeServiceConnection.Callback 
     private CustomTabsServiceConnection customTabsServiceConnection;
 
     public static void openCustomTab(Activity activity, CustomTabsIntent customTabsIntent, Uri uri, Fallback fallback) {
-        String packageName = ChromeCustomTabsUtils.getPackageNameToUse(activity);
+        String packageName = ChromeCustomTabsUtils.getPackageNameToUse(activity, uri.toString());
 
         if (packageName == null) {
             // Chrome doesn't installed.
@@ -30,12 +30,12 @@ public class ChromeCustomTabsHelper implements ChromeServiceConnection.Callback 
         }
     }
 
-    public void bindCustomTabsServices(Activity activity) {
+    public void bindCustomTabsServices(Activity activity, String hostURL) {
         if (customTabsClient != null) {
             return;
         }
 
-        String packageName = ChromeCustomTabsUtils.getPackageNameToUse(activity);
+        String packageName = ChromeCustomTabsUtils.getPackageNameToUse(activity, hostURL);
         Log.i("ChromeCustomTabsHelper", "bound packageName: " + packageName);
         if (packageName == null) {
             return;

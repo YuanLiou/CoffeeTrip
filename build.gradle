@@ -6,12 +6,12 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
 ext {
-    support_version = '25.3.0'
+    support_version = '26.1.0'
     gms_version = '10.2.0'
 }
 
