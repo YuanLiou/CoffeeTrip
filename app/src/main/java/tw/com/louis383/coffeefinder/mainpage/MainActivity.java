@@ -1,11 +1,5 @@
 package tw.com.louis383.coffeefinder.mainpage;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
-
 import android.Manifest;
 import android.animation.Animator;
 import android.content.Context;
@@ -47,14 +41,14 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.about.AboutActivity;
@@ -89,31 +83,31 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private boolean isFabVisible = false;
 
     // Main Content
-    @BindView(R.id.main_rootview) CoordinatorLayout rootView;
-    @BindView(R.id.main_toolbar) Toolbar toolbar;
-    @BindView(R.id.main_appbar) AppBarLayout appbarLayout;
-    @BindView(R.id.main_tabbar) TabLayout tabLayout;
-    @BindView(R.id.main_viewpager) ViewPager viewPager;
-    @BindView(R.id.main_bottom_sheet) NestedScrollView bottomSheet;
-    @BindView(R.id.main_shadow) View shadow;
+    private CoordinatorLayout rootView;
+    private Toolbar toolbar;
+    private AppBarLayout appbarLayout;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private NestedScrollView bottomSheet;
+    private View shadow;
 
     // Bottom Sheet
-    @BindView(R.id.main_fab) FloatingActionButton navigationFab;
-    @BindView(R.id.detail_view_title) TextView bottomSheetTitle;
-    @BindView(R.id.detail_view_distance) TextView bottomSheetDistance;
-    @BindView(R.id.detail_view_wifi_score) TextView bottomSheetWifiScore;
-    @BindView(R.id.detail_view_seat_score) TextView bottomSheetSeatScore;
-    @BindView(R.id.detail_view_limited_time) TextView bottomSheetLimitedTime;
-    @BindView(R.id.detail_view_socket) TextView bottomSheetSocket;
-    @BindView(R.id.detail_view_standing_desk) TextView bottomSheetStandingDesk;
-    @BindView(R.id.detail_view_opentime) TextView bottomSheetOpenTime;
-    @BindView(R.id.detail_view_website) TextView bottomSheetWebsite;
-    @BindView(R.id.detail_view_mrt) TextView bottomSheetMrt;
-    @BindView(R.id.detail_view_expense) AppCompatRatingBar bottomSheetExpensebar;
-    @BindView(R.id.detail_view_wifi_quality) ProgressBar bottomSheetWifiQuality;
-    @BindView(R.id.detail_view_seat_quality) ProgressBar bottomSheetSeatQuality;
-    @BindView(R.id.detail_view_button_navigate) Button bottomSheetNavigate;
-    @BindView(R.id.detail_view_button_share) Button bottomSheetShare;
+    private FloatingActionButton navigationFab;
+    private TextView bottomSheetTitle;
+    private TextView bottomSheetDistance;
+    private TextView bottomSheetWifiScore;
+    private TextView bottomSheetSeatScore;
+    private TextView bottomSheetLimitedTime;
+    private TextView bottomSheetSocket;
+    private TextView bottomSheetStandingDesk;
+    private TextView bottomSheetOpenTime;
+    private TextView bottomSheetWebsite;
+    private TextView bottomSheetMrt;
+    private AppCompatRatingBar bottomSheetExpensebar;
+    private ProgressBar bottomSheetWifiQuality;
+    private ProgressBar bottomSheetSeatQuality;
+    private Button bottomSheetNavigate;
+    private Button bottomSheetShare;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,7 +115,32 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
-        ButterKnife.bind(this);
+        // Main Content
+        rootView = (CoordinatorLayout) findViewById(R.id.main_rootview);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        appbarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
+        tabLayout = (TabLayout) findViewById(R.id.main_tabbar);
+        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+        bottomSheet = (NestedScrollView) findViewById(R.id.main_bottom_sheet);
+        shadow = findViewById(R.id.main_shadow);
+
+        // Bottom Sheet
+        navigationFab = (FloatingActionButton) findViewById(R.id.main_fab);
+        bottomSheetTitle = (TextView) findViewById(R.id.detail_view_title);
+        bottomSheetDistance = (TextView) findViewById(R.id.detail_view_distance);
+        bottomSheetWifiScore = (TextView) findViewById(R.id.detail_view_wifi_score);
+        bottomSheetSeatScore = (TextView) findViewById(R.id.detail_view_seat_score);
+        bottomSheetLimitedTime = (TextView) findViewById(R.id.detail_view_limited_time);
+        bottomSheetSocket = (TextView) findViewById(R.id.detail_view_socket);
+        bottomSheetStandingDesk = (TextView) findViewById(R.id.detail_view_standing_desk);
+        bottomSheetOpenTime = (TextView) findViewById(R.id.detail_view_opentime);
+        bottomSheetWebsite = (TextView) findViewById(R.id.detail_view_website);
+        bottomSheetMrt = (TextView) findViewById(R.id.detail_view_mrt);
+        bottomSheetExpensebar = (AppCompatRatingBar) findViewById(R.id.detail_view_expense);
+        bottomSheetWifiQuality = (ProgressBar) findViewById(R.id.detail_view_wifi_quality);
+        bottomSheetSeatQuality = (ProgressBar) findViewById(R.id.detail_view_seat_quality);
+        bottomSheetNavigate = (Button) findViewById(R.id.detail_view_button_navigate);
+        bottomSheetShare = (Button) findViewById(R.id.detail_view_button_share);
 
         init();
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);

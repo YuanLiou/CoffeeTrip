@@ -11,11 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
@@ -32,10 +28,10 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     private CoffeeListAdapter adapter;
     private Callback callback;
 
-    @BindView(R.id.recyclerview) RecyclerView recyclerView;
-    @BindView(R.id.list_progressbar) ProgressBar progressBar;
-    @BindView(R.id.list_none_picture) ImageView noCoffeeShopImage;
-    @BindView(R.id.list_none_message) TextView noCoffeeShopMessage;
+    private RecyclerView recyclerView;
+    private ProgressBar progressBar;
+    private ImageView noCoffeeShopImage;
+    private TextView noCoffeeShopMessage;
 
     public ListFragment() {}
 
@@ -50,13 +46,18 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        progressBar = (ProgressBar) view.findViewById(R.id.list_progressbar);
+        noCoffeeShopImage = (ImageView) view.findViewById(R.id.list_none_picture);
+        noCoffeeShopMessage = (TextView) view.findViewById(R.id.list_none_message);
+
         adapter = new CoffeeListAdapter(getActivity(), this);
         RecyclerViewDividerHelper dividerHelper = new RecyclerViewDividerHelper(getActivity(), RecyclerViewDividerHelper.VERTICAL_LIST, false, false);
         recyclerView.setVisibility(View.INVISIBLE);

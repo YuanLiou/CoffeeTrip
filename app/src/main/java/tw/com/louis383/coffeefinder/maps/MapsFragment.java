@@ -1,16 +1,5 @@
 package tw.com.louis383.coffeefinder.maps;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -25,13 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
@@ -47,9 +41,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     private GoogleMap googleMap;
     private Snackbar snackbar;
 
-    @BindView(R.id.map_rootview) FrameLayout rootView;
-    @BindView(R.id.my_location_button) FloatingActionButton myLocationButton;
-    @BindView(R.id.map_view) MapView mapView;
+    private FrameLayout rootView;
+    private FloatingActionButton myLocationButton;
+    private MapView mapView;
 
     private MapsClickHandler handler;
 
@@ -68,13 +62,16 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_maps, container, false);
-        ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        rootView = (FrameLayout) view.findViewById(R.id.map_rootview);
+        myLocationButton = (FloatingActionButton) view.findViewById(R.id.my_location_button);
+        mapView = (MapView) view.findViewById(R.id.map_view);
+
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);

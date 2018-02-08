@@ -16,11 +16,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.PreferenceManager;
@@ -34,17 +30,22 @@ public class BossActivity extends AppCompatActivity implements BossPresenter.Vie
     private BossPresenter presenter;
     private Animation pokeAnimation;
 
-    @BindView(R.id.boss_rootview) View rootView;
-    @BindView(R.id.boss_toolbar) Toolbar toolbar;
-    @BindView(R.id.boss_twitter) TextView bossId;
-    @BindView(R.id.boss_twitter_icon) ImageView bossTwitterIcon;
+    private View rootView;
+    private Toolbar toolbar;
+    private TextView bossId;
+    private ImageView bossTwitterIcon;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_boss);
-        ButterKnife.bind(this);
+
+        rootView = findViewById(R.id.boss_rootview);
+        toolbar = (Toolbar) findViewById(R.id.boss_toolbar);
+        bossId = (TextView) findViewById(R.id.boss_twitter);
+        bossTwitterIcon = (ImageView) findViewById(R.id.boss_twitter_icon);
+
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
 
         setSupportActionBar(toolbar);

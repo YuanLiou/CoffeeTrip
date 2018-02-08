@@ -15,9 +15,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.boss.BossActivity;
 
@@ -30,19 +27,19 @@ public class AboutActivity extends AppCompatActivity implements AboutPresenter.V
     private AboutPresenter presenter;
     private Animation pokeAnimation;
 
-    @BindView(R.id.about_toolbar) Toolbar toolbar;
-    @BindView(R.id.about_logo) ImageView logo;
-    @BindView(R.id.about_title) TextView versionTitle;
-    @BindView(R.id.about_message) TextView message;
-    @BindView(R.id.about_designer) TextView designerId;
-    @BindView(R.id.about_designer_title) TextView designerTitle;
-    @BindView(R.id.about_designer_twitter_icon) ImageView designerIcon;
-    @BindView(R.id.about_backend) TextView backendId;
-    @BindView(R.id.about_backend_title) TextView backendTitle;
-    @BindView(R.id.about_backend_twitter_icon) ImageView backendIcon;
-    @BindView(R.id.about_android) TextView androidId;
-    @BindView(R.id.about_android_title) TextView androidTitle;
-    @BindView(R.id.about_android_twitter_icon) ImageView androidIcon;
+    private Toolbar toolbar;
+    private ImageView logo;
+    private TextView versionTitle;
+    private TextView message;
+    private TextView designerId;
+    private TextView designerTitle;
+    private ImageView designerIcon;
+    private TextView backendId;
+    private TextView backendTitle;
+    private ImageView backendIcon;
+    private TextView androidId;
+    private TextView androidTitle;
+    private ImageView androidIcon;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +47,19 @@ public class AboutActivity extends AppCompatActivity implements AboutPresenter.V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        ButterKnife.bind(this);
+        toolbar = (Toolbar) findViewById(R.id.about_toolbar);
+        logo = (ImageView) findViewById(R.id.about_logo);
+        versionTitle = (TextView) findViewById(R.id.about_title);
+        message = (TextView) findViewById(R.id.about_message);
+        designerId = (TextView) findViewById(R.id.about_designer);
+        designerTitle = (TextView) findViewById(R.id.about_designer_title);
+        designerIcon = (ImageView) findViewById(R.id.about_designer_twitter_icon);
+        backendId = (TextView) findViewById(R.id.about_backend);
+        backendTitle = (TextView) findViewById(R.id.about_backend_title);
+        backendIcon = (ImageView) findViewById(R.id.about_backend_twitter_icon);
+        androidId = (TextView) findViewById(R.id.about_android);
+        androidTitle = (TextView) findViewById(R.id.about_android_title);
+        androidIcon = (ImageView) findViewById(R.id.about_android_twitter_icon);
 
         presenter = new AboutPresenter();
         presenter.attachView(this);
