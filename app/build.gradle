@@ -2,17 +2,14 @@ apply plugin: 'com.android.application'
 apply from: "${rootDir}/gradle/build-script.gradle"
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 27
     defaultConfig {
         applicationId "tw.com.louis383.coffeefinder"
-        targetSdkVersion 26
+        targetSdkVersion 27
+        minSdkVersion 21
         versionCode getVersionCodeTimeStamps()
-        versionName "1.1.0"
+        versionName app_version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-        vectorDrawables.useSupportLibrary = true
-
         buildConfigField 'String', 'HOST', APIHost
     }
 
@@ -32,10 +29,6 @@ android {
 
     buildTypes {
         debug {
-            defaultConfig {
-                minSdkVersion 21
-            }
-
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
@@ -43,25 +36,6 @@ android {
             manifestPlaceholders = [ googleMapKeys: googleMapKey_debug ]
         }
         release {
-            defaultConfig {
-                minSdkVersion 19
-            }
-
-            signingConfig signingConfigs.release
-            minifyEnabled true
-            shrinkResources false
-            zipAlignEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            manifestPlaceholders = [ googleMapKeys: googleMapKey_release ]
-        }
-        nightdream {
-            defaultConfig {
-                minSdkVersion 19
-            }
-
-            versionNameSuffix "-night-dream"
-
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources false
@@ -78,32 +52,33 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:appcompat-v7:${support_version}"
-    compile "com.android.support:design:${support_version}"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.github.YuanLiou:ChromeCustomTabHelper:1.0'
+    implementation "com.android.support:appcompat-v7:${support_version}"
+    implementation "com.android.support:design:${support_version}"
 
-    compile "com.google.android.gms:play-services-location:${gms_version}"
-    compile "com.google.android.gms:play-services-maps:${gms_version}"
+    implementation "com.google.android.gms:play-services-location:${gms_version}"
+    implementation "com.google.android.gms:play-services-maps:${gms_version}"
 
     // HTTP Client
-    compile "com.squareup.retrofit2:retrofit:${retrofit_version}"
-    compile "com.squareup.retrofit2:converter-gson:${retrofit_version}"
-    compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+    implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
+    implementation "com.squareup.retrofit2:converter-gson:${retrofit_version}"
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
 
-    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
 
-    compile 'io.reactivex.rxjava2:rxjava:2.0.4'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.4'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    compile 'com.google.code.gson:gson:2.3.1'
+    implementation 'com.google.code.gson:gson:2.3.1'
 
     // Dependency Injection
-    compile 'com.google.dagger:dagger:2.9'
+    implementation 'com.google.dagger:dagger:2.9'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.9'
 
     // for unit test
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }

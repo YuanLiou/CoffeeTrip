@@ -6,19 +6,23 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
     }
 }
 
 ext {
-    support_version = '26.1.0'
-    gms_version = '10.2.0'
+    app_version = '1.2.0'
+
+
+    support_version = '27.0.2'
+    gms_version = '15.0.1'
 }
 
 allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 
