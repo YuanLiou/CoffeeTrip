@@ -38,16 +38,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.about.AboutActivity;
-import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter;
 import tw.com.louis383.coffeefinder.list.ListFragment;
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler;
 import tw.com.louis383.coffeefinder.maps.MapsFragment;
@@ -130,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         presenter.attachView(this);
+        presenter.addLifecycleOwner(this);
         presenter.setBottomSheetBehavior(bottomSheetBehavior);
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
@@ -149,7 +149,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     @Inject
     public void initPresenter(CoffeeShopListManager coffeeShopListManager) {
         buildGoogleAPIClient();
-        presenter = new MainPresenter(googleApiClient, coffeeShopListManager);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(this);
+        presenter = new MainPresenter(googleApiClient, coffeeShopListManager, fusedLocationProviderClient);
     }
 
     @Override
@@ -159,15 +161,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        presenter.onActivityPause();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         googleApiClient.disconnect();
+    }
+
+    @Override
+    public Context getActivityContext() {
+        return this;
     }
 
     @Override
@@ -287,9 +288,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    public void locationSettingNeedsResolution(Status status) {
+    public void locationSettingNeedsResolution(ResolvableApiException resolvable) {
         try {
-            status.startResolutionForResult(this, LOCATION_SETTING_RESOLUTION);
+            resolvable.startResolutionForResult(this, LOCATION_SETTING_RESOLUTION);
         } catch (IntentSender.SendIntentException e) {
             Log.e("MainActivity", Log.getStackTraceString(e));
         }

@@ -1,23 +1,33 @@
 package tw.com.louis383.coffeefinder.mainpage;
 
+import android.arch.lifecycle.Lifecycle.Event;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 import android.view.View;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.Task;
 import java.util.List;
 import java.util.Locale;
 import tw.com.louis383.coffeefinder.BasePresenter;
@@ -30,7 +40,8 @@ import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
  * Created by louis383 on 2017/2/17.
  */
 
-public class MainPresenter extends BasePresenter<MainPresenter.MainView> implements LocationListener, CoffeeShopListManager.Callback {
+public class MainPresenter extends BasePresenter<MainPresenter.MainView> implements CoffeeShopListManager.Callback,
+        LifecycleObserver {
 
     private static final String GOOGLE_MAP_PACKAGE = "com.google.android.apps.maps";
 
@@ -41,13 +52,17 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     private GoogleApiClient apiClient;
     private LocationRequest locationRequest;
     private CoffeeShopListManager coffeeShopListManager;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private HandlerThread backgroundThread;
+    private Handler uiHandler;
 
     private Location currentLocation;
     private CoffeeShop lastTappedCoffeeShop;
     private boolean isRequestingLocation, isWaitingAccurateLocation;
 
-    public MainPresenter(GoogleApiClient apiClient, CoffeeShopListManager coffeeShopListManager) {
+    public MainPresenter(GoogleApiClient apiClient, CoffeeShopListManager coffeeShopListManager, FusedLocationProviderClient locationProviderClient) {
         this.apiClient = apiClient;
+        this.fusedLocationProviderClient = locationProviderClient;
         this.coffeeShopListManager = coffeeShopListManager;
         this.coffeeShopListManager.setCallback(this);
     }
@@ -68,6 +83,36 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         }
     }
 
+    public void addLifecycleOwner(LifecycleOwner owner) {
+        owner.getLifecycle().addObserver(this);
+    }
+
+    @OnLifecycleEvent(Event.ON_RESUME)
+    private void startBackgroundThread() {
+        backgroundThread = new HandlerThread("BackgroundThread");
+        backgroundThread.start();
+        uiHandler = new Handler(Looper.getMainLooper());
+        if (apiClient.isConnected()) {
+            startLocationUpdate();
+        }
+    }
+
+    @OnLifecycleEvent(Event.ON_PAUSE)
+    private void pauseLocationUpdate() {
+        backgroundThread.quitSafely();
+        try {
+            backgroundThread.join();
+            backgroundThread = null;
+            uiHandler = null;
+        } catch (InterruptedException e) {
+            Log.e("MainPresenter", Log.getStackTraceString(e));
+        }
+
+        if (apiClient.isConnected()) {
+            stopLocationUpdate();
+        }
+    }
+
     public void requestUserLocation(boolean force) {
         // Prevent request twice current location
         if (currentLocation != null && !force) {
@@ -75,23 +120,22 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         }
 
         if (view.checkLocationPermission()) {
-            currentLocation = getLastLocation();
-            if (currentLocation != null) {
-                LatLng lastLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                view.moveCameraToCurrentPosition(lastLatLng);
-                fetchCoffeeShops();
-                Log.i("MainPresenter", "lastLocation latitude: " + lastLatLng.latitude + ", longitude: " + lastLatLng.longitude);
-            } else {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+                if (location != null) {
+                    currentLocation = location;
+                    LatLng lastLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    view.moveCameraToCurrentPosition(lastLatLng);
+                    fetchCoffeeShops();
+                    Log.i("MainPresenter",
+                            "lastLocation latitude: " + lastLatLng.latitude + ", longitude: " + lastLatLng.longitude);
+                } else {
+                    isWaitingAccurateLocation = true;
+                }
+                tryToGetAccurateLocation();
+            }).addOnFailureListener(e -> {
                 isWaitingAccurateLocation = true;
-            }
-
-            tryToGetAccurateLocation();
-        }
-    }
-
-    public void onActivityPause() {
-        if (apiClient.isConnected()) {
-            stopLocationUpdate();
+                tryToGetAccurateLocation();
+            });
         }
     }
 
@@ -149,49 +193,23 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 switch (newState) {
                     case BottomSheetBehavior.STATE_HIDDEN:
-                        if (!view.isAppbarVisible()) {
-                            view.showAppbar(true);
-                        }
-
                         view.showFab(false);
                         view.setFloatingActionButtonEnable(false);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
-                        if (!view.isFabVisible()) {
-                            view.showFab(true);
-                            view.setFloatingActionButtonEnable(true);
-                        }
+                        view.showFab(true);
                         break;
                     case BottomSheetBehavior.STATE_DRAGGING:
-                        if (view.isFabVisible()) {
-                            view.showFab(false);
-                        }
+                        view.showFab(false);
                         break;
                 }
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                if (slideOffset > 0.1f && view.isAppbarVisible()) {
-                    view.showAppbar(false);
-                } else if (slideOffset <= 0.4f && !view.isAppbarVisible()) {
-                    view.showAppbar(true);
-                }
-
                 view.setShadowAlpha(slideOffset);
             }
         });
-    }
-
-    // Doing permission checking at Activity. When the method is called, it must have granted location permission.
-    @SuppressWarnings("MissingPermission")
-    private Location getLastLocation() {
-        if (apiClient != null) {
-            Location location = LocationServices.FusedLocationApi.getLastLocation(apiClient);
-            return location;
-        }
-
-        return null;
     }
 
     private void buildLocationRequest() {
@@ -209,26 +227,29 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
 
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                     .addLocationRequest(locationRequest);
-            PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(apiClient, builder.build());
 
-            result.setResultCallback(locationSettingsResult -> {
-                Status status = locationSettingsResult.getStatus();
+            Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(view.getActivityContext())
+                    .checkLocationSettings(builder.build());
 
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        if (!isRequestingLocation) {
-                            startLocationUpdate();
-                        }
-                        Log.i("MapsPresenter", "Succeed.");
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        view.locationSettingNeedsResolution(status);
-                        Log.i("MapsPresenter", "Resolution Required");
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        view.showServiceUnavailableMessage();
-                        Log.i("MapsPresenter", "unavailable.");
-                        break;
+            result.addOnCompleteListener(task -> {
+                try {
+                    task.getResult(ApiException.class);
+                    if (!isRequestingLocation) {
+                        startLocationUpdate();
+                    }
+                    Log.i("MapsPresenter", "Succeed.");
+                } catch (ApiException exception) {
+                    switch (exception.getStatusCode()) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            ResolvableApiException resolvable = (ResolvableApiException) exception;
+                            view.locationSettingNeedsResolution(resolvable);
+                            Log.i("MapsPresenter", "Resolution Required");
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            view.showServiceUnavailableMessage();
+                            Log.i("MapsPresenter", "unavailable.");
+                            break;
+                    }
                 }
             });
         }
@@ -241,29 +262,38 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     @SuppressWarnings("MissingPermission")
     private void startLocationUpdate() {
         isRequestingLocation = true;
-        LocationServices.FusedLocationApi.requestLocationUpdates(apiClient, locationRequest, this);
+        fusedLocationProviderClient
+                .requestLocationUpdates(locationRequest, locationCallback, backgroundThread.getLooper());
     }
 
     private void stopLocationUpdate() {
         isRequestingLocation = false;
-        LocationServices.FusedLocationApi.removeLocationUpdates(apiClient, this);
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    //region LocationChanged
-    @Override
-    public void onLocationChanged(Location location) {
-        this.currentLocation = location;
-        stopLocationUpdate();    // Only get one time accurate position.
+    private LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(final LocationResult result) {
+            super.onLocationResult(result);
+            List<Location> locations = result.getLocations();
+            if (!locations.isEmpty()) {
+                // The last location in the list is the newest
+                Location newestLocation = locations.get(locations.size() - 1);
+                stopLocationUpdate();    // Only get one time accurate position.
+                MainPresenter.this.currentLocation = newestLocation;
 
-        if (isWaitingAccurateLocation) {
-            isWaitingAccurateLocation = false;
+                if (isWaitingAccurateLocation) {
+                    isWaitingAccurateLocation = false;
 
-            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-            view.moveCameraToCurrentPosition(currentLatLng);
-            fetchCoffeeShops();
+                    uiHandler.post(() -> {
+                        LatLng currentLatLng = new LatLng(newestLocation.getLatitude(), newestLocation.getLongitude());
+                        view.moveCameraToCurrentPosition(currentLatLng);
+                        fetchCoffeeShops();
+                    });
+                }
+            }
         }
-    }
-    //endregion
+    };
 
     //region CoffeeShopListManager Callback
     @Override
@@ -283,7 +313,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         boolean isInternetAvailable();
         void requestInternetConnection();
         void requestLocationPermission();
-        void locationSettingNeedsResolution(Status status);
+        void locationSettingNeedsResolution(ResolvableApiException resolvable);
         void showServiceUnavailableMessage();
         void makeSnackBar(String message, boolean infinity);
         void setStatusBarDarkIndicator();
@@ -296,5 +326,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showFab(boolean show);
         void setShadowAlpha(float offset);
         void setFloatingActionButtonEnable(boolean enable);
+        Context getActivityContext();
     }
 }
