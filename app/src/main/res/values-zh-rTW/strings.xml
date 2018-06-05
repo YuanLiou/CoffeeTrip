@@ -52,8 +52,4 @@
     <string name="about_android">Android String 校對人員</string>
     <string name="about_licence">版權授權什麼的</string>
     <string name="about_data_comes_from">咖啡館資料由 CafeNomad 提供</string>
-    <string name="boss_hanashi">啊啊啊啊 :\u3008 \n被找到了！這是臭頭！</string>
-    <string name="boss_feed">請臭頭喝咖啡</string>
-    <string name="boss_title">你找到了一隻叫臭頭的貓</string>
-    <string name="trophy_boss">已獲得獎盃: 隱藏房間</string>
 </resources>

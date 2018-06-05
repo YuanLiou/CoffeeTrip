@@ -12,6 +12,7 @@
         android:id="@+id/about_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
+        android:elevation="2dp"
         android:background="@color/primary_orange"
         style="@style/OrangeToolbar"
         />
@@ -34,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/ic_figure_coffeetrip_egg"
+                android:src="@mipmap/ic_launcher"
                 />
 
             <TextView

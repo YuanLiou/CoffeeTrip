@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import tw.com.louis383.coffeefinder.R;
-import tw.com.louis383.coffeefinder.boss.BossActivity;
 
 /**
  * Created by louis383 on 2017/3/14.
@@ -99,12 +98,6 @@ public class AboutActivity extends AppCompatActivity implements AboutPresenter.V
 
     @Override
     public void openTwitterPage(Intent intent) {
-        startActivity(intent);
-    }
-
-    @Override
-    public void openBossPage() {
-        Intent intent = new Intent(this, BossActivity.class);
         startActivity(intent);
     }
 

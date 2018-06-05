@@ -41,7 +41,6 @@ public class AboutPresenter extends BasePresenter<AboutPresenter.ViewHandler> {
     public void openTopSecret() {
         counter++;
         if (counter == 5) {
-            view.openBossPage();
             counter = 0;
         } else if (counter == 4) {
             view.makeToast("!?");
@@ -54,7 +53,6 @@ public class AboutPresenter extends BasePresenter<AboutPresenter.ViewHandler> {
         void setTitle(String title);
         void setMessage(String message);
         void openTwitterPage(Intent intent);
-        void openBossPage();
         void setDarkStatusBar();
         void makeToast(String message);
     }

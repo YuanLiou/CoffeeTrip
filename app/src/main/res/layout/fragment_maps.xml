@@ -20,9 +20,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_activity_margin_size"
         android:layout_gravity="bottom|right|end"
-        app:backgroundTint="@color/white"
         app:srcCompat="@drawable/ic_mylocation"
+        app:backgroundTint="@color/white"
         app:fabSize="normal"
+        app:elevation="5dp"
+        app:pressedTranslationZ="11dp"
         />
 
 </FrameLayout>

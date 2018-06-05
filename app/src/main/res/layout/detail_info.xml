@@ -46,7 +46,7 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:textColor="@color/gray"
-            tools:text="天馬茶房是二二八引爆點咖啡店名要多長就給他多長作秀！"
+            tools:text="title"
             />
 
         <android.support.v7.widget.AppCompatRatingBar
@@ -289,19 +289,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="26dp"
-        android:paddingStart="16dp"
         android:paddingBottom="16dp"
-        >
+        android:paddingStart="16dp"
+        android:paddingTop="26dp">
 
         <TextView
             android:id="@+id/detail_view_coffeeshop_info_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/coffeeshop_info"
-            android:textSize="16sp"
             android:textColor="@color/gray"
-            />
+            android:textSize="16sp" />
 
         <ImageView
             android:id="@+id/detail_view_limited_time_icon"
@@ -309,10 +307,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/detail_view_coffeeshop_info_title"
             android:layout_marginTop="25dp"
-            android:paddingStart="7dp"
             android:paddingEnd="7dp"
-            app:srcCompat="@drawable/ic_limited_time"
-            />
+            android:paddingStart="7dp"
+            app:srcCompat="@drawable/ic_limited_time" />
 
         <View
             android:id="@+id/coffeeshop_info_left_margin"
@@ -322,195 +319,180 @@
             android:layout_toEndOf="@id/detail_view_limited_time_icon"
             android:visibility="invisible"
             tools:background="#00FF00"
-            tools:visibility="visible"
-            />
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/detail_view_limited_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
-            android:layout_alignTop="@id/detail_view_limited_time_icon"
             android:layout_alignBottom="@id/detail_view_limited_time_icon"
-            android:gravity="center_vertical"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif"
-            android:maxLines="1"
+            android:layout_alignTop="@id/detail_view_limited_time_icon"
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
             android:singleLine="true"
-            tools:text="不限時"
-            />
+            android:textSize="16sp"
+            tools:text="不限時" />
 
         <ImageView
             android:id="@+id/detail_view_socket_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_below="@id/detail_view_limited_time_icon"
-            android:layout_alignStart="@id/detail_view_limited_time_icon"
             android:layout_alignEnd="@id/detail_view_limited_time_icon"
-            app:srcCompat="@drawable/ic_socket"
-            />
+            android:layout_alignStart="@id/detail_view_limited_time_icon"
+            android:layout_below="@id/detail_view_limited_time_icon"
+            android:layout_marginTop="18dp"
+            app:srcCompat="@drawable/ic_socket" />
 
         <TextView
             android:id="@+id/detail_view_socket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
-            android:layout_alignTop="@id/detail_view_socket_icon"
             android:layout_alignBottom="@id/detail_view_socket_icon"
-            android:gravity="center_vertical"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif"
-            android:maxLines="1"
+            android:layout_alignTop="@id/detail_view_socket_icon"
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
             android:singleLine="true"
-            tools:text="到處都是插座"
-            />
+            android:textSize="16sp"
+            tools:text="到處都是插座" />
 
         <ImageView
             android:id="@+id/detail_view_standing_desk_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_below="@id/detail_view_socket_icon"
-            android:layout_alignStart="@id/detail_view_socket_icon"
             android:layout_alignEnd="@id/detail_view_socket_icon"
-            app:srcCompat="@drawable/ic_standing_desk"
-            />
+            android:layout_alignStart="@id/detail_view_socket_icon"
+            android:layout_below="@id/detail_view_socket_icon"
+            android:layout_marginTop="18dp"
+            app:srcCompat="@drawable/ic_standing_desk" />
 
         <TextView
             android:id="@+id/detail_view_standing_desk"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
-            android:layout_alignTop="@id/detail_view_standing_desk_icon"
             android:layout_alignBottom="@id/detail_view_standing_desk_icon"
-            android:gravity="center_vertical"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif"
-            android:maxLines="1"
+            android:layout_alignTop="@id/detail_view_standing_desk_icon"
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingEnd="16dp"
             android:singleLine="true"
-            tools:text="有站立工作位"
-            />
+            android:textSize="16sp"
+            tools:text="有站立工作位" />
 
         <View
             android:id="@+id/detail_view_coffeeshop_info_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/detail_view_standing_desk_icon"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:layout_marginTop="26dp"
-            android:background="@color/gray_cd"
-            />
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
+            android:background="@color/gray_cd" />
 
         <ImageView
             android:id="@+id/detail_view_website_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/detail_view_coffeeshop_info_divider"
-            android:layout_alignStart="@id/detail_view_limited_time_icon"
             android:layout_alignEnd="@id/detail_view_limited_time_icon"
-            android:paddingTop="1dp"
+            android:layout_alignStart="@id/detail_view_limited_time_icon"
+            android:layout_below="@id/detail_view_coffeeshop_info_divider"
             android:layout_marginTop="22dp"
-            app:srcCompat="@drawable/ic_house"
-            />
+            android:paddingTop="1dp"
+            app:srcCompat="@drawable/ic_house" />
 
         <TextView
             android:id="@+id/detail_view_website"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@+id/coffeeshop_info_left_margin"
             android:layout_alignTop="@id/detail_view_website_icon"
             android:layout_marginTop="2dp"
-            android:maxLines="2"
-            android:gravity="top"
+            android:layout_toEndOf="@+id/coffeeshop_info_left_margin"
+            android:autoLink="web"
             android:ellipsize="end"
+            android:gravity="top"
+            android:maxLines="2"
+            android:paddingEnd="16dp"
             android:textColor="@color/gray"
             android:textColorLink="@color/gray"
             android:textSize="16sp"
-            android:autoLink="web"
-            tools:text="http://somewebsite.com"
-            />
+            tools:text="http://somewebsite.com" />
 
         <View
             android:id="@+id/detail_view_coffeeshop_web_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/detail_view_website_icon"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:layout_marginTop="26dp"
-            android:background="@color/gray_cd"
-            />
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
+            android:background="@color/gray_cd" />
 
         <ImageView
             android:id="@+id/detail_view_opentime_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/detail_view_coffeeshop_web_divider"
-            android:layout_alignStart="@id/detail_view_limited_time_icon"
             android:layout_alignEnd="@id/detail_view_limited_time_icon"
-            android:paddingTop="1dp"
+            android:layout_alignStart="@id/detail_view_limited_time_icon"
+            android:layout_below="@id/detail_view_coffeeshop_web_divider"
             android:layout_marginTop="22dp"
-            app:srcCompat="@drawable/ic_open_time"
-            />
+            android:paddingTop="1dp"
+            app:srcCompat="@drawable/ic_open_time" />
 
         <TextView
             android:id="@+id/detail_view_opentime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@+id/coffeeshop_info_left_margin"
             android:layout_alignTop="@id/detail_view_opentime_icon"
-            android:maxLines="2"
-            android:gravity="top"
+            android:layout_toEndOf="@+id/coffeeshop_info_left_margin"
             android:ellipsize="end"
+            android:gravity="top"
+            android:maxLines="2"
+            android:paddingEnd="16dp"
             android:textColor="@color/gray"
             android:textSize="16sp"
-            tools:text="一~四07:30~20:00 五07:30~21:00 六日08:30~21:00"
-            />
+            tools:text="一~四07:30~20:00 五07:30~21:00 六日08:30~21:00" />
 
         <View
             android:id="@+id/detail_view_coffeeshop_info_divider2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/detail_view_opentime"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:layout_marginTop="29dp"
-            android:background="@color/gray_cd"
-            />
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
+            android:background="@color/gray_cd" />
 
         <ImageView
             android:id="@+id/detail_view_mrt_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/detail_view_coffeeshop_info_divider2"
-            android:layout_alignStart="@id/detail_view_opentime_icon"
             android:layout_alignEnd="@id/detail_view_opentime_icon"
+            android:layout_alignStart="@id/detail_view_opentime_icon"
+            android:layout_below="@id/detail_view_coffeeshop_info_divider2"
             android:layout_marginTop="25dp"
-            app:srcCompat="@drawable/ic_mass_transit"
-            />
+            app:srcCompat="@drawable/ic_mass_transit" />
 
         <TextView
             android:id="@+id/detail_view_mrt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="1dp"
-            android:paddingEnd="16dp"
-            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
             android:layout_alignTop="@id/detail_view_mrt_icon"
+            android:layout_toEndOf="@id/coffeeshop_info_left_margin"
+            android:ellipsize="end"
             android:gravity="top"
             android:maxLines="2"
-            android:ellipsize="end"
-            android:textSize="16sp"
+            android:paddingEnd="16dp"
+            android:paddingTop="1dp"
             android:textColor="@color/gray"
-            tools:text="北車 Y13"
-            />
+            android:textSize="16sp"
+            tools:text="北車 Y13" />
 
     </RelativeLayout>
 </LinearLayout>

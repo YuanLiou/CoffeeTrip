@@ -1,5 +1,13 @@
 package tw.com.louis383.coffeefinder.mainpage;
 
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.util.Log;
+import android.view.View;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
@@ -10,19 +18,8 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
-
-import android.content.Context;
-import android.content.Intent;
-import android.location.Location;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.util.Log;
-import android.view.View;
-
 import java.util.List;
 import java.util.Locale;
-
 import tw.com.louis383.coffeefinder.BasePresenter;
 import tw.com.louis383.coffeefinder.R;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
@@ -283,8 +280,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     public interface MainView {
         boolean isApplicationInstalled(String packageName);
         boolean checkLocationPermission();
-        boolean isAppbarVisible();
-        boolean isFabVisible();
         boolean isInternetAvailable();
         void requestInternetConnection();
         void requestLocationPermission();
@@ -298,7 +293,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         void showNeedsGoogleMapMessage();
         void showBottomSheetDetailView(CoffeeShopViewModel viewModel);
         void shareCoffeeShop(Intent shareIntent);
-        void showAppbar(boolean show);
         void showFab(boolean show);
         void setShadowAlpha(float offset);
         void setFloatingActionButtonEnable(boolean enable);

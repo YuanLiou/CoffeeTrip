@@ -15,27 +15,22 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRatingBar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -66,7 +61,6 @@ import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
  */
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.MainView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, MapsClickHandler, ListFragment.Callback {
-
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
     private static final int LOCATION_SETTING_RESOLUTION = 2;
@@ -75,19 +69,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     private GoogleApiClient googleApiClient;
 
     private MainPresenter presenter;
-    private ViewPagerAdapter adapter;
     private Snackbar snackbar;
     private BottomSheetBehavior bottomSheetBehavior;
 
-    private boolean isAppbarVisible = false;
-    private boolean isFabVisible = false;
-
     // Main Content
     private CoordinatorLayout rootView;
-    private Toolbar toolbar;
-    private AppBarLayout appbarLayout;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
     private NestedScrollView bottomSheet;
     private View shadow;
 
@@ -115,12 +101,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ((CoffeeTripApplication) getApplication()).getAppComponent().inject(this);
+
         // Main Content
         rootView = (CoordinatorLayout) findViewById(R.id.main_rootview);
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        appbarLayout = (AppBarLayout) findViewById(R.id.main_appbar);
-        tabLayout = (TabLayout) findViewById(R.id.main_tabbar);
-        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
         bottomSheet = (NestedScrollView) findViewById(R.id.main_bottom_sheet);
         shadow = findViewById(R.id.main_shadow);
 
@@ -151,31 +134,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         bottomSheetNavigate.setOnClickListener(v -> presenter.prepareNavigation());
         bottomSheetShare.setOnClickListener(v -> presenter.share(MainActivity.this));
-
-        setSupportActionBar(toolbar);
     }
 
     private void init() {
-        List<Fragment> fragments = new ArrayList<>();
-
         MapsFragment mapsFragment = MapsFragment.newInstance();
         mapsFragment.setRetainInstance(true);
         mapsFragment.setMapClickHandler(this);
-        fragments.add(ViewPagerAdapter.MAP_FRAGMENT, mapsFragment);
 
-        ListFragment listFragment = ListFragment.newInstance();
-        listFragment.setCallback(this);
-        fragments.add(ViewPagerAdapter.LIST_FRAGMENT, listFragment);
-
-        tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_map)));
-        tabLayout.addTab(tabLayout.newTab().setText(getResourceString(R.string.tab_title_list)));
-
-        adapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
-
-        toolbar.setTitle(getResourceString(R.string.app_name));
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, mapsFragment)
+                .commit();
     }
 
     @Inject
@@ -364,17 +332,18 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Override
     public void moveCameraToCurrentPosition(LatLng latLng) {
-        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
-        mapsFragment.moveCamera(latLng, MapsFragment.ZOOM_RATE);
+        MapsFragment mapsFragment = getMapFragment();
+        if (mapsFragment != null) {
+            mapsFragment.moveCamera(latLng, MapsFragment.ZOOM_RATE);
+        }
     }
 
     @Override
     public void onCoffeeShopFetched(List<CoffeeShop> coffeeShops) {
-        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
-        mapsFragment.prepareCoffeeShops(coffeeShops);
-
-        ListFragment listFragment = (ListFragment) adapter.getItem(ViewPagerAdapter.LIST_FRAGMENT);
-        listFragment.prepareCoffeeShops(coffeeShops);
+        MapsFragment mapsFragment = getMapFragment();
+        if (mapsFragment != null) {
+            mapsFragment.prepareCoffeeShops(coffeeShops);
+        }
     }
 
     @Override
@@ -457,18 +426,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     @Override
-    public void showAppbar(boolean show) {
-        isAppbarVisible = show;
-        if (show) {
-            appbarLayout.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
-        } else {
-            appbarLayout.animate().translationY(-appbarLayout.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
-        }
-    }
-
-    @Override
     public void showFab(boolean show) {
-        isFabVisible = show;
         if (show) {
             navigationFab.animate().scaleX(1).scaleY(1).setDuration(300)
                     .setListener(new Animator.AnimatorListener() {
@@ -510,20 +468,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         if (offset > 0.0f) {
             float alpha = offset * 0.4f;
             shadow.setAlpha(alpha);
-            viewPager.setTranslationY(offset * -55);
         }
 
         shadow.setVisibility(offset > 0.0f ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public boolean isAppbarVisible() {
-        return isAppbarVisible;
-    }
-
-    @Override
-    public boolean isFabVisible() {
-        return isFabVisible;
     }
 
     @Override
@@ -591,8 +538,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         presenter.setLastTappedCoffeeShop(coffeeShop);
         presenter.showDetailView();
 
-        MapsFragment mapsFragment = (MapsFragment) adapter.getItem(ViewPagerAdapter.MAP_FRAGMENT);
-        mapsFragment.setMarkerActive(coffeeShop);
+        MapsFragment mapsFragment = getMapFragment();
+        if (mapsFragment != null) {
+            mapsFragment.setMarkerActive(coffeeShop);
+        }
     }
     //endregion
+
+    @Nullable
+    private MapsFragment getMapFragment() {
+        Fragment mapFragment = getSupportFragmentManager().findFragmentById(R.id.main_container);
+        if (mapFragment instanceof MapsFragment) {
+            return (MapsFragment) mapFragment;
+        } else {
+            return null;
+        }
+    }
 }
