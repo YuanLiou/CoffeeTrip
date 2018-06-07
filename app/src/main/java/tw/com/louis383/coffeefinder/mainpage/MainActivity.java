@@ -36,8 +36,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -59,13 +57,11 @@ import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
  * Created by louis383 on 2017/2/17.
  */
 
-public class MainActivity extends AppCompatActivity implements MainPresenter.MainView, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, MapsClickHandler, ListFragment.Callback {
+public class MainActivity extends AppCompatActivity implements MainPresenter.MainView,  MapsClickHandler, ListFragment.Callback {
     private static final int LOCATION_PERMISSION_REQUEST = 0;
     private static final int LOCATION_MANUAL_ENABLE = 1;
     private static final int LOCATION_SETTING_RESOLUTION = 2;
     private static final int INTERNET_REQUEST = 3;
-
-    private GoogleApiClient googleApiClient;
 
     private MainPresenter presenter;
     private Snackbar snackbar;
@@ -148,22 +144,9 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
     @Inject
     public void initPresenter(CoffeeShopListManager coffeeShopListManager) {
-        buildGoogleAPIClient();
         FusedLocationProviderClient fusedLocationProviderClient = LocationServices
                 .getFusedLocationProviderClient(this);
-        presenter = new MainPresenter(googleApiClient, coffeeShopListManager, fusedLocationProviderClient);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        googleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        googleApiClient.disconnect();
+        presenter = new MainPresenter(coffeeShopListManager, fusedLocationProviderClient);
     }
 
     @Override
@@ -176,9 +159,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
         switch (requestCode) {
             case LOCATION_PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (googleApiClient.isConnected()) {
-                        presenter.requestUserLocation(true);
-                    }
+                    presenter.requestUserLocation(true);
                 } else {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                         new AlertDialog.Builder(this)
@@ -269,11 +250,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     }
 
     private void forceRequestCoffeeShop() {
-        if (googleApiClient.isConnected()) {
-            presenter.requestUserLocation(true);
-        } else {
-            googleApiClient.connect();
-        }
+        presenter.requestUserLocation(true);
     }
 
     @Override
@@ -373,14 +350,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
     public void shareCoffeeShop(Intent shareIntent) {
         String title = getResourceString(R.string.share_title);
         startActivity(Intent.createChooser(shareIntent, title));
-    }
-
-    private synchronized void buildGoogleAPIClient() {
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
     }
 
     private void showPermissionNeedSnackBar() {
@@ -497,25 +466,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Mai
 
         super.onBackPressed();
     }
-
-    //region GoogleAPIClient.ConnectionCallback
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        presenter.requestUserLocation(false);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i("MainActivity", "onConnectionSuspended");
-    }
-    //endregion
-
-    //region GoogleAPIClient.OnConnectionFailedListener
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i("MapsFragment", "onConnectionFailed: " + connectionResult.getErrorMessage());
-    }
-    //endregion
 
     //region MapsClickHandler
     @Override

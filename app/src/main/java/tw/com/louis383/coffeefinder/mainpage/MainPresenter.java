@@ -16,7 +16,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 import android.view.View;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -49,7 +48,6 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     private static final int FASTEST_UPDATE_INTERVAL = 5000; // 5 Sec
     private static final int RANGE = 3000;    // 3m
 
-    private GoogleApiClient apiClient;
     private LocationRequest locationRequest;
     private CoffeeShopListManager coffeeShopListManager;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -60,8 +58,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     private CoffeeShop lastTappedCoffeeShop;
     private boolean isRequestingLocation, isWaitingAccurateLocation;
 
-    public MainPresenter(GoogleApiClient apiClient, CoffeeShopListManager coffeeShopListManager, FusedLocationProviderClient locationProviderClient) {
-        this.apiClient = apiClient;
+    public MainPresenter(CoffeeShopListManager coffeeShopListManager, FusedLocationProviderClient locationProviderClient) {
         this.fusedLocationProviderClient = locationProviderClient;
         this.coffeeShopListManager = coffeeShopListManager;
         this.coffeeShopListManager.setCallback(this);
@@ -92,9 +89,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
         backgroundThread = new HandlerThread("BackgroundThread");
         backgroundThread.start();
         uiHandler = new Handler(Looper.getMainLooper());
-        if (apiClient.isConnected()) {
-            startLocationUpdate();
-        }
+        requestUserLocation(false);
     }
 
     @OnLifecycleEvent(Event.ON_PAUSE)
@@ -108,9 +103,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
             Log.e("MainPresenter", Log.getStackTraceString(e));
         }
 
-        if (apiClient.isConnected()) {
-            stopLocationUpdate();
-        }
+        stopLocationUpdate();
     }
 
     public void requestUserLocation(boolean force) {
@@ -220,39 +213,37 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     }
 
     private void tryToGetAccurateLocation() {
-        if (apiClient != null) {
-            if (locationRequest == null) {
-                buildLocationRequest();
-            }
-
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                    .addLocationRequest(locationRequest);
-
-            Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(view.getActivityContext())
-                    .checkLocationSettings(builder.build());
-
-            result.addOnCompleteListener(task -> {
-                try {
-                    task.getResult(ApiException.class);
-                    if (!isRequestingLocation) {
-                        startLocationUpdate();
-                    }
-                    Log.i("MapsPresenter", "Succeed.");
-                } catch (ApiException exception) {
-                    switch (exception.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            ResolvableApiException resolvable = (ResolvableApiException) exception;
-                            view.locationSettingNeedsResolution(resolvable);
-                            Log.i("MapsPresenter", "Resolution Required");
-                            break;
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            view.showServiceUnavailableMessage();
-                            Log.i("MapsPresenter", "unavailable.");
-                            break;
-                    }
-                }
-            });
+        if (locationRequest == null) {
+            buildLocationRequest();
         }
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        Task<LocationSettingsResponse> result = LocationServices.getSettingsClient(view.getActivityContext())
+                .checkLocationSettings(builder.build());
+
+        result.addOnCompleteListener(task -> {
+            try {
+                task.getResult(ApiException.class);
+                if (!isRequestingLocation) {
+                    startLocationUpdate();
+                }
+                Log.i("MapsPresenter", "Succeed.");
+            } catch (ApiException exception) {
+                switch (exception.getStatusCode()) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        ResolvableApiException resolvable = (ResolvableApiException) exception;
+                        view.locationSettingNeedsResolution(resolvable);
+                        Log.i("MapsPresenter", "Resolution Required");
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        view.showServiceUnavailableMessage();
+                        Log.i("MapsPresenter", "unavailable.");
+                        break;
+                }
+            }
+        });
     }
 
     public Location getCurrentLocation() {
@@ -262,8 +253,7 @@ public class MainPresenter extends BasePresenter<MainPresenter.MainView> impleme
     @SuppressWarnings("MissingPermission")
     private void startLocationUpdate() {
         isRequestingLocation = true;
-        fusedLocationProviderClient
-                .requestLocationUpdates(locationRequest, locationCallback, backgroundThread.getLooper());
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, backgroundThread.getLooper());
     }
 
     private void stopLocationUpdate() {
