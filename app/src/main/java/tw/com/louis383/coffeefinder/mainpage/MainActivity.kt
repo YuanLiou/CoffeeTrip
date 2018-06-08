@@ -1,0 +1,442 @@
+package tw.com.louis383.coffeefinder.mainpage
+
+import android.Manifest
+import android.animation.Animator
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.net.ConnectivityManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
+import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.widget.NestedScrollView
+import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.AppCompatRatingBar
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.OvershootInterpolator
+import android.widget.Button
+import android.widget.ProgressBar
+import android.widget.TextView
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
+import tw.com.louis383.coffeefinder.CoffeeTripApplication
+import tw.com.louis383.coffeefinder.R
+import tw.com.louis383.coffeefinder.about.AboutActivity
+import tw.com.louis383.coffeefinder.list.ListFragment
+import tw.com.louis383.coffeefinder.maps.MapsClickHandler
+import tw.com.louis383.coffeefinder.maps.MapsFragment
+import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.Utils
+import tw.com.louis383.coffeefinder.utils.bindView
+import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
+import javax.inject.Inject
+
+/**
+ * Created by louis383 on 2017/2/17.
+ */
+
+class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback {
+    private val locationPermissionRequest = 0
+    private val locationManualEnable = 1
+    private val locationSettingResolution = 2
+    private val internetRequest = 3
+
+    private var presenter: MainPresenter? = null
+    private var snackbar: Snackbar? = null
+
+    // Main Content
+    private val rootView: CoordinatorLayout by bindView(R.id.main_rootview)
+    private val shadow: View by bindView(R.id.main_shadow)
+
+    // Bottom Sheet
+    private val navigationFab: FloatingActionButton by bindView(R.id.main_fab)
+    private val bottomSheetTitle: TextView by bindView(R.id.detail_view_title)
+    private val bottomSheetDistance: TextView by bindView(R.id.detail_view_distance)
+    private val bottomSheetWifiScore: TextView by bindView(R.id.detail_view_wifi_score)
+    private val bottomSheetSeatScore: TextView by bindView(R.id.detail_view_seat_score)
+    private val bottomSheetLimitedTime: TextView by bindView(R.id.detail_view_limited_time)
+    private val bottomSheetSocket: TextView by bindView(R.id.detail_view_socket)
+    private val bottomSheetStandingDesk: TextView by bindView(R.id.detail_view_standing_desk)
+    private val bottomSheetOpenTime: TextView by bindView(R.id.detail_view_opentime)
+    private val bottomSheetWebsite: TextView by bindView(R.id.detail_view_website)
+    private val bottomSheetMrt: TextView by bindView(R.id.detail_view_mrt)
+    private val bottomSheetExpensebar: AppCompatRatingBar by bindView(R.id.detail_view_expense)
+    private val bottomSheetWifiQuality: ProgressBar by bindView(R.id.detail_view_wifi_quality)
+    private val bottomSheetSeatQuality: ProgressBar by bindView(R.id.detail_view_seat_quality)
+    private val bottomSheetNavigate: Button by bindView(R.id.detail_view_button_navigate)
+    private val bottomSheetShare: Button by bindView(R.id.detail_view_button_share)
+
+    private lateinit var bottomSheet: NestedScrollView
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+
+    val currentLocation: Location?
+        get() = presenter?.currentLocation
+
+    override val activityContext: Context
+        get() = this
+
+    override val isInternetAvailable: Boolean
+        get() {
+            val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = manager.activeNetworkInfo
+            return networkInfo?.run {
+                isConnected && isAvailable
+            } ?: false
+        }
+
+    private val mapFragment: MapsFragment?
+        get() {
+            val mapFragment = supportFragmentManager.findFragmentById(R.id.main_container)
+            return mapFragment as? MapsFragment
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        (application as CoffeeTripApplication).appComponent.inject(this)
+
+        initMapFragment()
+        bottomSheet = findViewById(R.id.main_bottom_sheet)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        presenter?.attachView(this)
+        presenter?.addLifecycleOwner(this)
+        presenter?.setBottomSheetBehavior(bottomSheetBehavior)
+
+        bottomSheetNavigate.setOnClickListener { presenter?.prepareNavigation() }
+        bottomSheetShare.setOnClickListener { presenter?.share(this) }
+    }
+
+    private fun initMapFragment() {
+        val mapsFragment = MapsFragment.newInstance()
+        with(mapsFragment) {
+            retainInstance = true
+            setMapClickHandler(this@MainActivity)
+        }
+
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, mapsFragment)
+                .commit()
+    }
+
+    @Inject
+    fun initPresenter(coffeeShopListManager: CoffeeShopListManager) {
+        val fusedLocationProviderClient = LocationServices
+                .getFusedLocationProviderClient(this)
+        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            locationPermissionRequest -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    presenter?.requestUserLocation(true)
+                } else {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        AlertDialog.Builder(this)
+                                .setMessage(Utils.getResourceString(this, R.string.request_location))
+                                .setPositiveButton(Utils.getResourceString(this, R.string.dialog_auth))
+                                    { _, _ -> requestLocationPermission() }
+                                .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
+                                    { _, _ -> showPermissionNeedSnackBar() }
+                                .create()
+                                .show()
+                    } else {
+                        showPermissionNeedSnackBar()
+                        val appName = Utils.getResourceString(this, R.string.app_name)
+                        val permissionName = Utils.getResourceString(this, R.string.auth_location)
+
+                        AlertDialog.Builder(this)
+                                .setTitle(Utils.getResourceString(this, R.string.dialog_auth))
+                                .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
+                                .setPositiveButton(Utils.getResourceString(this, R.string.auto_go))
+                                    { _, _ -> openApplicationSetting() }
+                                .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
+                                    { _, _ -> }
+                                .create()
+                                .show()
+                    }
+                }
+            }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        when (requestCode) {
+            internetRequest -> {
+                if (isInternetAvailable) {
+                    if (checkLocationPermission()) {
+                        forceRequestCoffeeShop()
+                    } else {
+                        showPermissionNeedSnackBar()
+                    }
+                } else {
+                    requestInternetConnection()
+                }
+            }
+            locationManualEnable -> {
+                if (checkLocationPermission()) {
+                    forceRequestCoffeeShop()
+                    snackbar?.run {
+                        if (isShown) {
+                            dismiss()
+                        }
+                    }
+                } else {
+                    showPermissionNeedSnackBar()
+                }
+            }
+            locationSettingResolution -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    presenter?.requestUserLocation(true)
+                } else {
+                    snackbar = Snackbar.make(rootView, R.string.high_accuracy_recommand, Snackbar.LENGTH_LONG)
+                    snackbar?.show()
+                }
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.main_activity, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_about -> {
+                // Go to about page!
+                val intent = Intent(this, AboutActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun forceRequestCoffeeShop() {
+        presenter?.requestUserLocation(true)
+    }
+
+    override fun checkLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun requestLocationPermission() {
+        val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        ActivityCompat.requestPermissions(this, permissions, locationPermissionRequest)
+    }
+
+    override fun locationSettingNeedsResolution(resolvable: ResolvableApiException) {
+        resolvable.startResolutionForResult(this, locationSettingResolution)
+    }
+
+    override fun showServiceUnavailableMessage() {
+        val message = resources.getString(R.string.service_unavailable)
+        makeSnackBar(message, true)
+    }
+
+    override fun makeSnackBar(message: String, infinity: Boolean) {
+        val duration = if (infinity) Snackbar.LENGTH_INDEFINITE else Snackbar.LENGTH_LONG
+        val snackbar = Snackbar.make(rootView, message, duration)
+        snackbar.show()
+        this.snackbar = snackbar
+    }
+
+    override fun setStatusBarDarkIndicator() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+    }
+
+    override fun requestInternetConnection() {
+        AlertDialog.Builder(this)
+                .setTitle(getResourceString(R.string.internet_request_title))
+                .setMessage(getResourceString(R.string.internet_request_message))
+                .setPositiveButton(getResourceString(R.string.auto_go)) { _, _ ->
+                    val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
+                    startActivityForResult(intent, internetRequest)
+                }.create().show()
+    }
+
+    override fun moveCameraToCurrentPosition(latLng: LatLng) {
+        mapFragment?.moveCamera(latLng, MapsFragment.ZOOM_RATE)
+    }
+
+    override fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>) {
+        mapFragment?.prepareCoffeeShops(coffeeShops)
+    }
+
+    override fun isApplicationInstalled(packageName: String): Boolean {
+        val packageManager = packageManager
+        return try {
+            packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    override fun navigateToLocation(intent: Intent) {
+        startActivity(intent)
+    }
+
+    override fun showNeedsGoogleMapMessage() {
+        val message = resources.getString(R.string.googlemap_not_install)
+        makeSnackBar(message, false)
+    }
+
+    override fun shareCoffeeShop(shareIntent: Intent) {
+        val title = getResourceString(R.string.share_title)
+        startActivity(Intent.createChooser(shareIntent, title))
+    }
+
+    private fun showPermissionNeedSnackBar() {
+        val snackbar = Snackbar.make(rootView, R.string.permission_needed, Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction(R.string.dialog_auth) { openApplicationSetting() }
+        snackbar.show()
+        this.snackbar = snackbar
+    }
+
+    private fun openApplicationSetting() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivityForResult(intent, locationManualEnable)
+    }
+
+    private fun getResourceString(stringId: Int): String {
+        return resources.getString(stringId)
+    }
+
+    override fun showBottomSheetDetailView(viewModel: CoffeeShopViewModel) {
+        if (this::bottomSheet.isInitialized && this::bottomSheetBehavior.isInitialized) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+            bottomSheetTitle.text = viewModel.shopName
+            bottomSheetDistance.text = viewModel.distances
+            bottomSheetExpensebar.rating = viewModel.cheapPoints
+
+            bottomSheetWifiQuality.progress = viewModel.wifiPoints.toInt() * 20
+            bottomSheetWifiScore.text = viewModel.wifiPoints.toString()
+            bottomSheetSeatQuality.progress = viewModel.seatPoints.toInt() * 20
+            bottomSheetSeatScore.text = viewModel.seatPoints.toString()
+
+            bottomSheetWebsite.text = viewModel.getWebsiteURL(this)
+            bottomSheetOpenTime.text = viewModel.getOpenTimes(this)
+            bottomSheetMrt.text = viewModel.getMrtInfo(this)
+
+            bottomSheetLimitedTime.text = viewModel.getLimitTimeString(this)
+            bottomSheetSocket.text = viewModel.getSocketString(this)
+            bottomSheetStandingDesk.text = viewModel.getStandingDeskString(this)
+        }
+    }
+
+    override fun showFab(show: Boolean) {
+        if (show) {
+            navigationFab.animate().scaleX(1f).scaleY(1f).setDuration(300)
+                    .setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationStart(animation: Animator) {
+                            if (!navigationFab.isShown) {
+                                navigationFab.visibility = View.VISIBLE
+                            }
+                        }
+
+                        override fun onAnimationEnd(animation: Animator) {}
+                        override fun onAnimationCancel(animation: Animator) {}
+                        override fun onAnimationRepeat(animation: Animator) {}
+                    })
+                    .setInterpolator(OvershootInterpolator())
+                    .start()
+        } else {
+            navigationFab.animate().scaleX(0f).scaleY(0f).setDuration(200).setInterpolator(DecelerateInterpolator()).start()
+        }
+    }
+
+    override fun setFloatingActionButtonEnable(enable: Boolean) {
+        Log.i("MainActivity", "Action Button Enable: $enable")
+        if (enable) {
+            navigationFab.setOnClickListener {
+                presenter?.prepareNavigation()
+                Log.i("MainActivity", "navigation clicked.")
+            }
+        } else {
+            navigationFab.setOnClickListener(null)
+            navigationFab.visibility = View.GONE
+        }
+
+        with(navigationFab) {
+            isEnabled = enable
+            isClickable = enable
+        }
+    }
+
+    override fun setShadowAlpha(offset: Float) {
+        if (offset > 0.0f) {
+            val alpha = offset * 0.4f
+            shadow.alpha = alpha
+        }
+
+        shadow.visibility = if (offset > 0.0f) View.VISIBLE else View.GONE
+    }
+
+    override fun onBackPressed() {
+        if (this::bottomSheetBehavior.isInitialized) {
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheet.fullScroll(View.FOCUS_UP)
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                return
+            } else if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                showFab(false)
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                return
+            }
+        }
+
+        super.onBackPressed()
+    }
+
+    //region MapsClickHandler
+    override fun onMapClicked() {
+        if (this::bottomSheetBehavior.isInitialized) {
+            showFab(false)
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+    }
+
+    override fun onMarkerClicked(coffeeShop: CoffeeShop) {
+        presenter?.setLastTappedCoffeeShop(coffeeShop)
+        presenter?.showDetailView()
+    }
+    //endregion
+
+    //region ListFragment.Callback
+    override fun onItemTapped(coffeeShop: CoffeeShop) {
+        presenter?.setLastTappedCoffeeShop(coffeeShop)
+        presenter?.showDetailView()
+
+        mapFragment?.setMarkerActive(coffeeShop)
+    }
+}

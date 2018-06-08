@@ -1,11 +1,14 @@
 package tw.com.louis383.coffeefinder;
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by louis383 on 2017/1/13.
  */
 
 public abstract class BasePresenter<T> {
 
+    @Nullable
     protected T view;
     private boolean viewAttached;
 
