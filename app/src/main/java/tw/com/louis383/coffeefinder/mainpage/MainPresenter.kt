@@ -195,8 +195,8 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     fun showDetailView() {
-        lastTappedCoffeeShop?.run {
-            view?.showBottomSheetDetailView(viewModel)
+        lastTappedCoffeeShop?.let {
+            view?.showBottomSheetDetailView(it)
         }
     }
 
@@ -267,6 +267,7 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
 
     //region CoffeeShopListManager Callback
     override fun onCoffeeShopFetchedComplete(coffeeShops: List<CoffeeShop>) {
+        view?.updateListPage(coffeeShops)
         view?.onCoffeeShopFetched(coffeeShops)
     }
 

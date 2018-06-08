@@ -5,7 +5,6 @@ import android.content.Intent
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.maps.model.LatLng
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
 
 interface MainView {
     val isInternetAvailable: Boolean
@@ -22,9 +21,10 @@ interface MainView {
     fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>)
     fun navigateToLocation(intent: Intent)
     fun showNeedsGoogleMapMessage()
-    fun showBottomSheetDetailView(viewModel: CoffeeShopViewModel)
+    fun showBottomSheetDetailView(coffeeShop: CoffeeShop)
     fun shareCoffeeShop(shareIntent: Intent)
     fun showFab(show: Boolean)
     fun setShadowAlpha(offset: Float)
     fun setFloatingActionButtonEnable(enable: Boolean)
+    fun updateListPage(coffeeShops : List<CoffeeShop>)
 }

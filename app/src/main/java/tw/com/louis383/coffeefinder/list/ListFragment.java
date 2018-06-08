@@ -1,7 +1,9 @@
 package tw.com.louis383.coffeefinder.list;
 
+import android.arch.lifecycle.Lifecycle.State;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import java.util.ArrayList;
 import java.util.List;
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.R;
@@ -24,6 +27,8 @@ import tw.com.louis383.coffeefinder.view.CoffeeListAdapter;
 
 public class ListFragment extends BaseFragment implements ListPresenter.ViewHandler, ListTappedHandler {
 
+    private static final String COFFEESHOP_LIST_KEY = "coffee-list-key";
+
     private ListPresenter presenter;
     private CoffeeListAdapter adapter;
     private Callback callback;
@@ -35,8 +40,9 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
 
     public ListFragment() {}
 
-    public static ListFragment newInstance() {
+    public static ListFragment newInstance(List<CoffeeShop> coffeeShops) {
         Bundle args = new Bundle();
+        args.putParcelableArrayList(COFFEESHOP_LIST_KEY, (ArrayList<? extends Parcelable>) coffeeShops);
         ListFragment fragment = new ListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -59,6 +65,7 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
         noCoffeeShopMessage = (TextView) view.findViewById(R.id.list_none_message);
 
         adapter = new CoffeeListAdapter(getActivity(), this);
+
         RecyclerViewDividerHelper dividerHelper = new RecyclerViewDividerHelper(getActivity(), RecyclerViewDividerHelper.VERTICAL_LIST, false, false);
         recyclerView.setVisibility(View.INVISIBLE);
         recyclerView.addItemDecoration(dividerHelper);
@@ -67,6 +74,17 @@ public class ListFragment extends BaseFragment implements ListPresenter.ViewHand
 
         presenter = new ListPresenter();
         presenter.attachView(this);
+
+        if (getArguments() != null) {
+            ArrayList<CoffeeShop> coffeeShops = getArguments().getParcelableArrayList(COFFEESHOP_LIST_KEY);
+            presenter.prepareToShowCoffeeShops(coffeeShops);
+        }
+    }
+
+    public void setNestScrollingEnable(boolean enable) {
+        if (getLifecycle().getCurrentState().isAtLeast(State.CREATED)) {
+            recyclerView.setNestedScrollingEnabled(enable);
+        }
     }
 
     private int getActionBarHeight() {

@@ -18,25 +18,24 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.widget.NestedScrollView
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.AppCompatRatingBar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.about.AboutActivity
+import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
+import tw.com.louis383.coffeefinder.details.DetailsFragment
+import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
@@ -44,14 +43,13 @@ import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
 import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
-class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback {
+class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback, DetailsItemClickListener {
     private val locationPermissionRequest = 0
     private val locationManualEnable = 1
     private val locationSettingResolution = 2
@@ -66,24 +64,10 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // Bottom Sheet
     private val navigationFab: FloatingActionButton by bindView(R.id.main_fab)
-    private val bottomSheetTitle: TextView by bindView(R.id.detail_view_title)
-    private val bottomSheetDistance: TextView by bindView(R.id.detail_view_distance)
-    private val bottomSheetWifiScore: TextView by bindView(R.id.detail_view_wifi_score)
-    private val bottomSheetSeatScore: TextView by bindView(R.id.detail_view_seat_score)
-    private val bottomSheetLimitedTime: TextView by bindView(R.id.detail_view_limited_time)
-    private val bottomSheetSocket: TextView by bindView(R.id.detail_view_socket)
-    private val bottomSheetStandingDesk: TextView by bindView(R.id.detail_view_standing_desk)
-    private val bottomSheetOpenTime: TextView by bindView(R.id.detail_view_opentime)
-    private val bottomSheetWebsite: TextView by bindView(R.id.detail_view_website)
-    private val bottomSheetMrt: TextView by bindView(R.id.detail_view_mrt)
-    private val bottomSheetExpensebar: AppCompatRatingBar by bindView(R.id.detail_view_expense)
-    private val bottomSheetWifiQuality: ProgressBar by bindView(R.id.detail_view_wifi_quality)
-    private val bottomSheetSeatQuality: ProgressBar by bindView(R.id.detail_view_seat_quality)
-    private val bottomSheetNavigate: Button by bindView(R.id.detail_view_button_navigate)
-    private val bottomSheetShare: Button by bindView(R.id.detail_view_button_share)
 
-    private lateinit var bottomSheet: NestedScrollView
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+    private lateinit var bottomSheetViewPager: ViewPager
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ViewPager>
+    private val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 
     val currentLocation: Location?
         get() = presenter?.currentLocation
@@ -113,16 +97,14 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         (application as CoffeeTripApplication).appComponent.inject(this)
 
         initMapFragment()
-        bottomSheet = findViewById(R.id.main_bottom_sheet)
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
+        bottomSheetViewPager.adapter = viewPagerAdapter
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetViewPager)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         presenter?.attachView(this)
         presenter?.addLifecycleOwner(this)
         presenter?.setBottomSheetBehavior(bottomSheetBehavior)
-
-        bottomSheetNavigate.setOnClickListener { presenter?.prepareNavigation() }
-        bottomSheetShare.setOnClickListener { presenter?.share(this) }
     }
 
     private fun initMapFragment() {
@@ -268,6 +250,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun setStatusBarDarkIndicator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        } else {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.secondary_bluegray)
         }
     }
 
@@ -287,6 +271,14 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>) {
         mapFragment?.prepareCoffeeShops(coffeeShops)
+    }
+
+    override fun updateListPage(coffeeShops: List<CoffeeShop>) {
+        if (!viewPagerAdapter.isListPageInitiated) {
+            val listFragment = ListFragment.newInstance(coffeeShops)
+            listFragment.setCallback(this)
+            viewPagerAdapter.setListFragment(listFragment)
+        }
     }
 
     override fun isApplicationInstalled(packageName: String): Boolean {
@@ -331,26 +323,16 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         return resources.getString(stringId)
     }
 
-    override fun showBottomSheetDetailView(viewModel: CoffeeShopViewModel) {
-        if (this::bottomSheet.isInitialized && this::bottomSheetBehavior.isInitialized) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
-            bottomSheetTitle.text = viewModel.shopName
-            bottomSheetDistance.text = viewModel.distances
-            bottomSheetExpensebar.rating = viewModel.cheapPoints
-
-            bottomSheetWifiQuality.progress = viewModel.wifiPoints.toInt() * 20
-            bottomSheetWifiScore.text = viewModel.wifiPoints.toString()
-            bottomSheetSeatQuality.progress = viewModel.seatPoints.toInt() * 20
-            bottomSheetSeatScore.text = viewModel.seatPoints.toString()
-
-            bottomSheetWebsite.text = viewModel.getWebsiteURL(this)
-            bottomSheetOpenTime.text = viewModel.getOpenTimes(this)
-            bottomSheetMrt.text = viewModel.getMrtInfo(this)
-
-            bottomSheetLimitedTime.text = viewModel.getLimitTimeString(this)
-            bottomSheetSocket.text = viewModel.getSocketString(this)
-            bottomSheetStandingDesk.text = viewModel.getStandingDeskString(this)
+    override fun showBottomSheetDetailView(coffeeShop: CoffeeShop) {
+        if (this::bottomSheetViewPager.isInitialized) {
+            if (viewPagerAdapter.isDetailPageInitiated) {
+                val detailsFragment = viewPagerAdapter.getItem(ViewPagerAdapter.DETAIL_FRAGMENT)
+                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.viewModel)
+            } else {
+                val detailsFragment = DetailsFragment.newInstance(coffeeShop)
+                viewPagerAdapter.setDetailFragment(detailsFragment)
+            }
+            bottomSheetViewPager.setCurrentItem(ViewPagerAdapter.DETAIL_FRAGMENT, true)
         }
     }
 
@@ -405,12 +387,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onBackPressed() {
         if (this::bottomSheetBehavior.isInitialized) {
             if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheet.fullScroll(View.FOCUS_UP)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                return
-            } else if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                showFab(false)
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
                 return
             }
         }
@@ -422,7 +399,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onMapClicked() {
         if (this::bottomSheetBehavior.isInitialized) {
             showFab(false)
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
@@ -439,4 +415,15 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
         mapFragment?.setMarkerActive(coffeeShop)
     }
+    //endregion
+
+    //region DetailsItemClickListener
+    override fun onNavigationButtonClicked() {
+        presenter?.prepareNavigation()
+    }
+
+    override fun onShareButtonClicked() {
+        presenter?.share(this)
+    }
+    //endregion
 }

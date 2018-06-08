@@ -24,7 +24,7 @@
     <string name="tab_title_list">列表</string>
     <string name="unit_m_words">公尺</string>
     <string name="add_to_bookmark">收藏</string>
-    <string name="im_here">媽我在這</string>
+    <string name="im_here">嘿！我在這</string>
     <string name="share_this_shop">分享這間咖啡館</string>
     <string name="coffeeshop_info">咖啡館資訊</string>
     <string name="limit_time_yes">有限時</string>
@@ -38,9 +38,9 @@
     <string name="maps_string_null">不知道！</string>
     <string name="share_message">我在 %1$s，%2$s。    via #CoffeeTrip</string>
     <string name="share_subject">與你分享</string>
-    <string name="share_title">我在這裡辣！</string>
+    <string name="share_title">我在這裡！</string>
     <string name="list_no_money_data">尚無價位資料</string>
-    <string name="opentime_mrt_none">嗯～不知道</string>
+    <string name="opentime_mrt_none">尚不知道</string>
     <string name="internet_request_title">網路連線</string>
     <string name="internet_request_message">您的手機正在偷懶！如果沒有連上網路就不算工時。</string>
     <string name="menu_about">關於</string>
@@ -48,8 +48,8 @@
     <string name="about_message">喝一杯還想睡，那你有喝第二杯嗎？</string>
     <string name="about_work">工人</string>
     <string name="about_designer">午餐部（懂美工佳）</string>
-    <string name="about_backend">努力畢業的山人</string>
+    <string name="about_backend">已畢業的山人</string>
     <string name="about_android">Android String 校對人員</string>
-    <string name="about_licence">版權授權什麼的</string>
+    <string name="about_licence">版權授權</string>
     <string name="about_data_comes_from">咖啡館資料由 CafeNomad 提供</string>
 </resources>
