@@ -6,10 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +42,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     private Snackbar snackbar;
 
     private FrameLayout rootView;
-    private FloatingActionButton myLocationButton;
+    private AppCompatImageButton myLocationButton;
     private MapView mapView;
 
     private MapsClickHandler handler;
@@ -69,7 +69,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rootView = (FrameLayout) view.findViewById(R.id.map_rootview);
-        myLocationButton = (FloatingActionButton) view.findViewById(R.id.my_location_button);
+        myLocationButton = (AppCompatImageButton) view.findViewById(R.id.my_location_button);
         mapView = (MapView) view.findViewById(R.id.map_view);
 
         mapView.onCreate(savedInstanceState);
