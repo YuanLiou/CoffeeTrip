@@ -2,6 +2,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/white</item>
+        <!-- FIXME: total white status bar on Lollipop devices -->
         <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/primary_orange</item>
         <item name="android:alertDialogTheme">@style/LightDialogTheme</item>
