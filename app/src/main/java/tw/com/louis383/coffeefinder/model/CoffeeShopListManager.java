@@ -3,6 +3,7 @@ package tw.com.louis383.coffeefinder.model;
 import android.location.Location;
 import android.util.Log;
 
+import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,8 @@ public class CoffeeShopListManager {
     private List<CoffeeShop> coffeeShops;
     private CoffeeShopListManager.Callback callback;
 
+    private Disposable connection;
+
     public CoffeeShopListManager(CoffeeTripAPI coffeeTripAPI) {
         this.coffeeTripAPI = coffeeTripAPI;
 
@@ -31,7 +34,7 @@ public class CoffeeShopListManager {
     }
 
     public void fetch(Location location, int range) {
-        coffeeTripAPI.getCoffeeShops(location.getLatitude(), location.getLongitude(), range)
+        connection = coffeeTripAPI.getCoffeeShops(location.getLatitude(), location.getLongitude(), range)
                 .subscribe(listResponse -> {
                     List<CoffeeShop> coffeeShops = listResponse.body();
                     if (callback != null) {
@@ -52,6 +55,13 @@ public class CoffeeShopListManager {
         }
 
         return null;
+    }
+
+    public void stop() {
+        if (connection != null && !connection.isDisposed()) {
+            connection.dispose();
+            Log.i("CoffeeShopListManager", "stop coffee shop fetching.");
+        }
     }
 
     public int getCoffeeShopsCount() {

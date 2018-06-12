@@ -119,6 +119,7 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
 
     @OnLifecycleEvent(Event.ON_PAUSE)
     private fun pauseLocationUpdate() {
+        coffeeShopListManager.stop()
         backgroundThread?.quitSafely()
         backgroundThread?.join()
         backgroundThread = null
