@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
-import android.support.design.widget.BottomSheetBehavior
 import android.util.Log
 import android.view.View
 import com.google.android.gms.common.api.ApiException
@@ -25,6 +24,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
 import com.google.android.gms.maps.model.LatLng
+import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
@@ -74,11 +74,11 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
                     if (isWaitingAccurateLocation) {
                         isWaitingAccurateLocation = false
 
-                        uiHandler?.post({
+                        uiHandler?.post {
                             val currentLatLng = LatLng(latestLocation.latitude, latestLocation.longitude)
                             view?.moveCameraToCurrentPosition(currentLatLng)
                             fetchCoffeeShops()
-                        })
+                        }
                     }
                 }
             }
@@ -201,19 +201,20 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         }
     }
 
-    fun setBottomSheetBehavior(bottomSheetBehavior: BottomSheetBehavior<*>) {
-        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+    fun setBottomSheetBehavior(bottomSheetBehavior: AnchorBottomSheetBehavior<*>) {
+        bottomSheetBehavior.addBottomSheetCallback(object : AnchorBottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
-                    BottomSheetBehavior.STATE_HIDDEN -> {
+                    AnchorBottomSheetBehavior.STATE_HIDDEN -> {
                         view?.showFab(false)
                         view?.setFloatingActionButtonEnable(false)
                     }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                    AnchorBottomSheetBehavior.STATE_COLLAPSED -> {
                         view?.showFab(true)
                         view?.setFloatingActionButtonEnable(true)
                     }
-                    BottomSheetBehavior.STATE_DRAGGING -> view?.showFab(false)
+                    AnchorBottomSheetBehavior.STATE_DRAGGING -> view?.showFab(false)
+                    else -> {}
                 }
             }
 

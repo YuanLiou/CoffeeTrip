@@ -77,6 +77,9 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
             val coffeeShops = getParcelableArrayList<CoffeeShop>(COFFEE_SHOP_LIST_KEY)
             presenter?.prepareToShowCoffeeShops(coffeeShops)
         }
+
+        val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
+        view.setPadding(0, 0, 0, anchorOffset)
     }
 
     fun setNestScrollingEnable(enable: Boolean) {

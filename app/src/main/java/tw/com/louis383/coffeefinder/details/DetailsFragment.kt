@@ -56,6 +56,9 @@ class DetailsFragment: Fragment() {
         detail_view_button_share.setOnClickListener {
             detailsItemClickListener?.onShareButtonClicked()
         }
+
+        val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
+        view.setPadding(0, 0, 0, anchorOffset)
     }
 
     fun setDetailInfo(viewModel: CoffeeShopViewModel) {

@@ -28,9 +28,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:layout_behavior="@string/anchor_bottom_sheet_behaviour"
         app:behavior_peekHeight="170dp"
         app:behavior_hideable="false"
+        app:behavior_anchorOffset="@dimen/store_panel_anchor_offset"
+        app:behavior_expandable="false"
+        app:behavior_defaultState="collapsed"
         />
 
     <android.support.design.widget.FloatingActionButton
@@ -39,7 +42,7 @@
         android:layout_height="wrap_content"
         android:elevation="6dp"
         app:layout_anchor="@id/main_bottom_sheet"
-        app:layout_anchorGravity="end"
+        app:layout_anchorGravity="top|end"
         app:fabSize="normal"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"

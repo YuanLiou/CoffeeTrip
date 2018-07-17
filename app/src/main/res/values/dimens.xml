@@ -4,4 +4,5 @@
     <dimen name="margin_next_to_progress">14dp</dimen>
 
     <dimen name="textSizeSmaller">11sp</dimen>
+    <dimen name="store_panel_anchor_offset">220dp</dimen>
 </resources>

@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -30,6 +29,7 @@ import android.view.animation.OvershootInterpolator
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.about.AboutActivity
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     private val navigationFab: FloatingActionButton by bindView(R.id.main_fab)
 
     private lateinit var bottomSheetViewPager: ViewPager
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ViewPager>
+    private lateinit var bottomSheetBehavior: AnchorBottomSheetBehavior<ViewPager>
     private val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 
     val currentLocation: Location?
@@ -99,8 +99,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
         bottomSheetViewPager.adapter = viewPagerAdapter
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetViewPager)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior = AnchorBottomSheetBehavior.from(bottomSheetViewPager)
+        bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
 
         presenter?.attachView(this)
         presenter?.addLifecycleOwner(this)
@@ -386,8 +386,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun onBackPressed() {
         if (this::bottomSheetBehavior.isInitialized) {
-            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (bottomSheetBehavior.state == AnchorBottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
                 return
             }
         }

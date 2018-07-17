@@ -5,11 +5,11 @@ apply plugin: 'kotlin-kapt'
 apply from: "${rootDir}/gradle/build-script.gradle"
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion compile_sdk_version
     defaultConfig {
         applicationId "tw.com.louis383.coffeefinder"
-        targetSdkVersion 27
-        minSdkVersion 21
+        targetSdkVersion target_sdk_version
+        minSdkVersion min_sdk_version
         versionCode getVersionCodeTimeStamps()
         versionName app_version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -56,6 +56,8 @@ ext {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":anchor-bottom-sheet-behavior")
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.github.YuanLiou:ChromeCustomTabHelper:1.0'
     implementation "com.android.support:appcompat-v7:${support_version}"
