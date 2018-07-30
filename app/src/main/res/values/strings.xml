@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CoffeeTrip</string>
     <string name="anchor_bottom_sheet_behaviour" translatable="false">com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior</string>
+    <string name="follower_behavior" translatable="false">tw.com.louis383.coffeefinder.view.behavior.FollowerBehavior</string>
 
     <string name="title_activity_maps">Café Nearby</string>
     <string name="request_location">We need your location to find out where are you.</string>

@@ -15,12 +15,16 @@
         tools:background="#757575"
         />
 
-    <View
-        android:id="@+id/main_shadow"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:background="@drawable/shadow_layer"
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/main_my_location_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rectangle_material"
+        android:elevation="5dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_mylocation"
+        android:layout_gravity="end|right"
+        app:layout_behavior="@string/follower_behavior"
         />
 
     <android.support.v4.view.ViewPager
@@ -34,20 +38,6 @@
         app:behavior_anchorOffset="@dimen/store_panel_anchor_offset"
         app:behavior_expandable="false"
         app:behavior_defaultState="collapsed"
-        />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/main_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:elevation="6dp"
-        app:layout_anchor="@id/main_bottom_sheet"
-        app:layout_anchorGravity="top|end"
-        app:fabSize="normal"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        app:useCompatPadding="true"
-        app:srcCompat="@drawable/ic_direction"
         />
 
 </android.support.design.widget.CoordinatorLayout>

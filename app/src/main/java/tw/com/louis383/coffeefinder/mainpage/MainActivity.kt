@@ -1,31 +1,27 @@
 package tw.com.louis383.coffeefinder.mainpage
 
 import android.Manifest
-import android.animation.Animator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.OvershootInterpolator
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -49,7 +45,8 @@ import javax.inject.Inject
  * Created by louis383 on 2017/2/17.
  */
 
-class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback, DetailsItemClickListener {
+class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback,
+        DetailsItemClickListener, View.OnClickListener {
     private val locationPermissionRequest = 0
     private val locationManualEnable = 1
     private val locationSettingResolution = 2
@@ -60,17 +57,13 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // Main Content
     private val rootView: CoordinatorLayout by bindView(R.id.main_rootview)
-    private val shadow: View by bindView(R.id.main_shadow)
+    private val mainContainer: FrameLayout by bindView(R.id.main_container)
+    private val myLocationButton: ImageButton by bindView(R.id.main_my_location_button)
 
     // Bottom Sheet
-    private val navigationFab: FloatingActionButton by bindView(R.id.main_fab)
-
     private lateinit var bottomSheetViewPager: ViewPager
     private lateinit var bottomSheetBehavior: AnchorBottomSheetBehavior<ViewPager>
     private val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
-
-    val currentLocation: Location?
-        get() = presenter?.currentLocation
 
     override val activityContext: Context
         get() = this
@@ -91,7 +84,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         (application as CoffeeTripApplication).appComponent.inject(this)
@@ -105,6 +98,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         presenter?.attachView(this)
         presenter?.addLifecycleOwner(this)
         presenter?.setBottomSheetBehavior(bottomSheetBehavior)
+
+        myLocationButton.setOnClickListener(this)
     }
 
     private fun initMapFragment() {
@@ -115,7 +110,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, mapsFragment)
+                .replace(R.id.main_container, mapsFragment, MapsFragment.TAG)
                 .commit()
     }
 
@@ -249,9 +244,17 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun setStatusBarDarkIndicator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            translucentStatusBar()
         } else {
             window.statusBarColor = ContextCompat.getColor(this, R.color.secondary_bluegray)
+        }
+    }
+
+    private fun translucentStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
     }
 
@@ -336,57 +339,18 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    override fun showFab(show: Boolean) {
-        if (show) {
-            navigationFab.animate().scaleX(1f).scaleY(1f).setDuration(300)
-                    .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationStart(animation: Animator) {
-                            if (!navigationFab.isShown) {
-                                navigationFab.visibility = View.VISIBLE
-                            }
-                        }
-
-                        override fun onAnimationEnd(animation: Animator) {}
-                        override fun onAnimationCancel(animation: Animator) {}
-                        override fun onAnimationRepeat(animation: Animator) {}
-                    })
-                    .setInterpolator(OvershootInterpolator())
-                    .start()
-        } else {
-            navigationFab.animate().scaleX(0f).scaleY(0f).setDuration(200).setInterpolator(DecelerateInterpolator()).start()
-        }
-    }
-
-    override fun setFloatingActionButtonEnable(enable: Boolean) {
-        Log.i("MainActivity", "Action Button Enable: $enable")
-        if (enable) {
-            navigationFab.setOnClickListener {
-                presenter?.prepareNavigation()
-                Log.i("MainActivity", "navigation clicked.")
-            }
-        } else {
-            navigationFab.setOnClickListener(null)
-            navigationFab.visibility = View.GONE
-        }
-
-        with(navigationFab) {
-            isEnabled = enable
-            isClickable = enable
-        }
-    }
-
-    override fun setShadowAlpha(offset: Float) {
-        if (offset > 0.0f) {
-            val alpha = offset * 0.4f
-            shadow.alpha = alpha
-        }
-
-        shadow.visibility = if (offset > 0.0f) View.VISIBLE else View.GONE
+    override fun moveMapView(offset: Float) {
+        mainContainer.translationY = offset
     }
 
     override fun onBackPressed() {
         if (this::bottomSheetBehavior.isInitialized) {
-            if (bottomSheetBehavior.state == AnchorBottomSheetBehavior.STATE_EXPANDED) {
+            if (bottomSheetViewPager.currentItem != 0) {
+                bottomSheetViewPager.currentItem = 0
+                return
+            }
+
+            if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
                 return
             }
@@ -398,7 +362,9 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     //region MapsClickHandler
     override fun onMapClicked() {
         if (this::bottomSheetBehavior.isInitialized) {
-            showFab(false)
+            if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
+            }
         }
     }
 
@@ -424,6 +390,21 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun onShareButtonClicked() {
         presenter?.share(this)
+    }
+    //endregion
+
+    //region View.OnClickListener
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.main_my_location_button -> {
+                presenter?.let {
+                    val myLocation = it.currentLocation
+                    val mapFragment = supportFragmentManager.findFragmentByTag(MapsFragment.TAG)
+                            as MapsFragment
+                    mapFragment.moveToMyLocation(myLocation)
+                }
+            }
+        }
     }
     //endregion
 }

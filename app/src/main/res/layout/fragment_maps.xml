@@ -1,28 +1,9 @@
-<FrameLayout
+<com.google.android.gms.maps.MapView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map_rootview"
+    android:id="@+id/map_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    tools:background="#757575"
+    />
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:background="#757575"
-        />
-
-    <android.support.v7.widget.AppCompatImageButton
-        android:id="@+id/my_location_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_activity_margin_size"
-        android:layout_gravity="right|end"
-        android:background="@drawable/rectangle_material"
-        android:elevation="5dp"
-        android:src="@drawable/ic_mylocation"
-        />
-
-</FrameLayout>

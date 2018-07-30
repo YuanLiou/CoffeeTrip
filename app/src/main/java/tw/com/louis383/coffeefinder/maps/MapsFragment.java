@@ -1,19 +1,5 @@
 package tw.com.louis383.coffeefinder.maps;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatImageButton;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,27 +10,37 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import java.util.List;
+
 import javax.inject.Inject;
+
 import tw.com.louis383.coffeefinder.BaseFragment;
 import tw.com.louis383.coffeefinder.CoffeeTripApplication;
 import tw.com.louis383.coffeefinder.R;
-import tw.com.louis383.coffeefinder.mainpage.MainActivity;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
 
-public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, View.OnClickListener, GoogleMap.OnMapClickListener {
-
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, MapsPresenter.MapView, GoogleMap.OnMapClickListener {
+    public static final String TAG = "MAP_FRAGMENT";
     public static final float ZOOM_RATE = 16f;
 
     private MapsPresenter presenter;
     private GoogleMap googleMap;
-    private Snackbar snackbar;
 
-    private FrameLayout rootView;
-    private AppCompatImageButton myLocationButton;
     private MapView mapView;
-
     private MapsClickHandler handler;
 
     public MapsFragment() {}
@@ -68,10 +64,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        rootView = (FrameLayout) view.findViewById(R.id.map_rootview);
-        myLocationButton = (AppCompatImageButton) view.findViewById(R.id.my_location_button);
-        mapView = (MapView) view.findViewById(R.id.map_view);
-
+        mapView = view.findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
         mapView.getMapAsync(this);
@@ -83,7 +76,12 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
         ((CoffeeTripApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
         presenter.attachView(this);
-        myLocationButton.setOnClickListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler = null;
     }
 
     @Inject
@@ -148,7 +146,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     @Override
     public void moveCamera(LatLng latLng, Float zoom) {
         if (!isMapReady()) {
-            // FIXME:: it's a dirty hack to prevent get google map on an asynchonous way and get null if not ready.
+            // FIXME:: it's a dirty hack to prevent get google map on an asynchronous way and get null if not ready.
             presenter.setTemporaryLatlang(latLng);
             return;
         }
@@ -210,30 +208,19 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Ma
     }
 
     @Override
-    public Location getCurrentLocation() {
-        return ((MainActivity) getActivity()).getCurrentLocation();
-    }
-
-    @Override
     public Drawable getResourceDrawable(int resId) {
         return ContextCompat.getDrawable(getContext(), resId);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.my_location_button:
-                Location currentLocation = getCurrentLocation();
-                if (currentLocation != null) {
-                    LatLng lastLatlng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    moveCamera(lastLatlng, null);
-                }
-                break;
-        }
-    }
-
     private boolean isMapReady() {
         return googleMap != null;
+    }
+
+    public void moveToMyLocation(@Nullable Location currentLocation) {
+        if (currentLocation != null) {
+            LatLng lastLatlng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            moveCamera(lastLatlng, null);
+        }
     }
 
     @Override

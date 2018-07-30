@@ -15,4 +15,7 @@
 
     <!-- trophy -->
     <color name="copper">#B87333</color>
+
+    <!-- alpha -->
+    <color name="white_a75">#BFFFFFFF</color>
 </resources>

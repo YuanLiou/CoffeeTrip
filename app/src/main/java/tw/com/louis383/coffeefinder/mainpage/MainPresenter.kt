@@ -16,13 +16,7 @@ import android.util.Log
 import android.view.View
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BasePresenter
@@ -30,7 +24,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
-import java.util.Locale
+import java.util.*
 
 /**
  * Created by louis383 on 2017/2/17.
@@ -41,6 +35,7 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     private val updateInterval = 10000    // 10 Sec
     private val fastestUpdateInterval = 5000 // 5 Sec
     private val range = 3000    // 3m
+    private var anchorHeight = 200
 
     var currentLocation: Location? = null
         private set
@@ -93,8 +88,6 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         super.attachView(view)
         with(view) {
             setStatusBarDarkIndicator()
-            showFab(false)
-            setFloatingActionButtonEnable(false)
 
             if (!checkLocationPermission()) {
                 requestLocationPermission()
@@ -202,24 +195,16 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     fun setBottomSheetBehavior(bottomSheetBehavior: AnchorBottomSheetBehavior<*>) {
+        anchorHeight = bottomSheetBehavior.anchorOffset
         bottomSheetBehavior.addBottomSheetCallback(object : AnchorBottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    AnchorBottomSheetBehavior.STATE_HIDDEN -> {
-                        view?.showFab(false)
-                        view?.setFloatingActionButtonEnable(false)
-                    }
-                    AnchorBottomSheetBehavior.STATE_COLLAPSED -> {
-                        view?.showFab(true)
-                        view?.setFloatingActionButtonEnable(true)
-                    }
-                    AnchorBottomSheetBehavior.STATE_DRAGGING -> view?.showFab(false)
-                    else -> {}
-                }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                view?.setShadowAlpha(slideOffset)
+                if (slideOffset > 0f) {
+                    // negative values to move view up
+                    view?.moveMapView((anchorHeight * slideOffset) * -1.5f)
+                }
             }
         })
     }

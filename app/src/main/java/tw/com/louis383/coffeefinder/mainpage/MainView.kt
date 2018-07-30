@@ -23,8 +23,6 @@ interface MainView {
     fun showNeedsGoogleMapMessage()
     fun showBottomSheetDetailView(coffeeShop: CoffeeShop)
     fun shareCoffeeShop(shareIntent: Intent)
-    fun showFab(show: Boolean)
-    fun setShadowAlpha(offset: Float)
-    fun setFloatingActionButtonEnable(enable: Boolean)
     fun updateListPage(coffeeShops : List<CoffeeShop>)
+    fun moveMapView(offset: Float)
 }

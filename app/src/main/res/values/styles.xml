@@ -9,6 +9,11 @@
         <item name="android:textColorPrimary">@color/gray</item>
     </style>
 
+    <!-- Translucent UI -->
+    <style name="AppTheme.Translucent" parent="AppTheme">
+        <item name="android:statusBarColor">@color/white_a75</item>
+    </style>
+
     <!-- Splash -->
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/splash</item>

@@ -132,7 +132,6 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     public interface MapView {
         boolean checkLocationPermission();
         Drawable getResourceDrawable(int resId);
-        Location getCurrentLocation();
         Marker addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon);
 
         void moveCamera(LatLng latLng, Float zoom);

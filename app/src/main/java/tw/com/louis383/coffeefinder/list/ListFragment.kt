@@ -17,7 +17,7 @@ import tw.com.louis383.coffeefinder.R.layout
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by louis383 on 2017/2/21.
@@ -68,7 +68,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
         with(recyclerView) {
             visibility = View.INVISIBLE
             addItemDecoration(dividerHelper)
-            setPadding(0, actionBarHeight * 2, 0, 0)
+            setPadding(0, actionBarHeight, 0, 0)
             adapter = coffeeListAdapter
         }
 
