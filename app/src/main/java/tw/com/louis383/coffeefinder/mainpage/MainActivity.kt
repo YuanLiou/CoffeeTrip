@@ -333,6 +333,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                 (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.viewModel)
             } else {
                 val detailsFragment = DetailsFragment.newInstance(coffeeShop)
+                detailsFragment.detailsItemClickListener = this
                 viewPagerAdapter.setDetailFragment(detailsFragment)
             }
             bottomSheetViewPager.setCurrentItem(ViewPagerAdapter.DETAIL_FRAGMENT, true)

@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -196,14 +197,16 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
 
     fun setBottomSheetBehavior(bottomSheetBehavior: AnchorBottomSheetBehavior<*>) {
         anchorHeight = bottomSheetBehavior.anchorOffset
+        //FIXME:: release listener when destroy view
         bottomSheetBehavior.addBottomSheetCallback(object : AnchorBottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset > 0f) {
+                if (slideOffset >= 0f) {
                     // negative values to move view up
-                    view?.moveMapView((anchorHeight * slideOffset) * -1.5f)
+                    val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
+                    view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
                 }
             }
         })
