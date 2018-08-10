@@ -9,7 +9,6 @@ import com.google.android.gms.maps.model.Marker;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,7 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop;
  * Created by louis383 on 2017/1/13.
  */
 
-public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implements GoogleMap.OnMarkerClickListener {
+public class MapsPresenter extends BasePresenter<MapsView> implements GoogleMap.OnMarkerClickListener {
 
     private static final int CAMERA_MOVE_DELAY = 250;
 
@@ -40,7 +39,7 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
     }
 
     @Override
-    public void attachView(MapView view) {
+    public void attachView(MapsView view) {
         super.attachView(view);
     }
 
@@ -129,15 +128,4 @@ public class MapsPresenter extends BasePresenter<MapsPresenter.MapView> implemen
         }
     }
 
-    public interface MapView {
-        boolean checkLocationPermission();
-        Drawable getResourceDrawable(int resId);
-        Marker addMakers(LatLng latLng, String title, String snippet, CoffeeShop coffeeShop, BitmapDescriptor icon);
-
-        void moveCamera(LatLng latLng, Float zoom);
-        void setupDetailedMapInterface();
-        void showNoCoffeeShopDialog();
-        void cleanMap();
-        void openDetailView(CoffeeShop coffeeShop);
-    }
 }
