@@ -6,22 +6,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.detail_info.detail_view_button_navigate
-import kotlinx.android.synthetic.main.detail_info.detail_view_button_share
-import kotlinx.android.synthetic.main.detail_info.detail_view_distance
-import kotlinx.android.synthetic.main.detail_info.detail_view_expense
-import kotlinx.android.synthetic.main.detail_info.detail_view_limited_time
-import kotlinx.android.synthetic.main.detail_info.detail_view_mrt
-import kotlinx.android.synthetic.main.detail_info.detail_view_opentime
-import kotlinx.android.synthetic.main.detail_info.detail_view_scrollview
-import kotlinx.android.synthetic.main.detail_info.detail_view_seat_quality
-import kotlinx.android.synthetic.main.detail_info.detail_view_seat_score
-import kotlinx.android.synthetic.main.detail_info.detail_view_socket
-import kotlinx.android.synthetic.main.detail_info.detail_view_standing_desk
-import kotlinx.android.synthetic.main.detail_info.detail_view_title
-import kotlinx.android.synthetic.main.detail_info.detail_view_website
-import kotlinx.android.synthetic.main.detail_info.detail_view_wifi_quality
-import kotlinx.android.synthetic.main.detail_info.detail_view_wifi_score
+import kotlinx.android.synthetic.main.detail_info.*
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
@@ -39,7 +24,7 @@ class DetailsFragment: Fragment() {
     var detailsItemClickListener: DetailsItemClickListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.detail_info, container, false)
+        return inflater.inflate(R.layout.fragment_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

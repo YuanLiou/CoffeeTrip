@@ -53,4 +53,11 @@
         android:text="@string/no_any_coffee_shop"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_gravity="top"
+        android:background="@drawable/bottom_view_shadow"
+        />
+
 </FrameLayout>

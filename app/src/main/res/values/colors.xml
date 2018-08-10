@@ -2,20 +2,18 @@
 <resources>
     <color name="primary_orange">#EC651E</color>
     <color name="secondary_blue">#4455AA</color>
-    <color name="gray">#5B5B5B</color>
     <color name="secondary_bluegray">#90A4AE</color>
-    <color name="light_gray">#BFBFBF</color>
     <color name="white">#FFFFFF</color>
-    <color name="gray_1e">#1E1E1E</color>
-    <color name="gray_cd">#CDCDCD</color>
-
-    <color name="gray_21">#212121</color>
-    <color name="gray_75">#757575</color>
     <color name="gray_f5">#F5F5F5</color>
-
-    <!-- trophy -->
-    <color name="copper">#B87333</color>
+    <color name="gray_cd">#CDCDCD</color>
+    <color name="light_gray">#BFBFBF</color>
+    <color name="gray_75">#757575</color>
+    <color name="gray">#5B5B5B</color>
+    <color name="gray_21">#212121</color>
+    <color name="gray_1e">#1E1E1E</color>
 
     <!-- alpha -->
     <color name="white_a75">#BFFFFFFF</color>
+    <color name="gray_c0_a15">#26C0C0C0</color>
+    <color name="gray_3c_a25">#403C3C3C</color>
 </resources>
