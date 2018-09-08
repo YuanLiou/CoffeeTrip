@@ -93,6 +93,13 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
         this.callback = callback
     }
 
+    fun scrollToItemPosition(coffeeShop: CoffeeShop) {
+        val position = coffeeListAdapter.findPositionInList(coffeeShop)
+        if (position > -1 && position < coffeeListAdapter.itemCount) {
+            recyclerView.smoothScrollToPosition(position)
+        }
+    }
+
     override fun showNoCoffeeShopMessage() {
         val message = resources.getString(R.string.dialog_no_coffeeshop_message)
         Snackbar.make(recyclerView, message, Snackbar.LENGTH_INDEFINITE).show()

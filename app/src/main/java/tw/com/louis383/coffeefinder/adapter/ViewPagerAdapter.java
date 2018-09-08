@@ -47,7 +47,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         return index < 0 ? POSITION_NONE : index;
     }
 
-    // CAUTION:: Crash on Kotlin by override this method
+    // DO NOT CONVERT THIS JAVA SOURCE TO KOTLIN!!
+    // CAUTION:: Crash on Kotlin because it can't override this method
     @Override
     public void setPrimaryItem(final ViewGroup container, final int position, final Object object) {
         super.setPrimaryItem(container, position, object);

@@ -52,6 +52,13 @@ class CoffeeListAdapter(private val handler: ListTappedHandler) : RecyclerView.A
         }
     }
 
+    fun findPositionInList(coffeeShop: CoffeeShop): Int {
+        if (coffeeShops.isNotEmpty()) {
+            return coffeeShops.indexOf(coffeeShop)
+        }
+        return -1
+    }
+
     override fun getItemCount(): Int = coffeeShops.size
 
     fun setItems(coffeeShops: List<CoffeeShop>) {

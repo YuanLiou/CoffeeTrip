@@ -336,7 +336,20 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                 detailsFragment.detailsItemClickListener = this
                 viewPagerAdapter.setDetailFragment(detailsFragment)
             }
+
+            if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_ANCHORED) {
+                bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_ANCHORED
+            }
+
+            listScrollToItemPosition(coffeeShop)
             bottomSheetViewPager.setCurrentItem(ViewPagerAdapter.DETAIL_FRAGMENT, true)
+        }
+    }
+
+    private fun listScrollToItemPosition(coffeeShop: CoffeeShop) {
+        if (viewPagerAdapter.isListPageInitiated) {
+            val listFragment = viewPagerAdapter.getItem(ViewPagerAdapter.LIST_FRAGMENT)
+            (listFragment as ListFragment).scrollToItemPosition(coffeeShop)
         }
     }
 
@@ -391,6 +404,10 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun onShareButtonClicked() {
         presenter?.share(this)
+    }
+
+    override fun onBackButtonClicked() {
+        onBackPressed()
     }
     //endregion
 

@@ -18,10 +18,23 @@
         android:layout_height="wrap_content"
         >
 
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/detail_view_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:clickable="true"
+            android:background="?selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+            app:tint="@color/gray"
+            app:tintMode="src_in"
+            />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="43dp"
+            android:paddingTop="8dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             >
@@ -32,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/ic_bookmark"
-                tools:visibility="visible"
+                tools:visibility="invisible"
                 />
 
             <View
@@ -56,7 +69,7 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:textColor="@color/gray"
-                tools:text="title"
+                tools:text="@tools:sample/lorem"
                 />
 
             <android.support.v7.widget.AppCompatRatingBar
@@ -225,12 +238,14 @@
                 android:clipToPadding="false"
                 android:layout_below="@id/detail_view_seat_quality"
                 android:paddingBottom="20dp"
+                android:weightSum="2"
                 >
 
                 <Button
                     android:id="@+id/detail_view_button_navigate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:drawableStart="@drawable/ic_directions_grey"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
@@ -238,18 +253,19 @@
                     android:theme="@style/WhiteColorButton"
                     />
 
-                <Button
-                    android:id="@+id/detail_view_button_favorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_bookmark_grey"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/add_to_bookmark"
-                    android:theme="@style/WhiteColorButton"
-                    android:visibility="gone"
-                    tools:visibility="visible"
-                    />
+                <!--<Button-->
+                    <!--android:id="@+id/detail_view_button_favorite"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:drawableStart="@drawable/ic_bookmark_grey"-->
+                    <!--android:paddingStart="16dp"-->
+                    <!--android:paddingEnd="16dp"-->
+                    <!--android:text="@string/add_to_bookmark"-->
+                    <!--android:theme="@style/WhiteColorButton"-->
+                    <!--android:visibility="gone"-->
+                    <!--tools:visibility="invisible"-->
+                    <!--/>-->
 
             </LinearLayout>
         </RelativeLayout>

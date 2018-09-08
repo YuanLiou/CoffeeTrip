@@ -42,6 +42,10 @@ class DetailsFragment: Fragment() {
             detailsItemClickListener?.onShareButtonClicked()
         }
 
+        detail_view_back_button.setOnClickListener {
+            detailsItemClickListener?.onBackButtonClicked()
+        }
+
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
     }
