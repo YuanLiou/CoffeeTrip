@@ -82,6 +82,9 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.9'
     kapt 'com.google.dagger:dagger-compiler:2.9'
 
+    // ViewPager Indicator
+    implementation 'com.romandanylyk:pageindicatorview:1.0.1@aar'
+
     // for unit test
     testImplementation 'junit:junit:4.12'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {

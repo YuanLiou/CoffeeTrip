@@ -40,4 +40,21 @@
         app:behavior_defaultState="collapsed"
         />
 
+    <com.rd.PageIndicatorView
+        android:id="@+id/main_view_pager_indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:elevation="8dp"
+        app:piv_viewPager="@id/main_bottom_sheet"
+        app:piv_dynamicCount="true"
+        app:piv_interactiveAnimation="true"
+        app:piv_animationType="color"
+        app:piv_padding="12dp"
+        app:piv_radius="4dp"
+        app:piv_selectedColor="@color/primary_orange"
+        app:piv_unselectedColor="@color/light_gray"
+        />
+
 </android.support.design.widget.CoordinatorLayout>
