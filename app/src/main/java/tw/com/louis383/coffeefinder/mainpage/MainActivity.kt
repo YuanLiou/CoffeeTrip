@@ -65,6 +65,14 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     private lateinit var bottomSheetBehavior: AnchorBottomSheetBehavior<ViewPager>
     private val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
 
+    // View States
+    sealed class ViewState {
+        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop): ViewState()
+        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop): ViewState()
+        object Browsing: ViewState()
+    }
+    private var detailViewState: ViewState = ViewState.Browsing
+
     override val activityContext: Context
         get() = this
 
@@ -361,15 +369,24 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         if (this::bottomSheetBehavior.isInitialized) {
             if (bottomSheetViewPager.currentItem != 0) {
                 bottomSheetViewPager.currentItem = 0
-                return
-            }
 
-            if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
+                when (detailViewState) {
+                    is ViewState.EnterDetailInfoFromList -> {
+                        if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_ANCHORED) {
+                            bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_ANCHORED
+                        }
+                    }
+                    is ViewState.EnterDetailInfoFromMap -> {
+                        if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_COLLAPSED) {
+                            bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
+                        }
+                    }
+                    else -> {}
+                }
+                detailViewState = ViewState.Browsing
                 return
             }
         }
-
         super.onBackPressed()
     }
 
@@ -385,6 +402,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onMarkerClicked(coffeeShop: CoffeeShop) {
         presenter?.setLastTappedCoffeeShop(coffeeShop)
         presenter?.showDetailView()
+        detailViewState = ViewState.EnterDetailInfoFromMap(coffeeShop)
     }
     //endregion
 
@@ -392,7 +410,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onItemTapped(coffeeShop: CoffeeShop) {
         presenter?.setLastTappedCoffeeShop(coffeeShop)
         presenter?.showDetailView()
-
+        detailViewState = ViewState.EnterDetailInfoFromList(coffeeShop)
         mapFragment?.setMarkerActive(coffeeShop)
     }
     //endregion

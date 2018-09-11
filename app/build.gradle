@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.akaita.android.easylauncher'
 apply from: "${rootDir}/gradle/build-script.gradle"
 
 android {
@@ -48,6 +49,21 @@ android {
             manifestPlaceholders = [ googleMapKeys: googleMapKey_release ]
         }
     }
+}
+
+easylauncher {
+    iconNames "@mipmap/ic_launcher"
+    foregroundIconNames "@mipmap/ic_launcher_foreground"
+
+    buildTypes {
+        debug {
+            filters = [ orangeRibbonFilter("EXP") ]
+        }
+    }
+}
+
+androidExtensions {
+    experimental = true
 }
 
 ext {
