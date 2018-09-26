@@ -1,10 +1,6 @@
 package tw.com.louis383.coffeefinder.mainpage
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.Lifecycle.Event
-import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
 import android.content.Intent
 import android.location.Location
@@ -15,6 +11,10 @@ import android.os.Looper
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -104,14 +104,14 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         owner.lifecycle.addObserver(this)
     }
 
-    @OnLifecycleEvent(Event.ON_RESUME)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun startBackgroundThread() {
         backgroundThread = HandlerThread("BackgroundThread").apply { start() }
         uiHandler = Handler(Looper.getMainLooper())
         requestUserLocation(false)
     }
 
-    @OnLifecycleEvent(Event.ON_PAUSE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun pauseLocationUpdate() {
         coffeeShopListManager.stop()
         backgroundThread?.quitSafely()

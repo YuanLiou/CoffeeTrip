@@ -62,7 +62,7 @@
         tools:text="200公尺"
         />
 
-    <android.support.v7.widget.AppCompatRatingBar
+    <androidx.appcompat.widget.AppCompatRatingBar
         android:id="@+id/list_chart_money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

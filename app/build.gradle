@@ -13,7 +13,7 @@ android {
         minSdkVersion min_sdk_version
         versionCode getVersionCodeTimeStamps()
         versionName app_version
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField 'String', 'HOST', APIHost
     }
 
@@ -75,9 +75,8 @@ dependencies {
     implementation project(":anchor-bottom-sheet-behavior")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.github.YuanLiou:ChromeCustomTabHelper:1.0'
-    implementation "com.android.support:appcompat-v7:${support_version}"
-    implementation "com.android.support:design:${support_version}"
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
 
     implementation "com.google.android.gms:play-services-location:${gms_version}"
     implementation "com.google.android.gms:play-services-maps:${gms_version}"
@@ -103,7 +102,7 @@ dependencies {
 
     // for unit test
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }

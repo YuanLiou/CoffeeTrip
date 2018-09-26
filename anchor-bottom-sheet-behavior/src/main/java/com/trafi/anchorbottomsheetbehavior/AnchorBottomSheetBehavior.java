@@ -15,26 +15,10 @@
  */
 package com.trafi.anchorbottomsheetbehavior;
 
-import static android.support.annotation.RestrictTo.Scope.GROUP_ID;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.RestrictTo;
-import android.support.annotation.VisibleForTesting;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
-import android.support.v4.view.AbsSavedState;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPagerUtils;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -43,11 +27,29 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.os.ParcelableCompat;
+import androidx.core.os.ParcelableCompatCreatorCallbacks;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.ViewCompat;
+import androidx.customview.view.AbsSavedState;
+import androidx.customview.widget.ViewDragHelper;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPagerUtils;
+
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
 /**
  * An interaction behavior plugin for a child view of {@link CoordinatorLayout} to make it work as
@@ -130,7 +132,7 @@ public class AnchorBottomSheetBehavior<V extends View> extends CoordinatorLayout
     /**
      * @hide
      */
-    @RestrictTo(GROUP_ID)
+    @RestrictTo(LIBRARY_GROUP)
     @IntDef({STATE_EXPANDED, STATE_COLLAPSED, STATE_DRAGGING, STATE_SETTLING, STATE_HIDDEN, STATE_ANCHORED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
@@ -219,16 +221,16 @@ public class AnchorBottomSheetBehavior<V extends View> extends CoordinatorLayout
     public AnchorBottomSheetBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs,
-                android.support.design.R.styleable.BottomSheetBehavior_Layout);
-        TypedValue value = a.peekValue(android.support.design.R.styleable.BottomSheetBehavior_Layout_behavior_peekHeight);
+                R.styleable.BottomSheetBehavior_Layout);
+        TypedValue value = a.peekValue(R.styleable.BottomSheetBehavior_Layout_behavior_peekHeight);
         if (value != null && value.data == PEEK_HEIGHT_AUTO) {
             setPeekHeight(value.data);
         } else {
             setPeekHeight(a.getDimensionPixelSize(
-                    android.support.design.R.styleable.BottomSheetBehavior_Layout_behavior_peekHeight, PEEK_HEIGHT_AUTO));
+                    R.styleable.BottomSheetBehavior_Layout_behavior_peekHeight, PEEK_HEIGHT_AUTO));
         }
-        setHideable(a.getBoolean(android.support.design.R.styleable.BottomSheetBehavior_Layout_behavior_hideable, false));
-        setSkipCollapsed(a.getBoolean(android.support.design.R.styleable.BottomSheetBehavior_Layout_behavior_skipCollapsed,
+        setHideable(a.getBoolean(R.styleable.BottomSheetBehavior_Layout_behavior_hideable, false));
+        setSkipCollapsed(a.getBoolean(R.styleable.BottomSheetBehavior_Layout_behavior_skipCollapsed,
                 false));
         a.recycle();
 
@@ -283,7 +285,7 @@ public class AnchorBottomSheetBehavior<V extends View> extends CoordinatorLayout
         if (mPeekHeightAuto) {
             if (mPeekHeightMin == 0) {
                 mPeekHeightMin = parent.getResources().getDimensionPixelSize(
-                        android.support.design.R.dimen.design_bottom_sheet_peek_height_min);
+                        R.dimen.design_bottom_sheet_peek_height_min);
             }
             peekHeight = Math.max(mPeekHeightMin, mParentHeight - parent.getWidth() * 9 / 16);
         } else {

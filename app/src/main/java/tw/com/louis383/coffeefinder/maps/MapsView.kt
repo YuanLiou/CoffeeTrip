@@ -1,7 +1,7 @@
 package tw.com.louis383.coffeefinder.maps
 
 import android.graphics.drawable.Drawable
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker

@@ -1,8 +1,8 @@
 package tw.com.louis383.coffeefinder.utils
 
 import android.app.Activity
-import android.support.annotation.IdRes
 import android.view.View
+import androidx.annotation.IdRes
 
 fun <T: View> Activity.bindView(@IdRes resId: Int): Lazy<T> = lazy {
     findViewById<T>(resId)

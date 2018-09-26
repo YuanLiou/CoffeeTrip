@@ -1,8 +1,8 @@
 package tw.com.louis383.coffeefinder;
 
 import android.app.Application;
-import android.support.v7.app.AppCompatDelegate;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import tw.com.louis383.coffeefinder.di.AppComponent;
 import tw.com.louis383.coffeefinder.di.AppModule;
 import tw.com.louis383.coffeefinder.di.DaggerAppComponent;

@@ -1,6 +1,7 @@
 package tw.com.louis383.coffeefinder;
 
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Created by louis383 on 2017/1/13.

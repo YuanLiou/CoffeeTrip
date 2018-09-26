@@ -1,11 +1,11 @@
 package tw.com.louis383.coffeefinder.view.behavior
 
 import android.content.Context
-import android.support.design.widget.CoordinatorLayout
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.viewpager.widget.ViewPager
 import tw.com.louis383.coffeefinder.R
 
 class FollowerBehavior : CoordinatorLayout.Behavior<View> {

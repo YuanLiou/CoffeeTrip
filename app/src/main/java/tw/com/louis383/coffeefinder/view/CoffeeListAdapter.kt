@@ -1,14 +1,14 @@
 package tw.com.louis383.coffeefinder.view
 
 import android.graphics.PorterDuff
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.list.ListTappedHandler
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop

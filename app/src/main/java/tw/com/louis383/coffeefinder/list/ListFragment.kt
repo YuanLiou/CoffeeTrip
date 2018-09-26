@@ -1,16 +1,16 @@
 package tw.com.louis383.coffeefinder.list
 
-import android.arch.lifecycle.Lifecycle.State
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.design.widget.Snackbar
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
@@ -83,7 +83,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
     }
 
     fun setNestScrollingEnable(enable: Boolean) {
-        if (lifecycle.currentState.isAtLeast(State.CREATED)) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
             recyclerView.isNestedScrollingEnabled = enable
         }
     }
@@ -95,7 +95,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
 
     fun scrollToItemPosition(coffeeShop: CoffeeShop) {
         val position = coffeeListAdapter.findPositionInList(coffeeShop)
-        if (position > -1 && position < coffeeListAdapter.itemCount) {
+        if (position > -1 && position < coffeeListAdapter.getItemCount()) {
             recyclerView.smoothScrollToPosition(position)
         }
     }
