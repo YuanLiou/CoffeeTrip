@@ -82,7 +82,7 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     init {
-        this.coffeeShopListManager.setCallback(this)
+        this.coffeeShopListManager.callback = this
     }
 
     override fun attachView(view: MainView) {
@@ -148,7 +148,9 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     fun fetchCoffeeShops() {
-        coffeeShopListManager.fetch(currentLocation, range)
+        currentLocation?.run {
+            coffeeShopListManager.fetch(this, range)
+        }
     }
 
     fun prepareNavigation() {
