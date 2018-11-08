@@ -1,27 +1,41 @@
 package tw.com.louis383.coffeefinder.details
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.detail_info.*
 import tw.com.louis383.coffeefinder.R
+import tw.com.louis383.coffeefinder.mainpage.MainActivity
+import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
+import javax.inject.Inject
 
 class DetailsFragment: Fragment() {
     companion object {
-        private const val coffeeShopKey = "coffee-shop-key"
         fun newInstance(coffeeShop: CoffeeShop) = DetailsFragment().apply {
-            arguments = Bundle().also {
-                it.putParcelable(coffeeShopKey, coffeeShop)
-            }
+            this.coffeeShop = coffeeShop
         }
     }
 
+    private var coffeeShop by FragmentArgumentDelegate<CoffeeShop>()
     var detailsItemClickListener: DetailsItemClickListener? = null
+
+    @Inject
+    internal lateinit var currentLocationCarrier: CurrentLocationCarrier
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        context?.takeIf { it is MainActivity }?.let {
+            (it as MainActivity).getAppComponent().inject(this)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_detail, container, false)
@@ -29,10 +43,8 @@ class DetailsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.let {
-            val coffeeShop = it.getParcelable(coffeeShopKey) as CoffeeShop
-            setDetailInfo(coffeeShop.viewModel)
-        }
+
+        setDetailInfo(coffeeShop.viewModel)
 
         detail_view_button_navigate.setOnClickListener {
             detailsItemClickListener?.onNavigationButtonClicked()
@@ -53,7 +65,6 @@ class DetailsFragment: Fragment() {
     fun setDetailInfo(viewModel: CoffeeShopViewModel) {
         with(viewModel) {
             detail_view_title.text = shopName
-            detail_view_distance.text = distances
             detail_view_expense.rating = cheapPoints
 
             detail_view_wifi_quality.progress = wifiPoints.toInt() * 20
@@ -68,6 +79,13 @@ class DetailsFragment: Fragment() {
             detail_view_limited_time.text = getLimitTimeString(context)
             detail_view_socket.text = getSocketString(context)
             detail_view_standing_desk.text = getStandingDeskString(context)
+
+            currentLocationCarrier.currentLocation?.run {
+                val currentLatLng = LatLng(latitude, longitude)
+                detail_view_distance.text = getDistancesFromLocation(currentLatLng)
+            } ?: run {
+                detail_view_distance.text = ""
+            }
         }
     }
 

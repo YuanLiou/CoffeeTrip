@@ -23,6 +23,7 @@ import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import java.util.*
@@ -31,7 +32,9 @@ import java.util.*
  * Created by louis383 on 2017/2/17.
  */
 
-class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, private val fusedLocationProviderClient: FusedLocationProviderClient) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
+class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager,
+                    private val fusedLocationProviderClient: FusedLocationProviderClient,
+                    private val currentLocationCarrier: CurrentLocationCarrier) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
     private val googleMapPackage = "com.google.android.apps.maps"
     private val updateInterval = 10000    // 10 Sec
     private val fastestUpdateInterval = 5000 // 5 Sec
@@ -39,7 +42,10 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     private var anchorHeight = 200
 
     var currentLocation: Location? = null
-        private set
+        private set(value) {
+            currentLocationCarrier.currentLocation = value
+            field = value
+        }
 
     private val locationRequest by lazy {
         LocationRequest().apply {
@@ -97,6 +103,8 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
             if (!isInternetAvailable) {
                 requestInternetConnection()
             }
+
+            anchorHeight = getViewPagerBottomSheetBehavior().anchorOffset
         }
     }
 
@@ -105,20 +113,37 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun startBackgroundThread() {
+    private fun startPresenterWorks() {
         backgroundThread = HandlerThread("BackgroundThread").apply { start() }
         uiHandler = Handler(Looper.getMainLooper())
         requestUserLocation(false)
+
+        view?.getViewPagerBottomSheetBehavior()?.addBottomSheetCallback(bottomSheetCallback)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun pauseLocationUpdate() {
+    private fun pausePresenterWorks() {
         coffeeShopListManager.stop()
         backgroundThread?.quitSafely()
         backgroundThread?.join()
         backgroundThread = null
         uiHandler = null
         stopLocationUpdate()
+
+        view?.getViewPagerBottomSheetBehavior()?.removeBottomSheetCallback(bottomSheetCallback)
+    }
+
+    private val bottomSheetCallback = object : AnchorBottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            if (slideOffset >= 0f) {
+                // negative values to move view up
+                val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
+                view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
+            }
+        }
     }
 
     fun requestUserLocation(force: Boolean) {
@@ -195,23 +220,6 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         lastTappedCoffeeShop?.let {
             view?.showBottomSheetDetailView(it)
         }
-    }
-
-    fun setBottomSheetBehavior(bottomSheetBehavior: AnchorBottomSheetBehavior<*>) {
-        anchorHeight = bottomSheetBehavior.anchorOffset
-        //FIXME:: release listener when destroy view
-        bottomSheetBehavior.addBottomSheetCallback(object : AnchorBottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset >= 0f) {
-                    // negative values to move view up
-                    val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
-                    view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
-                }
-            }
-        })
     }
 
     private fun tryToGetAccurateLocation() {

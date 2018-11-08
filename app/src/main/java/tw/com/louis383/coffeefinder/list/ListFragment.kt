@@ -1,7 +1,8 @@
 package tw.com.louis383.coffeefinder.list
 
+import android.content.Context
+import android.location.Location
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,24 +15,24 @@ import com.google.android.material.snackbar.Snackbar
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
+import tw.com.louis383.coffeefinder.mainpage.MainActivity
+import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/21.
  */
 
-class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
+class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     companion object {
-        private const val COFFEE_SHOP_LIST_KEY = "coffee-list-key"
-
         fun newInstance(coffeeShops: List<CoffeeShop>): ListFragment {
             return ListFragment().apply {
-                arguments = Bundle().also {
-                    it.putParcelableArrayList(COFFEE_SHOP_LIST_KEY, coffeeShops as ArrayList<out Parcelable>)
-                }
+                this.coffeeShops = coffeeShops as ArrayList<CoffeeShop>
             }
         }
     }
@@ -39,6 +40,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
     private var presenter: ListPresenter? = null
     private val coffeeListAdapter: CoffeeListAdapter = CoffeeListAdapter(this)
     private var callback: Callback? = null
+    private var coffeeShops by FragmentArgumentDelegate<ArrayList<CoffeeShop>>()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -52,6 +54,18 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
             styledAttribute?.recycle()
             return actionBarSize
         }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        context?.takeIf { it is MainActivity }?.let {
+            (it as MainActivity).getAppComponent().inject(this)
+        }
+    }
+
+    @Inject
+    fun initPresenter(currentLocationCarrier: CurrentLocationCarrier) {
+        presenter = ListPresenter(currentLocationCarrier).also { it.attachView(this) }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_list, container, false)
@@ -72,11 +86,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
             adapter = coffeeListAdapter
         }
 
-        presenter = ListPresenter().also { it.attachView(this) }
-        arguments?.run {
-            val coffeeShops = getParcelableArrayList<CoffeeShop>(COFFEE_SHOP_LIST_KEY)
-            presenter?.prepareToShowCoffeeShops(coffeeShops)
-        }
+        presenter?.prepareToShowCoffeeShops(coffeeShops)
 
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
@@ -128,10 +138,15 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListTappedHandler {
     }
     //endregion
 
-    //region ListTappedHandler
+    //region ListAdapterHandler
     override fun onItemTapped(coffeeShop: CoffeeShop, index: Int) {
         callback?.onItemTapped(coffeeShop)
     }
+
+    override fun requestCurrentLocation(): Location? {
+        return presenter?.getCurrentLocation()
+    }
+
     //endregion
 
     interface Callback {

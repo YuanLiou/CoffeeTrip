@@ -1,23 +1,24 @@
 package tw.com.louis383.coffeefinder.view
 
 import android.graphics.PorterDuff
-import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.list.ListTappedHandler
+import tw.com.louis383.coffeefinder.list.ListAdapterHandler
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 
 /**
  * Created by louis383 on 2017/2/26.
  */
 
-class CoffeeListAdapter(private val handler: ListTappedHandler) : RecyclerView.Adapter<CoffeeListAdapter.ViewHolder>() {
+class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.Adapter<CoffeeListAdapter.ViewHolder>() {
 
     private val coffeeShops = mutableListOf<CoffeeShop>()
 
@@ -32,7 +33,11 @@ class CoffeeListAdapter(private val handler: ListTappedHandler) : RecyclerView.A
         val coffeeShopViewModel = coffeeShop.viewModel
 
         val context = holder.rootView.context
-        val distanceString = context.resources.getString(R.string.unit_m, coffeeShopViewModel.distances.toString())
+
+        val distanceString = handler.requestCurrentLocation()?.run {
+            val distance = coffeeShopViewModel.getDistancesFromLocation(LatLng(latitude, longitude))
+            context.resources.getString(R.string.unit_m, distance)
+        } ?: ""
 
         with(holder) {
             title.text = coffeeShopViewModel.shopName
