@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 import kotlinx.android.synthetic.main.detail_info.*
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.mainpage.MainActivity

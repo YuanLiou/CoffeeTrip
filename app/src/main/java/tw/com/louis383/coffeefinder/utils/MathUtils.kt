@@ -1,6 +1,6 @@
 package tw.com.louis383.coffeefinder.utils
 
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 
 object MathUtils {
     private const val EARTH_RADIUS = 6378137

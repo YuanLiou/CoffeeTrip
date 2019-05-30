@@ -1,6 +1,6 @@
 package tw.com.louis383.coffeefinder.viewmodel;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 
 import android.content.Context;
 import android.net.Uri;

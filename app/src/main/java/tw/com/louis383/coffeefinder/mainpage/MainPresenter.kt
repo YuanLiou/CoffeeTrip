@@ -18,7 +18,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R

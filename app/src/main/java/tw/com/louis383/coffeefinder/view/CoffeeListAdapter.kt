@@ -9,7 +9,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop

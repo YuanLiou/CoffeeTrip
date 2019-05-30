@@ -1,6 +1,6 @@
 package tw.com.louis383.coffeefinder.model.domain;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.maps.model.LatLng;
 
 import android.os.Parcel;
 import android.os.Parcelable;
