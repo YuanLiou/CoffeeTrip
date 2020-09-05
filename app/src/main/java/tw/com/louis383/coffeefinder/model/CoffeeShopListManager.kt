@@ -1,9 +1,8 @@
 package tw.com.louis383.coffeefinder.model
 
 import android.location.Location
-import android.util.Log
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.model.comparator.DistanceComparator
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import java.util.*
@@ -14,40 +13,27 @@ import java.util.*
 
 class CoffeeShopListManager(private val coffeeTripAPI: CoffeeTripAPI) {
 
-    private val coffeeShops = mutableListOf<CoffeeShop>()
-    private var connection: Disposable? = null
-
-    var callback: CoffeeShopListManager.Callback? = null
+    var coffeeShops: List<CoffeeShop> = emptyList()
+        private set
 
     val coffeeShopsCount: Int
         get() = coffeeShops.size
 
-    fun fetch(location: Location, range: Int) {
-        connection = coffeeTripAPI.getCoffeeShops(location.latitude, location.longitude, range)
-                .subscribeBy (
-                    onNext = {
-                        if (it.isSuccessful) {
-                            it.body()?.run {
-                                Collections.sort(this, DistanceComparator())
-                                callback?.onCoffeeShopFetchedComplete(this)
-                            }
-                        }
-                    },
-                    onError = {
-                        Log.e("CoffeeShopListManager", Log.getStackTraceString(it))
-                        callback?.onCoffeeShopFetchedFailed(it.localizedMessage)
-                    }
-                )
+    suspend fun getNearByCoffeeShopsAsync(location: Location, range: Int) = withContext(Dispatchers.IO) {
+        val listResult = coffeeTripAPI.getCoffeeShops(location.latitude, location.longitude, range)
+        if (listResult.isSuccessful) {
+            val shops = listResult.body()?.apply {
+                sortWithDistance(this)
+            } ?: emptyList()
+            this@CoffeeShopListManager.coffeeShops = shops
+            shops
+        } else {
+            null
+        }
     }
 
-    fun getCoffeeShops(): List<CoffeeShop> = coffeeShops
-
-    fun stop() {
-        connection?.takeUnless { it.isDisposed }?.dispose()
-    }
-
-    interface Callback {
-        fun onCoffeeShopFetchedComplete(coffeeShops: List<CoffeeShop>)
-        fun onCoffeeShopFetchedFailed(message: String)
+    private suspend fun sortWithDistance(coffeeShops: List<CoffeeShop>) = withContext(Dispatchers.Default) {
+        Collections.sort(coffeeShops, DistanceComparator())
+        coffeeShops
     }
 }

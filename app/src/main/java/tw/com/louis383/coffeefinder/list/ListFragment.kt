@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import tw.com.louis383.coffeefinder.BaseFragment
@@ -64,7 +65,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
 
     @Inject
     fun initPresenter(currentLocationCarrier: CurrentLocationCarrier) {
-        presenter = ListPresenter(currentLocationCarrier).also { it.attachView(this) }
+        presenter = ListPresenter(currentLocationCarrier)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -86,10 +87,15 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             adapter = coffeeListAdapter
         }
 
+        presenter?.attachView(this)
         presenter?.prepareToShowCoffeeShops(coffeeShops)
 
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
+    }
+
+    override fun provideLifecycleOwner(): LifecycleOwner {
+        return viewLifecycleOwner
     }
 
     fun setNestScrollingEnable(enable: Boolean) {

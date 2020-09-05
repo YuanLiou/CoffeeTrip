@@ -12,14 +12,14 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.libraries.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
@@ -38,7 +38,7 @@ class MainPresenter(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val currentLocationCarrier: CurrentLocationCarrier,
     private val connectivityChecker: ConnectivityChecker
-) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
+) : BasePresenter<MainView>() {
     private val googleMapPackage = "com.google.android.apps.maps"
     private val updateInterval = 10000    // 10 Sec
     private val fastestUpdateInterval = 5000 // 5 Sec
@@ -91,10 +91,6 @@ class MainPresenter(
         }
     }
 
-    init {
-        this.coffeeShopListManager.callback = this
-    }
-
     override fun attachView(view: MainView) {
         super.attachView(view)
         with(view) {
@@ -112,22 +108,16 @@ class MainPresenter(
         }
     }
 
-    fun addLifecycleOwner(owner: LifecycleOwner) {
-        owner.lifecycle.addObserver(this)
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     private fun startPresenterWorks() {
         backgroundThread = HandlerThread("BackgroundThread").apply { start() }
         uiHandler = Handler(Looper.getMainLooper())
         requestUserLocation(false)
-
         view?.getViewPagerBottomSheetBehavior()?.addBottomSheetCallback(bottomSheetCallback)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     private fun pausePresenterWorks() {
-        coffeeShopListManager.stop()
         backgroundThread?.quitSafely()
         backgroundThread?.join()
         backgroundThread = null
@@ -177,8 +167,18 @@ class MainPresenter(
     }
 
     fun fetchCoffeeShops() {
-        currentLocation?.run {
-            coffeeShopListManager.fetch(this, range)
+        val location = currentLocation ?: return
+        val errorHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            view?.makeSnackBar(R.string.network_error_fetching_api)
+            Log.d("MainPresenter", Log.getStackTraceString(throwable))
+        }
+
+        uiScope.launch(errorHandler) {
+            val coffeeShops = coffeeShopListManager.getNearByCoffeeShopsAsync(location, range)
+            if (coffeeShops != null) {
+                view?.updateListPage(coffeeShops)
+                view?.onCoffeeShopFetched(coffeeShops)
+            }
         }
     }
 
@@ -272,15 +272,4 @@ class MainPresenter(
         isRequestingLocation = false
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
-
-    //region CoffeeShopListManager Callback
-    override fun onCoffeeShopFetchedComplete(coffeeShops: List<CoffeeShop>) {
-        view?.updateListPage(coffeeShops)
-        view?.onCoffeeShopFetched(coffeeShops)
-    }
-
-    override fun onCoffeeShopFetchedFailed(message: String) {
-        view?.makeSnackBar(message, false)
-    }
-    //endregion
 }

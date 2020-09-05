@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import com.google.android.libraries.maps.CameraUpdateFactory
 import com.google.android.libraries.maps.GoogleMap
 import com.google.android.libraries.maps.MapView
@@ -62,13 +63,16 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         (activity?.application as CoffeeTripApplication).appComponent.inject(this)
-
         presenter?.attachView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler = null
+    }
+
+    override fun provideLifecycleOwner(): LifecycleOwner {
+        return viewLifecycleOwner
     }
 
     @Inject
