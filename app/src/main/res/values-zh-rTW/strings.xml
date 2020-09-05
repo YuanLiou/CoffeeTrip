@@ -46,10 +46,5 @@
     <string name="menu_about">關於</string>
     <string name="no_any_coffee_shop">附近沒發現任何疑似咖啡店</string>
     <string name="about_message">喝一杯還想睡，那你有喝第二杯嗎？</string>
-    <string name="about_work">工人</string>
-    <string name="about_designer">午餐部（懂美工佳）</string>
-    <string name="about_backend">已畢業的山人</string>
-    <string name="about_android">Android String 校對人員</string>
-    <string name="about_licence">版權授權</string>
-    <string name="about_data_comes_from">咖啡館資料由 CafeNomad 提供</string>
+    <string name="network_error_fetching_api">取得資訊時發生錯誤！</string>
 </resources>

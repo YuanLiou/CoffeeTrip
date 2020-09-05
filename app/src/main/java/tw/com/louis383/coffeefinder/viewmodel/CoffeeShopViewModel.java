@@ -1,5 +1,7 @@
 package tw.com.louis383.coffeefinder.viewmodel;
 
+import com.google.android.libraries.maps.model.LatLng;
+
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -53,8 +55,8 @@ public class CoffeeShopViewModel {
         return Uri.parse(CAFE_NOMAD_PATH + coffeeShop.getId());
     }
 
-    public String getDistances() {
-        int distance = (int) coffeeShop.getDistance();
+    public String getDistancesFromLocation(LatLng latLng) {
+        int distance = coffeeShop.calculateDistanceFromLocation(latLng);
         return String.valueOf(distance);
     }
 

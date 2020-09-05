@@ -5,14 +5,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
@@ -20,22 +18,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.about.AboutActivity
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
 import tw.com.louis383.coffeefinder.details.DetailsFragment
 import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
+import tw.com.louis383.coffeefinder.di.AppComponent
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker
+import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
@@ -76,15 +78,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override val activityContext: Context
         get() = this
 
-    override val isInternetAvailable: Boolean
-        get() {
-            val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = manager.activeNetworkInfo
-            return networkInfo?.run {
-                isConnected && isAvailable
-            } ?: false
-        }
-
     private val mapFragment: MapsFragment?
         get() {
             val mapFragment = supportFragmentManager.findFragmentById(R.id.main_container)
@@ -95,19 +88,20 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        (application as CoffeeTripApplication).appComponent.inject(this)
+        getAppComponent().inject(this)
 
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
         bottomSheetViewPager.adapter = viewPagerAdapter
-        bottomSheetBehavior = AnchorBottomSheetBehavior.from(bottomSheetViewPager)
+        bottomSheetBehavior = getViewPagerBottomSheetBehavior()
         bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
 
         presenter?.attachView(this)
-        presenter?.addLifecycleOwner(this)
-        presenter?.setBottomSheetBehavior(bottomSheetBehavior)
-
         myLocationButton.setOnClickListener(this)
+    }
+
+    fun getAppComponent(): AppComponent {
+        return (application as CoffeeTripApplication).appComponent
     }
 
     private fun initMapFragment() {
@@ -123,10 +117,9 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     @Inject
-    fun initPresenter(coffeeShopListManager: CoffeeShopListManager) {
-        val fusedLocationProviderClient = LocationServices
-                .getFusedLocationProviderClient(this)
-        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient)
+    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, currentLocationCarrier: CurrentLocationCarrier, connectivityChecker: ConnectivityChecker) {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient, currentLocationCarrier, connectivityChecker)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -168,7 +161,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             internetRequest -> {
-                if (isInternetAvailable) {
+                val isNetworkAvailable = presenter?.isNetworkAvailable() ?: false
+                if (isNetworkAvailable) {
                     if (checkLocationPermission()) {
                         forceRequestCoffeeShop()
                     } else {
@@ -202,23 +196,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val menuInflater = menuInflater
-        menuInflater.inflate(R.menu.main_activity, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_about -> {
-                // Go to about page!
-                val intent = Intent(this, AboutActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
+    override fun provideLifecycleOwner(): LifecycleOwner {
+        return this
     }
 
     private fun forceRequestCoffeeShop() {
@@ -250,6 +229,13 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         this.snackbar = snackbar
     }
 
+    override fun makeSnackBar(stringRes: Int) {
+        if (stringRes != -1) {
+            val message = getString(stringRes)
+            makeSnackBar(message, false)
+        }
+    }
+
     override fun setStatusBarDarkIndicator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             translucentStatusBar()
@@ -259,7 +245,12 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     private fun translucentStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // replace View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            window.setDecorFitsSystemWindows(false)
+            // replace View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            window.insetsController?.setSystemBarsAppearance(APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS)
+        } else {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -288,6 +279,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         if (!viewPagerAdapter.isListPageInitiated) {
             val listFragment = ListFragment.newInstance(coffeeShops)
             listFragment.setCallback(this)
+            // FIXME:: Below line cause crash
             viewPagerAdapter.setListFragment(listFragment)
         }
     }
@@ -389,6 +381,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
         super.onBackPressed()
     }
+
+    override fun getViewPagerBottomSheetBehavior(): AnchorBottomSheetBehavior<ViewPager> = AnchorBottomSheetBehavior.from(bottomSheetViewPager)
 
     //region MapsClickHandler
     override fun onMapClicked() {

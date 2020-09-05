@@ -1,9 +1,13 @@
 package tw.com.louis383.coffeefinder.model.domain;
 
+import com.google.android.libraries.maps.model.LatLng;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
 import tw.com.louis383.coffeefinder.model.entity._CoffeeShop;
+import tw.com.louis383.coffeefinder.utils.MathUtils;
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel;
 
 /**
@@ -70,4 +74,12 @@ public class CoffeeShop extends _CoffeeShop implements Parcelable {
             return new CoffeeShop[size];
         }
     };
+
+    public LatLng getLatLng() {
+        return new LatLng(latitude, longitude);
+    }
+
+    public int calculateDistanceFromLocation(@NonNull LatLng fromLatLng) {
+        return (int) MathUtils.calculateDistance(fromLatLng, getLatLng());
+    }
 }

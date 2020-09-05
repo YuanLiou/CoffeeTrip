@@ -2,12 +2,15 @@ package tw.com.louis383.coffeefinder.mainpage
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.StringRes
+import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
+import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
+import tw.com.louis383.coffeefinder.BaseView
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 
-interface MainView {
-    val isInternetAvailable: Boolean
+interface MainView : BaseView {
     val activityContext: Context
     fun isApplicationInstalled(packageName: String): Boolean
     fun checkLocationPermission(): Boolean
@@ -16,6 +19,7 @@ interface MainView {
     fun locationSettingNeedsResolution(resolvable: ResolvableApiException)
     fun showServiceUnavailableMessage()
     fun makeSnackBar(message: String, infinity: Boolean)
+    fun makeSnackBar(@StringRes stringRes: Int = -1)
     fun setStatusBarDarkIndicator()
     fun moveCameraToCurrentPosition(latLng: LatLng)
     fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>)
@@ -25,4 +29,5 @@ interface MainView {
     fun shareCoffeeShop(shareIntent: Intent)
     fun updateListPage(coffeeShops : List<CoffeeShop>)
     fun moveMapView(offset: Float)
+    fun getViewPagerBottomSheetBehavior(): AnchorBottomSheetBehavior<ViewPager>
 }

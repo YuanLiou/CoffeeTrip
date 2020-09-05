@@ -2,11 +2,11 @@ package tw.com.louis383.coffeefinder.maps
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
+import com.google.android.libraries.maps.GoogleMap
+import com.google.android.libraries.maps.model.BitmapDescriptor
+import com.google.android.libraries.maps.model.BitmapDescriptorFactory
+import com.google.android.libraries.maps.model.LatLng
+import com.google.android.libraries.maps.model.Marker
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager

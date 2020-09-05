@@ -12,17 +12,19 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker
+import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import java.util.*
@@ -31,7 +33,12 @@ import java.util.*
  * Created by louis383 on 2017/2/17.
  */
 
-class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, private val fusedLocationProviderClient: FusedLocationProviderClient) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
+class MainPresenter(
+    private val coffeeShopListManager: CoffeeShopListManager,
+    private val fusedLocationProviderClient: FusedLocationProviderClient,
+    private val currentLocationCarrier: CurrentLocationCarrier,
+    private val connectivityChecker: ConnectivityChecker
+) : BasePresenter<MainView>() {
     private val googleMapPackage = "com.google.android.apps.maps"
     private val updateInterval = 10000    // 10 Sec
     private val fastestUpdateInterval = 5000 // 5 Sec
@@ -39,7 +46,10 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     private var anchorHeight = 200
 
     var currentLocation: Location? = null
-        private set
+        private set(value) {
+            currentLocationCarrier.currentLocation = value
+            field = value
+        }
 
     private val locationRequest by lazy {
         LocationRequest().apply {
@@ -81,10 +91,6 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         }
     }
 
-    init {
-        this.coffeeShopListManager.callback = this
-    }
-
     override fun attachView(view: MainView) {
         super.attachView(view)
         with(view) {
@@ -94,31 +100,44 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
                 requestLocationPermission()
             }
 
-            if (!isInternetAvailable) {
+            if (!isNetworkAvailable()) {
                 requestInternetConnection()
             }
+
+            anchorHeight = getViewPagerBottomSheetBehavior().anchorOffset
         }
     }
 
-    fun addLifecycleOwner(owner: LifecycleOwner) {
-        owner.lifecycle.addObserver(this)
-    }
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    private fun startBackgroundThread() {
+    private fun startPresenterWorks() {
         backgroundThread = HandlerThread("BackgroundThread").apply { start() }
         uiHandler = Handler(Looper.getMainLooper())
         requestUserLocation(false)
+        view?.getViewPagerBottomSheetBehavior()?.addBottomSheetCallback(bottomSheetCallback)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    private fun pauseLocationUpdate() {
-        coffeeShopListManager.stop()
+    private fun pausePresenterWorks() {
         backgroundThread?.quitSafely()
         backgroundThread?.join()
         backgroundThread = null
         uiHandler = null
         stopLocationUpdate()
+
+        view?.getViewPagerBottomSheetBehavior()?.removeBottomSheetCallback(bottomSheetCallback)
+    }
+
+    private val bottomSheetCallback = object : AnchorBottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            if (slideOffset >= 0f) {
+                // negative values to move view up
+                val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
+                view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
+            }
+        }
     }
 
     fun requestUserLocation(force: Boolean) {
@@ -148,8 +167,18 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
     }
 
     fun fetchCoffeeShops() {
-        currentLocation?.run {
-            coffeeShopListManager.fetch(this, range)
+        val location = currentLocation ?: return
+        val errorHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            view?.makeSnackBar(R.string.network_error_fetching_api)
+            Log.d("MainPresenter", Log.getStackTraceString(throwable))
+        }
+
+        uiScope.launch(errorHandler) {
+            val coffeeShops = coffeeShopListManager.getNearByCoffeeShopsAsync(location, range)
+            if (coffeeShops != null) {
+                view?.updateListPage(coffeeShops)
+                view?.onCoffeeShopFetched(coffeeShops)
+            }
         }
     }
 
@@ -197,23 +226,6 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         }
     }
 
-    fun setBottomSheetBehavior(bottomSheetBehavior: AnchorBottomSheetBehavior<*>) {
-        anchorHeight = bottomSheetBehavior.anchorOffset
-        //FIXME:: release listener when destroy view
-        bottomSheetBehavior.addBottomSheetCallback(object : AnchorBottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                if (slideOffset >= 0f) {
-                    // negative values to move view up
-                    val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
-                    view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
-                }
-            }
-        })
-    }
-
     private fun tryToGetAccurateLocation() {
         val builder = LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
@@ -245,6 +257,10 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         }
     }
 
+    fun isNetworkAvailable(): Boolean {
+        return connectivityChecker.isNetworkAvailable()
+    }
+
     // Make sure call this function after checked permission.
     @SuppressLint("MissingPermission")
     private fun startLocationUpdate() {
@@ -256,15 +272,4 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager, pr
         isRequestingLocation = false
         fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
-
-    //region CoffeeShopListManager Callback
-    override fun onCoffeeShopFetchedComplete(coffeeShops: List<CoffeeShop>) {
-        view?.updateListPage(coffeeShops)
-        view?.onCoffeeShopFetched(coffeeShops)
-    }
-
-    override fun onCoffeeShopFetchedFailed(message: String) {
-        view?.makeSnackBar(message, false)
-    }
-    //endregion
 }

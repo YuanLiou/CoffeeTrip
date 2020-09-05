@@ -1,4 +1,4 @@
-<com.google.android.gms.maps.MapView
+<com.google.android.libraries.maps.MapView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map_view"

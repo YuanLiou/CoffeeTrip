@@ -10,14 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import androidx.lifecycle.LifecycleOwner
+import com.google.android.libraries.maps.CameraUpdateFactory
+import com.google.android.libraries.maps.GoogleMap
+import com.google.android.libraries.maps.MapView
+import com.google.android.libraries.maps.OnMapReadyCallback
+import com.google.android.libraries.maps.model.BitmapDescriptor
+import com.google.android.libraries.maps.model.LatLng
+import com.google.android.libraries.maps.model.Marker
+import com.google.android.libraries.maps.model.MarkerOptions
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
@@ -62,13 +63,16 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         (activity?.application as CoffeeTripApplication).appComponent.inject(this)
-
         presenter?.attachView(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler = null
+    }
+
+    override fun provideLifecycleOwner(): LifecycleOwner {
+        return viewLifecycleOwner
     }
 
     @Inject
