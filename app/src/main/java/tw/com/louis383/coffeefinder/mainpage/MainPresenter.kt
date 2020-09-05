@@ -25,7 +25,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import java.util.*
 
@@ -62,7 +62,7 @@ class MainPresenter(
     private var backgroundThread: HandlerThread? = null
     private var uiHandler: Handler? = null
 
-    private var lastTappedCoffeeShop: CoffeeShop? = null
+    private var lastTappedCoffeeShop: Shop? = null
 
     private var isRequestingLocation = false
     private var isWaitingAccurateLocation = false
@@ -176,8 +176,9 @@ class MainPresenter(
         uiScope.launch(errorHandler) {
             val coffeeShops = coffeeShopListManager.getNearByCoffeeShopsAsync(location, range)
             if (coffeeShops != null) {
-                view?.updateListPage(coffeeShops)
-                view?.onCoffeeShopFetched(coffeeShops)
+                val copiedShops = coffeeShops.map { it.copy() }
+                view?.updateListPage(copiedShops)
+                view?.onCoffeeShopFetched(copiedShops)
             }
         }
     }
@@ -189,7 +190,7 @@ class MainPresenter(
             return
         }
 
-        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: CoffeeShop ->
+        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: Shop ->
             val urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
                     lastTappedCoffeeShop.latitude, lastTappedCoffeeShop.longitude,
                     currentLocation.latitude, currentLocation.longitude)
@@ -203,20 +204,20 @@ class MainPresenter(
     }
 
     fun share(context: Context) {
-        lastTappedCoffeeShop?.run {
+        lastTappedCoffeeShop?.getViewModel()?.run {
             val subject = context.resources.getString(R.string.share_subject)
-            val message = context.resources.getString(R.string.share_message, viewModel.shopName, viewModel.address)
+            val message = context.resources.getString(R.string.share_message, shopName, address)
 
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_SUBJECT, subject)
-            intent.putExtra(Intent.EXTRA_TEXT, message + "\n" + viewModel.detailUri)
+            intent.putExtra(Intent.EXTRA_TEXT, message + "\n" + detailUri)
 
             view?.shareCoffeeShop(intent)
         }
     }
 
-    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: CoffeeShop) {
+    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: Shop) {
         this.lastTappedCoffeeShop = lastTappedCoffeeShop
     }
 

@@ -8,7 +8,7 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BaseView
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 
 interface MainView : BaseView {
     val activityContext: Context
@@ -22,12 +22,12 @@ interface MainView : BaseView {
     fun makeSnackBar(@StringRes stringRes: Int = -1)
     fun setStatusBarDarkIndicator()
     fun moveCameraToCurrentPosition(latLng: LatLng)
-    fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>)
+    fun onCoffeeShopFetched(coffeeShops: List<Shop>)
     fun navigateToLocation(intent: Intent)
     fun showNeedsGoogleMapMessage()
-    fun showBottomSheetDetailView(coffeeShop: CoffeeShop)
+    fun showBottomSheetDetailView(coffeeShop: Shop)
     fun shareCoffeeShop(shareIntent: Intent)
-    fun updateListPage(coffeeShops : List<CoffeeShop>)
+    fun updateListPage(coffeeShops : List<Shop>)
     fun moveMapView(offset: Float)
     fun getViewPagerBottomSheetBehavior(): AnchorBottomSheetBehavior<ViewPager>
 }

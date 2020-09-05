@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 
 /**
  * Created by louis383 on 2017/2/26.
@@ -20,7 +20,7 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 
 class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.Adapter<CoffeeListAdapter.ViewHolder>() {
 
-    private val coffeeShops = mutableListOf<CoffeeShop>()
+    private var coffeeShops: List<Shop> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.coffee_list_item, parent, false)
@@ -30,7 +30,7 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val index = holder.adapterPosition
         val coffeeShop = coffeeShops[index]
-        val coffeeShopViewModel = coffeeShop.viewModel
+        val coffeeShopViewModel = coffeeShop.getViewModel()
 
         val context = holder.rootView.context
 
@@ -57,7 +57,7 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
         }
     }
 
-    fun findPositionInList(coffeeShop: CoffeeShop): Int {
+    fun findPositionInList(coffeeShop: Shop): Int {
         if (coffeeShops.isNotEmpty()) {
             return coffeeShops.indexOf(coffeeShop)
         }
@@ -66,8 +66,8 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
 
     override fun getItemCount(): Int = coffeeShops.size
 
-    fun setItems(coffeeShops: List<CoffeeShop>) {
-        this.coffeeShops.addAll(coffeeShops)
+    fun setItems(coffeeShops: List<Shop>) {
+        this.coffeeShops = coffeeShops
         notifyDataSetChanged()
     }
 

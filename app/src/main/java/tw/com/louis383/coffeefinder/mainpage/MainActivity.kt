@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
@@ -38,7 +37,7 @@ import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject
@@ -69,8 +68,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // View States
     sealed class ViewState {
-        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop): ViewState()
-        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop): ViewState()
+        data class EnterDetailInfoFromMap(val coffeeshop: Shop): ViewState()
+        data class EnterDetailInfoFromList(val coffeeshop: Shop): ViewState()
         object Browsing: ViewState()
     }
     private var detailViewState: ViewState = ViewState.Browsing
@@ -271,11 +270,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         mapFragment?.moveCamera(latLng, MapsFragment.ZOOM_RATE)
     }
 
-    override fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>) {
+    override fun onCoffeeShopFetched(coffeeShops: List<Shop>) {
         mapFragment?.prepareCoffeeShops(coffeeShops)
     }
 
-    override fun updateListPage(coffeeShops: List<CoffeeShop>) {
+    override fun updateListPage(coffeeShops: List<Shop>) {
         if (!viewPagerAdapter.isListPageInitiated) {
             val listFragment = ListFragment.newInstance(coffeeShops)
             listFragment.setCallback(this)
@@ -326,11 +325,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         return resources.getString(stringId)
     }
 
-    override fun showBottomSheetDetailView(coffeeShop: CoffeeShop) {
+    override fun showBottomSheetDetailView(coffeeShop: Shop) {
         if (this::bottomSheetViewPager.isInitialized) {
             if (viewPagerAdapter.isDetailPageInitiated) {
                 val detailsFragment = viewPagerAdapter.getItem(ViewPagerAdapter.DETAIL_FRAGMENT)
-                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.viewModel)
+                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.getViewModel())
             } else {
                 val detailsFragment = DetailsFragment.newInstance(coffeeShop)
                 detailsFragment.detailsItemClickListener = this
@@ -346,7 +345,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    private fun listScrollToItemPosition(coffeeShop: CoffeeShop) {
+    private fun listScrollToItemPosition(coffeeShop: Shop) {
         if (viewPagerAdapter.isListPageInitiated) {
             val listFragment = viewPagerAdapter.getItem(ViewPagerAdapter.LIST_FRAGMENT)
             (listFragment as ListFragment).scrollToItemPosition(coffeeShop)
@@ -393,7 +392,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    override fun onMarkerClicked(coffeeShop: CoffeeShop) {
+    override fun onMarkerClicked(coffeeShop: Shop) {
         presenter?.setLastTappedCoffeeShop(coffeeShop)
         presenter?.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromMap(coffeeShop)
@@ -401,7 +400,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     //endregion
 
     //region ListFragment.Callback
-    override fun onItemTapped(coffeeShop: CoffeeShop) {
+    override fun onItemTapped(coffeeShop: Shop) {
         presenter?.setLastTappedCoffeeShop(coffeeShop)
         presenter?.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromList(coffeeShop)

@@ -12,19 +12,19 @@ import kotlinx.android.synthetic.main.detail_info.*
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
 import javax.inject.Inject
 
 class DetailsFragment: Fragment() {
     companion object {
-        fun newInstance(coffeeShop: CoffeeShop) = DetailsFragment().apply {
+        fun newInstance(coffeeShop: Shop) = DetailsFragment().apply {
             this.coffeeShop = coffeeShop
         }
     }
 
-    private var coffeeShop by FragmentArgumentDelegate<CoffeeShop>()
+    private var coffeeShop by FragmentArgumentDelegate<Shop>()
     var detailsItemClickListener: DetailsItemClickListener? = null
 
     @Inject
@@ -44,7 +44,7 @@ class DetailsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setDetailInfo(coffeeShop.viewModel)
+        setDetailInfo(coffeeShop.getViewModel())
 
         detail_view_button_navigate.setOnClickListener {
             detailsItemClickListener?.onNavigationButtonClicked()
@@ -72,13 +72,13 @@ class DetailsFragment: Fragment() {
             detail_view_seat_quality.progress = seatPoints.toInt() * 20
             detail_view_seat_score.text = seatPoints.toString()
 
-            detail_view_website.text = getWebsiteURL(context)
-            detail_view_opentime.text = getOpenTimes(context)
-            detail_view_mrt.text = getMrtInfo(context)
+            detail_view_website.text = getWebsiteURL(requireContext())
+            detail_view_opentime.text = getOpenTimes(requireContext())
+            detail_view_mrt.text = getMrtInfo(requireContext())
 
-            detail_view_limited_time.text = getLimitTimeString(context)
-            detail_view_socket.text = getSocketString(context)
-            detail_view_standing_desk.text = getStandingDeskString(context)
+            detail_view_limited_time.text = getLimitTimeString(requireContext())
+            detail_view_socket.text = getSocketString(requireContext())
+            detail_view_standing_desk.text = getStandingDeskString(requireContext())
 
             currentLocationCarrier.currentLocation?.run {
                 val currentLatLng = LatLng(latitude, longitude)

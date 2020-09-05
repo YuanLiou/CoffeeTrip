@@ -18,7 +18,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
 import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
@@ -31,9 +31,9 @@ import javax.inject.Inject
 
 class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     companion object {
-        fun newInstance(coffeeShops: List<CoffeeShop>): ListFragment {
+        fun newInstance(coffeeShops: List<Shop>): ListFragment {
             return ListFragment().apply {
-                this.coffeeShops = coffeeShops as ArrayList<CoffeeShop>
+                this.coffeeShops = coffeeShops as ArrayList<Shop>
             }
         }
     }
@@ -41,7 +41,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     private var presenter: ListPresenter? = null
     private val coffeeListAdapter: CoffeeListAdapter = CoffeeListAdapter(this)
     private var callback: Callback? = null
-    private var coffeeShops by FragmentArgumentDelegate<ArrayList<CoffeeShop>>()
+    private var coffeeShops by FragmentArgumentDelegate<ArrayList<Shop>>()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -109,7 +109,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         this.callback = callback
     }
 
-    fun scrollToItemPosition(coffeeShop: CoffeeShop) {
+    fun scrollToItemPosition(coffeeShop: Shop) {
         val position = coffeeListAdapter.findPositionInList(coffeeShop)
         if (position > -1 && position < coffeeListAdapter.getItemCount()) {
             recyclerView.smoothScrollToPosition(position)
@@ -121,7 +121,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         Snackbar.make(recyclerView, message, Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    override fun setItems(items: List<CoffeeShop>) {
+    override fun setItems(items: List<Shop>) {
         coffeeListAdapter.setItems(items)
     }
 
@@ -139,13 +139,13 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     }
 
     //region BaseFragment
-    override fun prepareCoffeeShops(coffeeShops: List<CoffeeShop>) {
+    override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
         presenter?.prepareToShowCoffeeShops(coffeeShops)
     }
     //endregion
 
     //region ListAdapterHandler
-    override fun onItemTapped(coffeeShop: CoffeeShop, index: Int) {
+    override fun onItemTapped(coffeeShop: Shop, index: Int) {
         callback?.onItemTapped(coffeeShop)
     }
 
@@ -156,6 +156,6 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     //endregion
 
     interface Callback {
-        fun onItemTapped(coffeeShop: CoffeeShop)
+        fun onItemTapped(coffeeShop: Shop)
     }
 }
