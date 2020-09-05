@@ -8,6 +8,7 @@ import dagger.Module;
 import dagger.Provides;
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager;
 import tw.com.louis383.coffeefinder.model.CoffeeTripAPI;
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker;
 import tw.com.louis383.coffeefinder.model.PreferenceManager;
 
 /**
@@ -41,5 +42,10 @@ public class AppModule {
     @Singleton
     PreferenceManager providePreferenceManager() {
         return new PreferenceManager(application);
+    }
+
+    @Provides
+    ConnectivityChecker provideConnectivityChecker() {
+        return new ConnectivityChecker(application.getBaseContext());
     }
 }

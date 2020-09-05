@@ -23,6 +23,7 @@ import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
@@ -32,9 +33,12 @@ import java.util.*
  * Created by louis383 on 2017/2/17.
  */
 
-class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager,
-                    private val fusedLocationProviderClient: FusedLocationProviderClient,
-                    private val currentLocationCarrier: CurrentLocationCarrier) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
+class MainPresenter(
+    private val coffeeShopListManager: CoffeeShopListManager,
+    private val fusedLocationProviderClient: FusedLocationProviderClient,
+    private val currentLocationCarrier: CurrentLocationCarrier,
+    private val connectivityChecker: ConnectivityChecker
+) : BasePresenter<MainView>(), CoffeeShopListManager.Callback, LifecycleObserver {
     private val googleMapPackage = "com.google.android.apps.maps"
     private val updateInterval = 10000    // 10 Sec
     private val fastestUpdateInterval = 5000 // 5 Sec
@@ -100,7 +104,7 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager,
                 requestLocationPermission()
             }
 
-            if (!isInternetAvailable) {
+            if (!isNetworkAvailable()) {
                 requestInternetConnection()
             }
 
@@ -251,6 +255,10 @@ class MainPresenter(private val coffeeShopListManager: CoffeeShopListManager,
                 }
             }
         }
+    }
+
+    fun isNetworkAvailable(): Boolean {
+        return connectivityChecker.isNetworkAvailable()
     }
 
     // Make sure call this function after checked permission.

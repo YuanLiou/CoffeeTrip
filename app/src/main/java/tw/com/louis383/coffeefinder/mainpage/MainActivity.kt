@@ -37,6 +37,7 @@ import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.Utils
@@ -77,15 +78,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override val activityContext: Context
         get() = this
-
-    override val isInternetAvailable: Boolean
-        get() {
-            val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val networkInfo = manager.activeNetworkInfo
-            return networkInfo?.run {
-                isConnected && isAvailable
-            } ?: false
-        }
 
     private val mapFragment: MapsFragment?
         get() {
@@ -128,10 +120,9 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     @Inject
-    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, currentLocationCarrier: CurrentLocationCarrier) {
-        val fusedLocationProviderClient = LocationServices
-                .getFusedLocationProviderClient(this)
-        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient, currentLocationCarrier)
+    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, currentLocationCarrier: CurrentLocationCarrier, connectivityChecker: ConnectivityChecker) {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient, currentLocationCarrier, connectivityChecker)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -173,7 +164,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             internetRequest -> {
-                if (isInternetAvailable) {
+                val isNetworkAvailable = presenter?.isNetworkAvailable() ?: false
+                if (isNetworkAvailable) {
                     if (checkLocationPermission()) {
                         forceRequestCoffeeShop()
                     } else {

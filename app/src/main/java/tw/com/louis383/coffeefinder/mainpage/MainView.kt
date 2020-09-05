@@ -9,7 +9,6 @@ import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 
 interface MainView {
-    val isInternetAvailable: Boolean
     val activityContext: Context
     fun isApplicationInstalled(packageName: String): Boolean
     fun checkLocationPermission(): Boolean
