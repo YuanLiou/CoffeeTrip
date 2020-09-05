@@ -1,5 +1,8 @@
 package tw.com.louis383.coffeefinder.model
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -33,9 +36,10 @@ class CoffeeTripAPI {
                 .retryOnConnectionFailure(true)
                 .build()
 
+        val contentType = MediaType.parse("application/json")!!
         val retrofit = Retrofit.Builder()
                 .baseUrl(HOST)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(Json.asConverterFactory(contentType))
                 .client(httpClient)
                 .build()
 

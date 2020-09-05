@@ -1,6 +1,6 @@
 package tw.com.louis383.coffeefinder.maps
 
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 
 /**
  * Created by louis383 on 2017/3/7.
@@ -8,5 +8,5 @@ import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
 
 interface MapsClickHandler {
     fun onMapClicked()
-    fun onMarkerClicked(coffeeShop: CoffeeShop)
+    fun onMarkerClicked(coffeeShop: Shop)
 }

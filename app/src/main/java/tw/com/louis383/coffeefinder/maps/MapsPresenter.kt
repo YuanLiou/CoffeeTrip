@@ -10,7 +10,7 @@ import com.google.android.libraries.maps.model.Marker
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 
 /**
  * Created by louis383 on 2017/1/13.
@@ -40,7 +40,7 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
         this.temporaryLatlang = latLng
     }
 
-    fun activeMarker(coffeeShop: CoffeeShop) {
+    fun activeMarker(coffeeShop: Shop) {
         if (markerMap.isNotEmpty()) {
             val marker = markerMap[coffeeShop.id]
             marker?.run {
@@ -91,7 +91,7 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
     override fun onMarkerClick(marker: Marker): Boolean {
         moveCameraToMarker(marker)
 
-        val coffeeShop = marker.tag as CoffeeShop?
+        val coffeeShop = marker.tag as? Shop
         coffeeShop?.run {
             view?.openDetailView(this)
         }
@@ -99,7 +99,7 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
     }
     //endregion
 
-    fun prepareToShowCoffeeShops(coffeeShops: List<CoffeeShop>) {
+    fun prepareToShowCoffeeShops(coffeeShops: List<Shop>) {
         if (coffeeShops.isNotEmpty()) {
             view?.cleanMap()
 

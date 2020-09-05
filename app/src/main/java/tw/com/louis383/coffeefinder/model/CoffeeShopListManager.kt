@@ -4,7 +4,7 @@ import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.model.comparator.DistanceComparator
-import tw.com.louis383.coffeefinder.model.domain.CoffeeShop
+import tw.com.louis383.coffeefinder.model.entity.Shop
 import java.util.*
 
 /**
@@ -13,7 +13,7 @@ import java.util.*
 
 class CoffeeShopListManager(private val coffeeTripAPI: CoffeeTripAPI) {
 
-    var coffeeShops: List<CoffeeShop> = emptyList()
+    var coffeeShops: List<Shop> = emptyList()
         private set
 
     val coffeeShopsCount: Int
@@ -32,7 +32,7 @@ class CoffeeShopListManager(private val coffeeTripAPI: CoffeeTripAPI) {
         }
     }
 
-    private suspend fun sortWithDistance(coffeeShops: List<CoffeeShop>) = withContext(Dispatchers.Default) {
+    private suspend fun sortWithDistance(coffeeShops: List<Shop>) = withContext(Dispatchers.Default) {
         Collections.sort(coffeeShops, DistanceComparator())
         coffeeShops
     }
