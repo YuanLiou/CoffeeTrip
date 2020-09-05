@@ -18,6 +18,7 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -73,6 +74,7 @@ ext {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(":anchor-bottom-sheet-behavior")
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
     implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
