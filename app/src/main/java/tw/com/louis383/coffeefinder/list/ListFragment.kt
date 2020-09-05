@@ -55,10 +55,10 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             return actionBarSize
         }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
-        context?.takeIf { it is MainActivity }?.let {
-            (it as MainActivity).getAppComponent().inject(this)
+        if (context is MainActivity) {
+            context.getAppComponent().inject(this)
         }
     }
 
