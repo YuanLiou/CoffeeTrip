@@ -23,9 +23,11 @@ class CoffeeTripAPI {
 
     init {
         val logInterceptor = HttpLoggingInterceptor()
-        logInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
-        if (Utils.isDebuggingBuild()) {
+        if (BuildConfig.DEBUG) {
+            logInterceptor.level = HttpLoggingInterceptor.Level.HEADERS
             logInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        } else {
+            logInterceptor.level = HttpLoggingInterceptor.Level.NONE
         }
 
         httpClient = OkHttpClient.Builder()
