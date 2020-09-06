@@ -16,8 +16,6 @@
 #   public *;
 #}
 
-#-optimizations 5
-
 -keep class tw.com.louis383.coffeefinder.model.entity.** { *; }
 -keep class tw.com.louis383.coffeefinder.model.domain.** { *; }
 -keep interface tw.com.louis383.coffeefinder.model.CoffeeTripService { *; }
@@ -34,11 +32,12 @@
 -keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
 
+# New Google Maps
+-keep class com.google.android.libraries.maps.** { *; }
+-dontwarn com.google.android.libraries.maps.**
+
 # Android Support Library
 -keep public class android.support.** { *; }
-
-# Gson
--keepattributes *Annotation*
 
 # Retrofit 2
 -dontwarn retrofit2.**
@@ -55,3 +54,21 @@
 -keep class okhttp3.** { *; }
 -dontwarn okio.*
 
+# Kotlin Serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.SerializationKt
+-keep,includedescriptorclasses class tw.com.louis383.coffeefinder.**$$serializer { *; }
+-keepclassmembers class tw.com.louis383.coffeefinder.** {
+    *** Companion;
+}
+-keepclasseswithmembers class tw.com.louis383.coffeefinder.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Remove Log
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** i(...);
+    public static *** w(...);
+}
