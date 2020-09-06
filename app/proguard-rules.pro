@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--optimizations 5
+#-optimizations 5
 
 -keep class tw.com.louis383.coffeefinder.model.entity.** { *; }
 -keep class tw.com.louis383.coffeefinder.model.domain.** { *; }
