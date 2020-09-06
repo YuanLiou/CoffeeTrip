@@ -6,7 +6,6 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import tw.com.louis383.coffeefinder.BuildConfig
 import tw.com.louis383.coffeefinder.utils.Utils
 import java.util.concurrent.TimeUnit
