@@ -1,4 +1,5 @@
-upload_keystore.jks
+*.jks
+*.keystore
 .project
 .settings
 .classpath
