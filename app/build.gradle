@@ -31,6 +31,12 @@ android {
     }
 
     signingConfigs {
+        local {
+            storeFile file(debugKeystorePath)
+            keyAlias debugKeystoreAlias
+            storePassword debugKeyPass
+            keyPassword debugStorePass
+        }
         release {
             storeFile file(keystorePath)
             keyAlias keystoreAlias
@@ -41,6 +47,7 @@ android {
 
     buildTypes {
         debug {
+            signingConfig signingConfigs.local
             debuggable true
             applicationIdSuffix ".debug"
             versionNameSuffix "-debug"
