@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAppComponent().inject(this)
+        getAppComponent()?.inject(this)
 
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         myLocationButton.setOnClickListener(this)
     }
 
-    fun getAppComponent(): AppComponent {
+    fun getAppComponent(): AppComponent? {
         return (application as CoffeeTripApplication).appComponent
     }
 

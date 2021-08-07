@@ -58,9 +58,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is MainActivity) {
-            context.getAppComponent().inject(this)
-        }
+        (context as? MainActivity)?.getAppComponent()?.inject(this)
     }
 
     @Inject
