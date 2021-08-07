@@ -16,7 +16,7 @@ abstract class BasePresenter<T: BaseView> : LifecycleObserver {
         get() = view != null
 
     private val presenterJob: Job = SupervisorJob()
-    private val defaultErrorHandling = CoroutineExceptionHandler { coroutineContext, throwable ->
+    private val defaultErrorHandling = CoroutineExceptionHandler { _, throwable ->
         Log.e("BasePresenter", Log.getStackTraceString(throwable))
     }
     private val coroutineContext: CoroutineContext = Dispatchers.Main + presenterJob + defaultErrorHandling
