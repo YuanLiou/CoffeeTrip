@@ -7,7 +7,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import tw.com.louis383.coffeefinder.BuildConfig
-import tw.com.louis383.coffeefinder.utils.Utils
 import java.util.concurrent.TimeUnit
 
 /**

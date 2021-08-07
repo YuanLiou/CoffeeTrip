@@ -5,10 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.google.android.libraries.maps.model.LatLng
-import kotlinx.android.synthetic.main.detail_info.*
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
@@ -26,6 +27,24 @@ class DetailsFragment: Fragment() {
 
     private var coffeeShop by FragmentArgumentDelegate<Shop>()
     var detailsItemClickListener: DetailsItemClickListener? = null
+    private lateinit var nestedScrollView: NestedScrollView
+    private lateinit var titleText: TextView
+    private lateinit var cheapRating: RatingBar
+
+    private lateinit var wiFiPointBar: ProgressBar
+    private lateinit var wiFiScoreText: TextView
+    private lateinit var seatPointBar: ProgressBar
+    private lateinit var seatScoreText: TextView
+
+    private lateinit var webSiteText: TextView
+    private lateinit var openTimeText: TextView
+    private lateinit var mrtText: TextView
+
+    private lateinit var limitedTimeText: TextView
+    private lateinit var socketText: TextView
+    private lateinit var standingDestText: TextView
+
+    private lateinit var distanceText: TextView
 
     @Inject
     internal lateinit var currentLocationCarrier: CurrentLocationCarrier
@@ -43,55 +62,75 @@ class DetailsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        retrieveViews(view)
+        nestedScrollView = view.findViewById(R.id.detail_view_scrollview)
         setDetailInfo(coffeeShop.getViewModel())
 
-        detail_view_button_navigate.setOnClickListener {
+        view.findViewById<Button>(R.id.detail_view_button_navigate).setOnClickListener {
             detailsItemClickListener?.onNavigationButtonClicked()
         }
 
-        detail_view_button_share.setOnClickListener {
+        view.findViewById<Button>(R.id.detail_view_button_share).setOnClickListener {
             detailsItemClickListener?.onShareButtonClicked()
         }
 
-        detail_view_back_button.setOnClickListener {
+        view.findViewById<ImageView>(R.id.detail_view_back_button).setOnClickListener {
             detailsItemClickListener?.onBackButtonClicked()
         }
-
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
     }
 
+    private fun retrieveViews(view: View) {
+        titleText = view.findViewById<TextView>(R.id.detail_view_title)
+        cheapRating = view.findViewById<RatingBar>(R.id.detail_view_expense)
+
+        wiFiPointBar = view.findViewById<ProgressBar>(R.id.detail_view_wifi_quality)
+        wiFiScoreText = view.findViewById<TextView>(R.id.detail_view_wifi_score)
+        seatPointBar = view.findViewById<ProgressBar>(R.id.detail_view_seat_quality)
+        seatScoreText = view.findViewById<TextView>(R.id.detail_view_seat_score)
+
+        webSiteText = view.findViewById<TextView>(R.id.detail_view_website)
+        openTimeText = view.findViewById<TextView>(R.id.detail_view_opentime)
+        mrtText = view.findViewById<TextView>(R.id.detail_view_mrt)
+
+        limitedTimeText = view.findViewById<TextView>(R.id.detail_view_limited_time)
+        socketText = view.findViewById<TextView>(R.id.detail_view_socket)
+        standingDestText = view.findViewById<TextView>(R.id.detail_view_standing_desk)
+
+        distanceText = view.findViewById<TextView>(R.id.detail_view_distance)
+    }
+
     fun setDetailInfo(viewModel: CoffeeShopViewModel) {
         with(viewModel) {
-            detail_view_title.text = shopName
-            detail_view_expense.rating = cheapPoints
+            titleText.text = shopName
+            cheapRating.rating = cheapPoints
 
-            detail_view_wifi_quality.progress = wifiPoints.toInt() * 20
-            detail_view_wifi_score.text = wifiPoints.toString()
-            detail_view_seat_quality.progress = seatPoints.toInt() * 20
-            detail_view_seat_score.text = seatPoints.toString()
+            wiFiPointBar.progress = wifiPoints.toInt() * 20
+            wiFiScoreText.text = wifiPoints.toString()
+            seatPointBar.progress = seatPoints.toInt() * 20
+            seatScoreText.text = seatPoints.toString()
 
-            detail_view_website.text = getWebsiteURL(requireContext())
-            detail_view_opentime.text = getOpenTimes(requireContext())
-            detail_view_mrt.text = getMrtInfo(requireContext())
+            webSiteText.text = getWebsiteURL(requireContext())
+            openTimeText.text = getOpenTimes(requireContext())
+            mrtText.text = getMrtInfo(requireContext())
 
-            detail_view_limited_time.text = getLimitTimeString(requireContext())
-            detail_view_socket.text = getSocketString(requireContext())
-            detail_view_standing_desk.text = getStandingDeskString(requireContext())
+            limitedTimeText.text = getLimitTimeString(requireContext())
+            socketText.text = getSocketString(requireContext())
+            standingDestText.text = getStandingDeskString(requireContext())
 
             currentLocationCarrier.currentLocation?.run {
                 val currentLatLng = LatLng(latitude, longitude)
-                detail_view_distance.text = getDistancesFromLocation(currentLatLng)
+                distanceText.text = getDistancesFromLocation(currentLatLng)
             } ?: run {
-                detail_view_distance.text = ""
+                distanceText.text = ""
             }
         }
     }
 
     fun setNestScrollingEnable(enable: Boolean) {
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
-            detail_view_scrollview.isSmoothScrollingEnabled = enable
+            nestedScrollView.isSmoothScrollingEnabled = enable
         }
     }
 }

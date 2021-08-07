@@ -3,7 +3,7 @@ plugins {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlinx-serialization'
 apply from: "${rootDir}/gradle/build-script.gradle"
@@ -75,19 +75,15 @@ easylauncher {
     }
 }
 
-androidExtensions {
-    experimental = true
-}
-
 ext {
-    retrofit_version = '2.8.1'
-    coroutines_version = '1.3.9'
+    retrofit_version = '2.9.0'
+    coroutines_version = '1.5.1'
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(":anchor-bottom-sheet-behavior")
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.0.10'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     // FIXME:: map 3.1.0 use volley 1.1.0 which is not available on mavenCentral and google
     //  so we include it explicitly
     implementation 'com.google.maps.android:maps-v3-ktx:3.1.0'
@@ -97,7 +93,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutines_version}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutines_version}"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
@@ -107,7 +103,7 @@ dependencies {
 
     // HTTP Client
     implementation "com.squareup.retrofit2:retrofit:${retrofit_version}"
-    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.7.0"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
 
     // Dependency Injection

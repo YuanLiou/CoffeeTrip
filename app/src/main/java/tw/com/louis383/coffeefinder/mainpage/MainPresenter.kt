@@ -168,7 +168,7 @@ class MainPresenter(
 
     fun fetchCoffeeShops() {
         val location = currentLocation ?: return
-        val errorHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+        val errorHandler = CoroutineExceptionHandler { _, throwable ->
             view?.makeSnackBar(R.string.network_error_fetching_api)
             Log.d("MainPresenter", Log.getStackTraceString(throwable))
         }

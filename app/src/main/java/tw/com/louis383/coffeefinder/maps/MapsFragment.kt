@@ -137,7 +137,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     }
 
     override fun moveCamera(latLng: LatLng, zoom: Float?) {
-        var zoom = zoom
         if (!isMapReady) {
             // FIXME:: it's a dirty hack to prevent get google map on an asynchronous way and get null if not ready.
             presenter?.setTemporaryLatlang(latLng)
@@ -145,17 +144,9 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         }
         googleMap?.takeUnless { it.isMyLocationEnabled }?.run { enableMyLocation() }
 
-        val currentZoomLevel = googleMap?.cameraPosition?.zoom
-        currentZoomLevel?.let {
-            if (zoom == null && it < 15f) {
-                zoom = ZOOM_RATE
-            }
-        }
-
         val cameraUpdate = zoom?.let {
             CameraUpdateFactory.newLatLngZoom(latLng, it)
         } ?: CameraUpdateFactory.newLatLng(latLng)
-
         googleMap?.animateCamera(cameraUpdate)
     }
 

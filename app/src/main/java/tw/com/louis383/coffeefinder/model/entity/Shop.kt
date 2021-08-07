@@ -2,7 +2,7 @@ package tw.com.louis383.coffeefinder.model.entity
 
 import android.os.Parcelable
 import com.google.android.libraries.maps.model.LatLng
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import tw.com.louis383.coffeefinder.utils.MathUtils.calculateDistance
