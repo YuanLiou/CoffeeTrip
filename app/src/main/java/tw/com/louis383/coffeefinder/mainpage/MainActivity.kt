@@ -30,13 +30,14 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
 import tw.com.louis383.coffeefinder.details.DetailsFragment
 import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
-import tw.com.louis383.coffeefinder.di.AppComponent
+import tw.com.louis383.coffeefinder.di.components.AppComponent
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
+import tw.com.louis383.coffeefinder.model.UserLocationListener
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
@@ -74,9 +75,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
     private var detailViewState: ViewState = ViewState.Browsing
 
-    override val activityContext: Context
-        get() = this
-
     private val mapFragment: MapsFragment?
         get() {
             val mapFragment = supportFragmentManager.findFragmentById(R.id.main_container)
@@ -87,7 +85,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAppComponent().inject(this)
+        getAppComponent()?.inject(this)
 
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         myLocationButton.setOnClickListener(this)
     }
 
-    fun getAppComponent(): AppComponent {
+    fun getAppComponent(): AppComponent? {
         return (application as CoffeeTripApplication).appComponent
     }
 
@@ -116,16 +114,15 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     @Inject
-    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, currentLocationCarrier: CurrentLocationCarrier, connectivityChecker: ConnectivityChecker) {
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        presenter = MainPresenter(coffeeShopListManager, fusedLocationProviderClient, currentLocationCarrier, connectivityChecker)
+    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, userLocationListener: UserLocationListener, connectivityChecker: ConnectivityChecker) {
+        presenter = MainPresenter(coffeeShopListManager, connectivityChecker, userLocationListener)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             locationPermissionRequest -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter?.requestUserLocation(true)
+                    presenter?.requestUserLocation()
                 } else {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                         AlertDialog.Builder(this)
@@ -185,7 +182,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
             }
             locationSettingResolution -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    presenter?.requestUserLocation(true)
+                    presenter?.requestUserLocation()
                 } else {
                     snackbar = Snackbar.make(rootView, R.string.high_accuracy_recommand, Snackbar.LENGTH_LONG)
                     snackbar?.show()
@@ -200,7 +197,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     private fun forceRequestCoffeeShop() {
-        presenter?.requestUserLocation(true)
+        presenter?.requestUserLocation()
     }
 
     override fun checkLocationPermission(): Boolean {

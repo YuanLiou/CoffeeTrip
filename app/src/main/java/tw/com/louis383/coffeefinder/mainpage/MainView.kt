@@ -11,7 +11,6 @@ import tw.com.louis383.coffeefinder.BaseView
 import tw.com.louis383.coffeefinder.model.entity.Shop
 
 interface MainView : BaseView {
-    val activityContext: Context
     fun isApplicationInstalled(packageName: String): Boolean
     fun checkLocationPermission(): Boolean
     fun requestInternetConnection()

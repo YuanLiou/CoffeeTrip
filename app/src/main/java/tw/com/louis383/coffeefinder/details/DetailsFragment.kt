@@ -47,13 +47,11 @@ class DetailsFragment: Fragment() {
     private lateinit var distanceText: TextView
 
     @Inject
-    internal lateinit var currentLocationCarrier: CurrentLocationCarrier
+    lateinit var currentLocationCarrier: CurrentLocationCarrier
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is MainActivity) {
-            context.getAppComponent().inject(this)
-        }
+        (context as? MainActivity)?.getAppComponent()?.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

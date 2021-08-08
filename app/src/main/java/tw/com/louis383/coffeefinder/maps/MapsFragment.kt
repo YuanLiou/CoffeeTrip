@@ -62,7 +62,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        (activity?.application as CoffeeTripApplication).appComponent.inject(this)
+        (requireActivity().application as CoffeeTripApplication).appComponent?.inject(this)
         presenter?.attachView(this)
     }
 
