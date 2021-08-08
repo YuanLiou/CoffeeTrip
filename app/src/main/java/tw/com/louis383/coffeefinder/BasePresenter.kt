@@ -28,7 +28,7 @@ abstract class BasePresenter<T: BaseView> : LifecycleObserver {
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun detachView() {
+    open fun detachView() {
         if (isViewAttached) {
             view = null
             presenterJob.cancel()

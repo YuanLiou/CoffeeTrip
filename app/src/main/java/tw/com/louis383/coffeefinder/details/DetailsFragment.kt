@@ -47,7 +47,7 @@ class DetailsFragment: Fragment() {
     private lateinit var distanceText: TextView
 
     @Inject
-    internal lateinit var currentLocationCarrier: CurrentLocationCarrier
+    lateinit var currentLocationCarrier: CurrentLocationCarrier
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
