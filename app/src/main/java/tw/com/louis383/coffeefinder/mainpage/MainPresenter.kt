@@ -116,8 +116,9 @@ class MainPresenter(
     }
 
     fun requestUserLocation() {
-        // Prevent request twice current location
-        userLocationListener.startLocationUpdate()
+        if (view?.checkLocationPermission() == true) {
+            userLocationListener.startLocationUpdate()
+        }
     }
 
     fun fetchCoffeeShops(location: Location) {
