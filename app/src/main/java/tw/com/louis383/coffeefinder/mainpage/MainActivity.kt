@@ -2,7 +2,6 @@ package tw.com.louis383.coffeefinder.mainpage
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -14,6 +13,7 @@ import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
@@ -36,7 +35,6 @@ import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.UserLocationListener
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.Utils
@@ -48,11 +46,8 @@ import javax.inject.Inject
  */
 
 class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback,
-        DetailsItemClickListener, View.OnClickListener {
-    private val locationPermissionRequest = 0
-    private val locationManualEnable = 1
-    private val locationSettingResolution = 2
-    private val internetRequest = 3
+    DetailsItemClickListener, View.OnClickListener {
+    private val locationSettingResolution = 1001
 
     private var presenter: MainPresenter? = null
     private var snackbar: Snackbar? = null
@@ -109,8 +104,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, mapsFragment, MapsFragment.TAG)
-                .commit()
+            .replace(R.id.main_container, mapsFragment, MapsFragment.TAG)
+            .commit()
     }
 
     @Inject
@@ -118,68 +113,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         presenter = MainPresenter(coffeeShopListManager, connectivityChecker, userLocationListener)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            locationPermissionRequest -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    presenter?.requestUserLocation()
-                } else {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        AlertDialog.Builder(this)
-                                .setMessage(Utils.getResourceString(this, R.string.request_location))
-                                .setPositiveButton(Utils.getResourceString(this, R.string.dialog_auth))
-                                    { _, _ -> requestLocationPermission() }
-                                .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
-                                    { _, _ -> showPermissionNeedSnackBar() }
-                                .create()
-                                .show()
-                    } else {
-                        showPermissionNeedSnackBar()
-                        val appName = Utils.getResourceString(this, R.string.app_name)
-                        val permissionName = Utils.getResourceString(this, R.string.auth_location)
-
-                        AlertDialog.Builder(this)
-                                .setTitle(Utils.getResourceString(this, R.string.dialog_auth))
-                                .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
-                                .setPositiveButton(Utils.getResourceString(this, R.string.auto_go))
-                                    { _, _ -> openApplicationSetting() }
-                                .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
-                                    { _, _ -> }
-                                .create()
-                                .show()
-                    }
-                }
-            }
-            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            internetRequest -> {
-                val isNetworkAvailable = presenter?.isNetworkAvailable() ?: false
-                if (isNetworkAvailable) {
-                    if (checkLocationPermission()) {
-                        forceRequestCoffeeShop()
-                    } else {
-                        showPermissionNeedSnackBar()
-                    }
-                } else {
-                    requestInternetConnection()
-                }
-            }
-            locationManualEnable -> {
-                if (checkLocationPermission()) {
-                    forceRequestCoffeeShop()
-                    snackbar?.run {
-                        if (isShown) {
-                            dismiss()
-                        }
-                    }
-                } else {
-                    showPermissionNeedSnackBar()
-                }
-            }
             locationSettingResolution -> {
                 if (resultCode == Activity.RESULT_OK) {
                     presenter?.requestUserLocation()
@@ -204,9 +139,42 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
+    private val locationPermissionCallback = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            presenter?.requestUserLocation()
+            hideSnackBar()
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(this)
+                    .setMessage(Utils.getResourceString(this, R.string.request_location))
+                    .setPositiveButton(Utils.getResourceString(this, R.string.dialog_auth))
+                    { _, _ -> requestLocationPermission() }
+                    .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
+                    { _, _ -> showPermissionNeedSnackBar() }
+                    .create()
+                    .show()
+            } else {
+                showPermissionNeedSnackBar()
+                val appName = Utils.getResourceString(this, R.string.app_name)
+                val permissionName = Utils.getResourceString(this, R.string.auth_location)
+
+                AlertDialog.Builder(this)
+                    .setTitle(Utils.getResourceString(this, R.string.dialog_auth))
+                    .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
+                    .setPositiveButton(Utils.getResourceString(this, R.string.auto_go))
+                    { _, _ -> openApplicationSetting() }
+                    .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
+                    { _, _ -> }
+                    .create()
+                    .show()
+            }
+        }
+    }
+
     override fun requestLocationPermission() {
-        val permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        ActivityCompat.requestPermissions(this, permissions, locationPermissionRequest)
+        locationPermissionCallback.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     override fun locationSettingNeedsResolution(resolvable: ResolvableApiException) {
@@ -233,11 +201,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     override fun setStatusBarDarkIndicator() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            translucentStatusBar()
-        } else {
-            window.statusBarColor = ContextCompat.getColor(this, R.color.secondary_bluegray)
-        }
+        translucentStatusBar()
     }
 
     private fun translucentStatusBar() {
@@ -253,14 +217,28 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
+    private val internetRequestCallback = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        val isNetworkAvailable = presenter?.isNetworkAvailable() ?: false
+        if (isNetworkAvailable) {
+            if (checkLocationPermission()) {
+                forceRequestCoffeeShop()
+            } else {
+                showPermissionNeedSnackBar()
+            }
+        } else {
+            requestInternetConnection()
+        }
+    }
+
     override fun requestInternetConnection() {
         AlertDialog.Builder(this)
-                .setTitle(getResourceString(R.string.internet_request_title))
-                .setMessage(getResourceString(R.string.internet_request_message))
-                .setPositiveButton(getResourceString(R.string.auto_go)) { _, _ ->
-                    val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
-                    startActivityForResult(intent, internetRequest)
-                }.create().show()
+            .setTitle(getResourceString(R.string.internet_request_title))
+            .setMessage(getResourceString(R.string.internet_request_message))
+            .setPositiveButton(getResourceString(R.string.auto_go)) { _, _ ->
+                internetRequestCallback.launch(Intent(Settings.ACTION_WIFI_SETTINGS))
+            }.create().show()
     }
 
     override fun moveCameraToCurrentPosition(latLng: LatLng) {
@@ -311,11 +289,30 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         this.snackbar = snackbar
     }
 
+    private val enableLocationManuallyCallback = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (checkLocationPermission()) {
+            forceRequestCoffeeShop()
+            hideSnackBar()
+        } else {
+            showPermissionNeedSnackBar()
+        }
+    }
+
+    private fun hideSnackBar() {
+        snackbar?.run {
+            if (isShown) {
+                dismiss()
+            }
+        }
+    }
+
     private fun openApplicationSetting() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", packageName, null)
-        intent.data = uri
-        startActivityForResult(intent, locationManualEnable)
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", packageName, null)
+        }
+        enableLocationManuallyCallback.launch(intent)
     }
 
     private fun getResourceString(stringId: Int): String {
