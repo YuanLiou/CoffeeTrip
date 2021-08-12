@@ -356,12 +356,12 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                 bottomSheetViewPager.currentItem = 0
 
                 when (detailViewState) {
-                    is MainActivity.ViewState.EnterDetailInfoFromList -> {
+                    is ViewState.EnterDetailInfoFromList -> {
                         if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_ANCHORED) {
                             bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_ANCHORED
                         }
                     }
-                    is MainActivity.ViewState.EnterDetailInfoFromMap -> {
+                    is ViewState.EnterDetailInfoFromMap -> {
                         if (bottomSheetBehavior.state != AnchorBottomSheetBehavior.STATE_COLLAPSED) {
                             bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
                         }
