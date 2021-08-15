@@ -13,16 +13,18 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
 import tw.com.louis383.coffeefinder.model.data.entity.Shop
-import tw.com.louis383.coffeefinder.model.domain.repository.CoffeeShopRepository
+import tw.com.louis383.coffeefinder.model.domain.usecase.GetCoffeeShopsUseCase
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
@@ -34,7 +36,7 @@ import javax.inject.Inject
 
 @ActivityScoped
 class MainPresenter @Inject constructor(
-    private val coffeeShopRepository: CoffeeShopRepository,
+    private val getCoffeeShopsUseCase: GetCoffeeShopsUseCase,
     private val connectivityChecker: ConnectivityChecker,
     private val userLocationListener: UserLocationListener
 ) : BasePresenter<MainView>(),
@@ -131,12 +133,22 @@ class MainPresenter @Inject constructor(
         }
 
         uiScope.launch(errorHandler) {
-            val coffeeShops = coffeeShopRepository.getNearByCoffeeShopsAsync(location, range)
-            if (coffeeShops.isNotEmpty()) {
-                val copiedShops = coffeeShops.map { it.copy() }
-                view?.updateListPage(copiedShops)
-                view?.onCoffeeShopFetched(copiedShops)
+            val coffeeShops = withContext(Dispatchers.IO) {
+                getCoffeeShopsUseCase(location, range)
             }
+
+            coffeeShops.fold(
+                success = { result ->
+                    if (result.isNotEmpty()) {
+                        val copiedShops = result.map { it.copy() }
+                        view?.updateListPage(copiedShops)
+                        view?.onCoffeeShopFetched(copiedShops)
+                    }
+                },
+                failed = {
+                    view?.makeSnackBar(R.string.generic_network_error)
+                }
+            )
         }
     }
 

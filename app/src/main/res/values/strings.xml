@@ -50,4 +50,5 @@
     <string name="no_any_coffee_shop">Found none of coffee shop around here!</string>
     <string name="about_message">if you feel sleepy, did you have another cup of coffee?</string>
     <string name="network_error_fetching_api">There is an error occurred when looking for coffee shops.</string>
+    <string name="generic_network_error">Get coffeeshop information failed, please try again later.</string>
 </resources>

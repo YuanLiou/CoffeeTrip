@@ -47,4 +47,5 @@
     <string name="no_any_coffee_shop">附近沒發現任何疑似咖啡店</string>
     <string name="about_message">喝一杯還想睡，那你有喝第二杯嗎？</string>
     <string name="network_error_fetching_api">取得資訊時發生錯誤！</string>
+    <string name="generic_network_error">暫時無法取得資料，請稍後再試</string>
 </resources>
