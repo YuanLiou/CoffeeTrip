@@ -3,8 +3,8 @@ package tw.com.louis383.coffeefinder.list
 import android.location.Location
 import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.CurrentLocationCarrier
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import javax.inject.Inject
 
 /**

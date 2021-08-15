@@ -5,11 +5,17 @@ import android.net.Uri
 import android.text.TextUtils
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.toMapLocation
 
 /**
  * Created by louis383 on 2017/1/24.
  */
+
+fun CoffeeShop.getUiModel(): CoffeeShopUiModel {
+    return CoffeeShopUiModel(this)
+}
+
 class CoffeeShopUiModel(private val coffeeShop: CoffeeShop) {
     companion object {
         private const val CAFE_NOMAD_PATH = "https://cafenomad.tw/shop/"
@@ -43,7 +49,7 @@ class CoffeeShopUiModel(private val coffeeShop: CoffeeShop) {
         get() = coffeeShop.address
 
     fun getDistancesFromLocation(latLng: LatLng): String {
-        val distance: Int = coffeeShop.calculateDistanceFromLocation(latLng)
+        val distance: Int = coffeeShop.calculateDistanceFromLocation(latLng.toMapLocation())
         return distance.toString()
     }
 

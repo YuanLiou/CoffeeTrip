@@ -6,7 +6,7 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
 import tw.com.louis383.coffeefinder.BaseView
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 
 interface MapsView : BaseView {
     fun checkLocationPermission(): Boolean

@@ -11,8 +11,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.uimodel.getUiModel
 
 /**
  * Created by louis383 on 2017/2/26.

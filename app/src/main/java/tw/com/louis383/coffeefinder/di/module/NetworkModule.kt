@@ -15,8 +15,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import tw.com.louis383.coffeefinder.BuildConfig
-import tw.com.louis383.coffeefinder.model.ConnectivityChecker
-import tw.com.louis383.coffeefinder.model.data.api.CoffeeTripService
+import tw.com.louis383.coffeefinder.core.ConnectivityChecker
+import tw.com.louis383.coffeefinder.core.data.api.CoffeeTripService
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 

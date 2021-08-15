@@ -27,12 +27,13 @@ import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.details.DetailsFragment
 import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject

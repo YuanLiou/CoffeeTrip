@@ -10,9 +10,9 @@ import dagger.Reusable
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.PermissionChecker
-import tw.com.louis383.coffeefinder.model.UserLocationListener
+import tw.com.louis383.coffeefinder.core.CurrentLocationCarrier
+import tw.com.louis383.coffeefinder.core.PermissionChecker
+import tw.com.louis383.coffeefinder.core.UserLocationListener
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
