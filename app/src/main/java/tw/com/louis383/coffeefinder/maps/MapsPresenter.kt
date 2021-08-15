@@ -7,25 +7,23 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.BitmapDescriptorFactory
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
+import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/1/13.
  */
 
-class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : BasePresenter<MapsView>(), GoogleMap.OnMarkerClickListener {
+@FragmentScoped
+class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap.OnMarkerClickListener {
 
     private var lastMarker: Marker? = null
 
     private var temporaryLatlang: LatLng? = null
     private val markerMap = mutableMapOf<String, Marker>()
-
-    override fun attachView(view: MapsView) {
-        super.attachView(view)
-    }
 
     fun setGoogleMap(googleMap: GoogleMap) {
         googleMap.setOnMarkerClickListener(this)
@@ -40,7 +38,7 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
         this.temporaryLatlang = latLng
     }
 
-    fun activeMarker(coffeeShop: Shop) {
+    fun activeMarker(coffeeShop: CoffeeShop) {
         if (markerMap.isNotEmpty()) {
             val marker = markerMap[coffeeShop.id]
             marker?.run {
@@ -91,7 +89,7 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
     override fun onMarkerClick(marker: Marker): Boolean {
         moveCameraToMarker(marker)
 
-        val coffeeShop = marker.tag as? Shop
+        val coffeeShop = marker.tag as? CoffeeShop
         coffeeShop?.run {
             view?.openDetailView(this)
         }
@@ -99,17 +97,15 @@ class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : 
     }
     //endregion
 
-    fun prepareToShowCoffeeShops(coffeeShops: List<Shop>) {
+    fun prepareToShowCoffeeShops(coffeeShops: List<CoffeeShop>) {
         if (coffeeShops.isNotEmpty()) {
             view?.cleanMap()
 
             val normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin)
             for (coffeeShop in coffeeShops) {
-                val latLng = LatLng(coffeeShop.latitude, coffeeShop.longitude)
-
                 val distance = coffeeShop.distance.toString()
                 normalMarker?.run {
-                    val generatedMarker = view?.addMakers(latLng, coffeeShop.name, distance, coffeeShop, this)
+                    val generatedMarker = view?.addMakers(coffeeShop.location, coffeeShop.name, distance, coffeeShop, this)
                     generatedMarker?.let {
                         markerMap[coffeeShop.id] = it
                     }

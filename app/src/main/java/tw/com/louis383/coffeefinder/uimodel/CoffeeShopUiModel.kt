@@ -1,16 +1,16 @@
-package tw.com.louis383.coffeefinder.viewmodel
+package tw.com.louis383.coffeefinder.uimodel
 
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 
 /**
  * Created by louis383 on 2017/1/24.
  */
-class CoffeeShopViewModel(private val coffeeShop: Shop) {
+class CoffeeShopUiModel(private val coffeeShop: CoffeeShop) {
     companion object {
         private const val CAFE_NOMAD_PATH = "https://cafenomad.tw/shop/"
     }
@@ -48,7 +48,7 @@ class CoffeeShopViewModel(private val coffeeShop: Shop) {
     }
 
     fun getWebsiteURL(context: Context): String {
-        val noInfoString = getResourceString(context, R.string.opentime_mrt_none)
+        val noInfoString = context.getResourceString(R.string.opentime_mrt_none)
         return if (TextUtils.isEmpty(coffeeShop.url)) {
             noInfoString
         } else {
@@ -58,7 +58,7 @@ class CoffeeShopViewModel(private val coffeeShop: Shop) {
 
     fun getOpenTimes(context: Context): String {
         val openTime = coffeeShop.openTime
-        val noInfoString = getResourceString(context, R.string.opentime_mrt_none)
+        val noInfoString = context.getResourceString(R.string.opentime_mrt_none)
         return if (!openTime.isNullOrBlank()) {
             openTime
         } else {
@@ -68,7 +68,7 @@ class CoffeeShopViewModel(private val coffeeShop: Shop) {
 
     fun getMrtInfo(context: Context): String {
         val mrtInfo = coffeeShop.mrt
-        val noInfoString = getResourceString(context, R.string.opentime_mrt_none)
+        val noInfoString = context.getResourceString(R.string.opentime_mrt_none)
         return if (!mrtInfo.isNullOrBlank()) {
             mrtInfo
         } else {
@@ -80,29 +80,29 @@ class CoffeeShopViewModel(private val coffeeShop: Shop) {
         val limitTimeString = coffeeShop.limitedTime
         val stringResource = limitedTimeStringResources[coffeeShop.limitedTime]
         if (limitTimeString != null && stringResource != null) {
-            return getResourceString(context, stringResource)
+            return context.getResourceString(stringResource)
         }
-        return getResourceString(context, R.string.maps_string_null)
+        return context.getResourceString(R.string.maps_string_null)
     }
 
     fun getSocketString(context: Context): String {
         val socketString = coffeeShop.socket
         val stringResource = socketStringResources[coffeeShop.socket]
         if (socketString != null && stringResource != null) {
-            return getResourceString(context, stringResource)
+            return context.getResourceString(stringResource)
         }
-        return getResourceString(context, R.string.maps_string_null)
+        return context.getResourceString(R.string.maps_string_null)
     }
 
     fun getStandingDeskString(context: Context): String {
         val stringResource = standingDeskStringResources[coffeeShop.standingDesk]
         if (stringResource != null) {
-            return getResourceString(context, stringResource)
+            return context.getResourceString(stringResource)
         }
-        return getResourceString(context, R.string.maps_string_null)
+        return context.getResourceString(R.string.maps_string_null)
     }
 
-    private fun getResourceString(context: Context, stringResId: Int): String {
-        return context.resources.getString(stringResId)
+    private fun Context.getResourceString(stringResId: Int): String {
+        return resources.getString(stringResId)
     }
 }

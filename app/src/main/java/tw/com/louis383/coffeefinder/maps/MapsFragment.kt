@@ -19,14 +19,14 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
 import com.google.android.libraries.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
-import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnMapClickListener {
     companion object {
         const val TAG = "MAP_FRAGMENT"
@@ -37,7 +37,9 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         }
     }
 
-    private var presenter: MapsPresenter? = null
+    @Inject
+    lateinit var presenter: MapsPresenter
+
     private var googleMap: GoogleMap? = null
 
     private var mapView: MapView? = null
@@ -62,8 +64,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        (requireActivity().application as CoffeeTripApplication).appComponent?.inject(this)
-        presenter?.attachView(this)
+        presenter.attachView(this)
     }
 
     override fun onDestroy() {
@@ -75,21 +76,16 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         return viewLifecycleOwner
     }
 
-    @Inject
-    fun initPresenter(coffeeShopListManager: CoffeeShopListManager) {
-        presenter = MapsPresenter(coffeeShopListManager)
-    }
-
     fun setMapClickHandler(handler: MapsClickHandler) {
         this.handler = handler
     }
 
-    fun setMarkerActive(coffeeShop: Shop) {
-        presenter?.activeMarker(coffeeShop)
+    fun setMarkerActive(coffeeShop: CoffeeShop) {
+        presenter.activeMarker(coffeeShop)
     }
 
-    override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
-        presenter?.prepareToShowCoffeeShops(coffeeShops)
+    override fun prepareCoffeeShops(coffeeShops: List<CoffeeShop>) {
+        presenter.prepareToShowCoffeeShops(coffeeShops)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -99,7 +95,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         val defaultLocation = CameraUpdateFactory.newLatLngZoom(LatLng(23.973875, 120.982024), ZOOM_RATE)
         this.googleMap?.moveCamera(defaultLocation)
 
-        presenter?.setGoogleMap(googleMap)
+        presenter.setGoogleMap(googleMap)
         setupDetailedMapInterface()
     }
 
@@ -117,7 +113,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         }
     }
 
-    override fun addMakers(latLng: LatLng, title: String, snippet: String, coffeeShop: Shop, icon: BitmapDescriptor): Marker? {
+    override fun addMakers(latLng: LatLng, title: String, snippet: String, coffeeShop: CoffeeShop, icon: BitmapDescriptor): Marker? {
         if (!isMapReady) {
             return null
         }
@@ -139,7 +135,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     override fun moveCamera(latLng: LatLng, zoom: Float?) {
         if (!isMapReady) {
             // FIXME:: it's a dirty hack to prevent get google map on an asynchronous way and get null if not ready.
-            presenter?.setTemporaryLatlang(latLng)
+            presenter.setTemporaryLatlang(latLng)
             return
         }
         googleMap?.takeUnless { it.isMyLocationEnabled }?.run { enableMyLocation() }
@@ -150,7 +146,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         googleMap?.animateCamera(cameraUpdate)
     }
 
-    override fun openDetailView(coffeeShop: Shop) {
+    override fun openDetailView(coffeeShop: CoffeeShop) {
         ifNotNull(handler, coffeeShop) { first, second ->
             first.onMarkerClicked(second)
         }

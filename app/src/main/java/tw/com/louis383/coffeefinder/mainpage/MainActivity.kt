@@ -12,8 +12,8 @@ import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -24,19 +24,15 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
-import tw.com.louis383.coffeefinder.CoffeeTripApplication
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
 import tw.com.louis383.coffeefinder.details.DetailsFragment
 import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
-import tw.com.louis383.coffeefinder.di.components.AppComponent
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
-import tw.com.louis383.coffeefinder.model.ConnectivityChecker
-import tw.com.louis383.coffeefinder.model.UserLocationListener
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject
@@ -45,11 +41,14 @@ import javax.inject.Inject
  * Created by louis383 on 2017/2/17.
  */
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback,
     DetailsItemClickListener, View.OnClickListener {
     private val locationSettingResolution = 1001
 
-    private var presenter: MainPresenter? = null
+    @Inject
+    lateinit var presenter: MainPresenter
+
     private var snackbar: Snackbar? = null
 
     // Main Content
@@ -64,8 +63,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // View States
     sealed class ViewState {
-        data class EnterDetailInfoFromMap(val coffeeshop: Shop): ViewState()
-        data class EnterDetailInfoFromList(val coffeeshop: Shop): ViewState()
+        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop): ViewState()
+        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop): ViewState()
         object Browsing: ViewState()
     }
     private var detailViewState: ViewState = ViewState.Browsing
@@ -80,7 +79,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAppComponent()?.inject(this)
 
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
@@ -88,12 +86,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         bottomSheetBehavior = getViewPagerBottomSheetBehavior()
         bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
 
-        presenter?.attachView(this)
+        presenter.attachView(this)
         myLocationButton.setOnClickListener(this)
-    }
-
-    fun getAppComponent(): AppComponent? {
-        return (application as CoffeeTripApplication).appComponent
     }
 
     private fun initMapFragment() {
@@ -108,16 +102,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
             .commit()
     }
 
-    @Inject
-    fun initPresenter(coffeeShopListManager: CoffeeShopListManager, userLocationListener: UserLocationListener, connectivityChecker: ConnectivityChecker) {
-        presenter = MainPresenter(coffeeShopListManager, connectivityChecker, userLocationListener)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             locationSettingResolution -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    presenter?.requestUserLocation()
+                    presenter.requestUserLocation()
                 } else {
                     snackbar = Snackbar.make(rootView, R.string.high_accuracy_recommand, Snackbar.LENGTH_LONG)
                     snackbar?.show()
@@ -132,7 +121,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     private fun forceRequestCoffeeShop() {
-        presenter?.requestUserLocation()
+        presenter.requestUserLocation()
     }
 
     override fun checkLocationPermission(): Boolean {
@@ -143,7 +132,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            presenter?.requestUserLocation()
+            presenter.requestUserLocation()
             hideSnackBar()
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -220,7 +209,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     private val internetRequestCallback = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
-        val isNetworkAvailable = presenter?.isNetworkAvailable() ?: false
+        val isNetworkAvailable = presenter.isNetworkAvailable()
         if (isNetworkAvailable) {
             if (checkLocationPermission()) {
                 forceRequestCoffeeShop()
@@ -245,11 +234,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         mapFragment?.moveCamera(latLng, MapsFragment.ZOOM_RATE)
     }
 
-    override fun onCoffeeShopFetched(coffeeShops: List<Shop>) {
+    override fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>) {
         mapFragment?.prepareCoffeeShops(coffeeShops)
     }
 
-    override fun updateListPage(coffeeShops: List<Shop>) {
+    override fun updateListPage(coffeeShops: List<CoffeeShop>) {
         if (!viewPagerAdapter.isListPageInitiated) {
             val listFragment = ListFragment.newInstance(coffeeShops)
             listFragment.setCallback(this)
@@ -319,11 +308,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         return resources.getString(stringId)
     }
 
-    override fun showBottomSheetDetailView(coffeeShop: Shop) {
+    override fun showBottomSheetDetailView(coffeeShop: CoffeeShop) {
         if (this::bottomSheetViewPager.isInitialized) {
             if (viewPagerAdapter.isDetailPageInitiated) {
                 val detailsFragment = viewPagerAdapter.getItem(ViewPagerAdapter.DETAIL_FRAGMENT)
-                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.getViewModel())
+                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.getUiModel())
             } else {
                 val detailsFragment = DetailsFragment.newInstance(coffeeShop)
                 detailsFragment.detailsItemClickListener = this
@@ -339,7 +328,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    private fun listScrollToItemPosition(coffeeShop: Shop) {
+    private fun listScrollToItemPosition(coffeeShop: CoffeeShop) {
         if (viewPagerAdapter.isListPageInitiated) {
             val listFragment = viewPagerAdapter.getItem(ViewPagerAdapter.LIST_FRAGMENT)
             (listFragment as ListFragment).scrollToItemPosition(coffeeShop)
@@ -386,17 +375,17 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    override fun onMarkerClicked(coffeeShop: Shop) {
-        presenter?.setLastTappedCoffeeShop(coffeeShop)
-        presenter?.showDetailView()
+    override fun onMarkerClicked(coffeeShop: CoffeeShop) {
+        presenter.setLastTappedCoffeeShop(coffeeShop)
+        presenter.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromMap(coffeeShop)
     }
     //endregion
 
     //region ListFragment.Callback
-    override fun onItemTapped(coffeeShop: Shop) {
-        presenter?.setLastTappedCoffeeShop(coffeeShop)
-        presenter?.showDetailView()
+    override fun onItemTapped(coffeeShop: CoffeeShop) {
+        presenter.setLastTappedCoffeeShop(coffeeShop)
+        presenter.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromList(coffeeShop)
         mapFragment?.setMarkerActive(coffeeShop)
     }
@@ -404,11 +393,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     //region DetailsItemClickListener
     override fun onNavigationButtonClicked() {
-        presenter?.prepareNavigation()
+        presenter.prepareNavigation()
     }
 
     override fun onShareButtonClicked() {
-        presenter?.share(this)
+        presenter.share(this)
     }
 
     override fun onBackButtonClicked() {
@@ -420,7 +409,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     override fun onClick(view: View) {
         when (view.id) {
             R.id.main_my_location_button -> {
-                presenter?.let {
+                presenter.let {
                     val myLocation = it.currentLocation
                     val mapFragment = supportFragmentManager.findFragmentByTag(MapsFragment.TAG)
                             as MapsFragment

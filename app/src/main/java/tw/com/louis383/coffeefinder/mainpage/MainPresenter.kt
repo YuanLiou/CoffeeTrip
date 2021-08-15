@@ -11,27 +11,32 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ResolvableApiException
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.model.domain.usecase.GetCoffeeShopsUseCase
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
-class MainPresenter(
-    private val coffeeShopListManager: CoffeeShopListManager,
+@ActivityScoped
+class MainPresenter @Inject constructor(
+    private val getCoffeeShopsUseCase: GetCoffeeShopsUseCase,
     private val connectivityChecker: ConnectivityChecker,
     private val userLocationListener: UserLocationListener
 ) : BasePresenter<MainView>(),
@@ -46,7 +51,7 @@ class MainPresenter(
             field = value
         }
 
-    private var lastTappedCoffeeShop: Shop? = null
+    private var lastTappedCoffeeShop: CoffeeShop? = null
 
     override fun attachView(view: MainView) {
         super.attachView(view)
@@ -121,19 +126,29 @@ class MainPresenter(
         }
     }
 
-    fun fetchCoffeeShops(location: Location) {
+    private fun fetchCoffeeShops(location: Location) {
         val errorHandler = CoroutineExceptionHandler { _, throwable ->
             view?.makeSnackBar(R.string.network_error_fetching_api)
             Log.d("MainPresenter", Log.getStackTraceString(throwable))
         }
 
         uiScope.launch(errorHandler) {
-            val coffeeShops = coffeeShopListManager.getNearByCoffeeShopsAsync(location, range)
-            if (coffeeShops != null) {
-                val copiedShops = coffeeShops.map { it.copy() }
-                view?.updateListPage(copiedShops)
-                view?.onCoffeeShopFetched(copiedShops)
+            val coffeeShops = withContext(Dispatchers.IO) {
+                getCoffeeShopsUseCase(location, range)
             }
+
+            coffeeShops.fold(
+                success = { result ->
+                    if (result.isNotEmpty()) {
+                        val copiedShops = result.map { it.copy() }
+                        view?.updateListPage(copiedShops)
+                        view?.onCoffeeShopFetched(copiedShops)
+                    }
+                },
+                failed = {
+                    view?.makeSnackBar(R.string.generic_network_error)
+                }
+            )
         }
     }
 
@@ -144,10 +159,12 @@ class MainPresenter(
             return
         }
 
-        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: Shop ->
-            val urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
-                    lastTappedCoffeeShop.latitude, lastTappedCoffeeShop.longitude,
-                    currentLocation.latitude, currentLocation.longitude)
+        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: CoffeeShop ->
+            val urlString = String.format(
+                Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
+                lastTappedCoffeeShop.location.latitude, lastTappedCoffeeShop.location.longitude,
+                currentLocation.latitude, currentLocation.longitude
+            )
 
             val intent = Intent()
             intent.`package` = googleMapPackage
@@ -158,7 +175,7 @@ class MainPresenter(
     }
 
     fun share(context: Context) {
-        lastTappedCoffeeShop?.getViewModel()?.run {
+        lastTappedCoffeeShop?.getUiModel()?.run {
             val subject = context.resources.getString(R.string.share_subject)
             val message = context.resources.getString(R.string.share_message, shopName, address)
 
@@ -171,7 +188,7 @@ class MainPresenter(
         }
     }
 
-    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: Shop) {
+    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: CoffeeShop) {
         this.lastTappedCoffeeShop = lastTappedCoffeeShop
     }
 

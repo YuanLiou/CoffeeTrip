@@ -1,6 +1,5 @@
 package tw.com.louis383.coffeefinder.list
 
-import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,35 +12,36 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
-import tw.com.louis383.coffeefinder.mainpage.MainActivity
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
-import java.util.*
 import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/21.
  */
 
+@AndroidEntryPoint
 class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     companion object {
-        fun newInstance(coffeeShops: List<Shop>): ListFragment {
+        fun newInstance(coffeeShops: List<CoffeeShop>): ListFragment {
             return ListFragment().apply {
-                this.coffeeShops = coffeeShops as ArrayList<Shop>
+                this.coffeeShops = coffeeShops as ArrayList<CoffeeShop>
             }
         }
     }
 
-    private var presenter: ListPresenter? = null
+    @Inject
+    protected lateinit var presenter: ListPresenter
+
     private val coffeeListAdapter: CoffeeListAdapter = CoffeeListAdapter(this)
     private var callback: Callback? = null
-    private var coffeeShops by FragmentArgumentDelegate<ArrayList<Shop>>()
+    private var coffeeShops by FragmentArgumentDelegate<ArrayList<CoffeeShop>>()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -55,16 +55,6 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             styledAttribute?.recycle()
             return actionBarSize
         }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as? MainActivity)?.getAppComponent()?.inject(this)
-    }
-
-    @Inject
-    fun initPresenter(currentLocationCarrier: CurrentLocationCarrier) {
-        presenter = ListPresenter(currentLocationCarrier)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_list, container, false)
@@ -85,8 +75,8 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             adapter = coffeeListAdapter
         }
 
-        presenter?.attachView(this)
-        presenter?.prepareToShowCoffeeShops(coffeeShops)
+        presenter.attachView(this)
+        presenter.prepareToShowCoffeeShops(coffeeShops)
 
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
@@ -107,7 +97,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         this.callback = callback
     }
 
-    fun scrollToItemPosition(coffeeShop: Shop) {
+    fun scrollToItemPosition(coffeeShop: CoffeeShop) {
         val position = coffeeListAdapter.findPositionInList(coffeeShop)
         if (position > -1 && position < coffeeListAdapter.getItemCount()) {
             recyclerView.smoothScrollToPosition(position)
@@ -119,7 +109,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         Snackbar.make(recyclerView, message, Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    override fun setItems(items: List<Shop>) {
+    override fun setItems(items: List<CoffeeShop>) {
         coffeeListAdapter.setItems(items)
     }
 
@@ -137,23 +127,23 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     }
 
     //region BaseFragment
-    override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
-        presenter?.prepareToShowCoffeeShops(coffeeShops)
+    override fun prepareCoffeeShops(coffeeShops: List<CoffeeShop>) {
+        presenter.prepareToShowCoffeeShops(coffeeShops)
     }
     //endregion
 
     //region ListAdapterHandler
-    override fun onItemTapped(coffeeShop: Shop, index: Int) {
+    override fun onItemTapped(coffeeShop: CoffeeShop, index: Int) {
         callback?.onItemTapped(coffeeShop)
     }
 
     override fun requestCurrentLocation(): Location? {
-        return presenter?.getCurrentLocation()
+        return presenter.getCurrentLocation()
     }
 
     //endregion
 
     interface Callback {
-        fun onItemTapped(coffeeShop: Shop)
+        fun onItemTapped(coffeeShop: CoffeeShop)
     }
 }

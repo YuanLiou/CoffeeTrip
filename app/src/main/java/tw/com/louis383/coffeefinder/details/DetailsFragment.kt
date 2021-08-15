@@ -1,31 +1,35 @@
 package tw.com.louis383.coffeefinder.details
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.google.android.libraries.maps.model.LatLng
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class DetailsFragment: Fragment() {
     companion object {
-        fun newInstance(coffeeShop: Shop) = DetailsFragment().apply {
+        fun newInstance(coffeeShop: CoffeeShop) = DetailsFragment().apply {
             this.coffeeShop = coffeeShop
         }
     }
 
-    private var coffeeShop by FragmentArgumentDelegate<Shop>()
+    private var coffeeShop by FragmentArgumentDelegate<CoffeeShop>()
     var detailsItemClickListener: DetailsItemClickListener? = null
     private lateinit var nestedScrollView: NestedScrollView
     private lateinit var titleText: TextView
@@ -49,11 +53,6 @@ class DetailsFragment: Fragment() {
     @Inject
     lateinit var currentLocationCarrier: CurrentLocationCarrier
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as? MainActivity)?.getAppComponent()?.inject(this)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_detail, container, false)
     }
@@ -62,7 +61,7 @@ class DetailsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         retrieveViews(view)
         nestedScrollView = view.findViewById(R.id.detail_view_scrollview)
-        setDetailInfo(coffeeShop.getViewModel())
+        setDetailInfo(coffeeShop.getUiModel())
 
         view.findViewById<Button>(R.id.detail_view_button_navigate).setOnClickListener {
             detailsItemClickListener?.onNavigationButtonClicked()
@@ -99,8 +98,8 @@ class DetailsFragment: Fragment() {
         distanceText = view.findViewById<TextView>(R.id.detail_view_distance)
     }
 
-    fun setDetailInfo(viewModel: CoffeeShopViewModel) {
-        with(viewModel) {
+    fun setDetailInfo(uiModel: CoffeeShopUiModel) {
+        with(uiModel) {
             titleText.text = shopName
             cheapRating.rating = cheapPoints
 

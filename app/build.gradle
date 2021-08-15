@@ -8,6 +8,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'dagger.hilt.android.plugin'
 apply from: "${rootDir}/gradle/build-script.gradle"
 
 android {
@@ -20,6 +21,11 @@ android {
         versionName app_version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField 'String', 'HOST', APIHost
+    }
+
+    buildFeatures {
+        viewBinding true
+        dataBinding true
     }
 
     compileOptions {
@@ -132,8 +138,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
 
     // Dependency Injection
-    implementation 'com.google.dagger:dagger:2.38.1'
-    kapt 'com.google.dagger:dagger-compiler:2.38.1'
+    implementation "com.google.dagger:hilt-android:$dagger_version"
+    kapt "com.google.dagger:hilt-compiler:$dagger_version"
 
     // ViewPager Indicator
     // FIXME:: Fetch on JitPack.io, version 1.0.3

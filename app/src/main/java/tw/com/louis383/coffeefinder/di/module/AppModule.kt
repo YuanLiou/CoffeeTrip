@@ -1,56 +1,25 @@
 package tw.com.louis383.coffeefinder.di.module
 
-import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
-import tw.com.louis383.coffeefinder.di.ApplicationContext
-import tw.com.louis383.coffeefinder.model.*
-import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
 /**
  * Created by louis383 on 2017/2/22.
  */
+@InstallIn(SingletonComponent::class)
 @Module
-class AppModule(private val application: Application) {
-
-    @ApplicationContext
-    @Provides
-    fun provideApplicationContext(): Context {
-        return application
-    }
+object AppModule {
 
     @Provides
-    @Singleton
-    fun provideCoffeeAPI(): CoffeeTripAPI {
-        return CoffeeTripAPI()
-    }
-
-    @Provides
-    @Singleton
-    fun provideCoffeeShopListManager(coffeeTripAPI: CoffeeTripAPI): CoffeeShopListManager {
-        return CoffeeShopListManager(coffeeTripAPI)
-    }
-
-    @Provides
-    @Singleton
-    fun providePreferenceManager(
+    fun provideDefaultPreference(
         @ApplicationContext context: Context
-    ): PreferenceManager {
-        return PreferenceManager(context)
-    }
-
-    @Provides
-    fun provideConnectivityChecker(
-        @ApplicationContext context: Context
-    ): ConnectivityChecker {
-        return ConnectivityChecker(context)
-    }
-
-    @Provides
-    fun providePermissionChecker(
-        @ApplicationContext context: Context
-    ): PermissionChecker {
-        return PermissionChecker(context)
+    ): SharedPreferences {
+        val preferenceName = "coffeeTrip_preference"
+        return context.getSharedPreferences(preferenceName, Context.MODE_PRIVATE)
     }
 }
