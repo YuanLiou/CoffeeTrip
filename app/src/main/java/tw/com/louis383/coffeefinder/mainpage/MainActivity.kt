@@ -32,7 +32,7 @@ import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // View States
     sealed class ViewState {
-        data class EnterDetailInfoFromMap(val coffeeshop: Shop): ViewState()
-        data class EnterDetailInfoFromList(val coffeeshop: Shop): ViewState()
+        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop): ViewState()
+        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop): ViewState()
         object Browsing: ViewState()
     }
     private var detailViewState: ViewState = ViewState.Browsing
@@ -234,11 +234,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         mapFragment?.moveCamera(latLng, MapsFragment.ZOOM_RATE)
     }
 
-    override fun onCoffeeShopFetched(coffeeShops: List<Shop>) {
+    override fun onCoffeeShopFetched(coffeeShops: List<CoffeeShop>) {
         mapFragment?.prepareCoffeeShops(coffeeShops)
     }
 
-    override fun updateListPage(coffeeShops: List<Shop>) {
+    override fun updateListPage(coffeeShops: List<CoffeeShop>) {
         if (!viewPagerAdapter.isListPageInitiated) {
             val listFragment = ListFragment.newInstance(coffeeShops)
             listFragment.setCallback(this)
@@ -308,7 +308,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         return resources.getString(stringId)
     }
 
-    override fun showBottomSheetDetailView(coffeeShop: Shop) {
+    override fun showBottomSheetDetailView(coffeeShop: CoffeeShop) {
         if (this::bottomSheetViewPager.isInitialized) {
             if (viewPagerAdapter.isDetailPageInitiated) {
                 val detailsFragment = viewPagerAdapter.getItem(ViewPagerAdapter.DETAIL_FRAGMENT)
@@ -328,7 +328,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    private fun listScrollToItemPosition(coffeeShop: Shop) {
+    private fun listScrollToItemPosition(coffeeShop: CoffeeShop) {
         if (viewPagerAdapter.isListPageInitiated) {
             val listFragment = viewPagerAdapter.getItem(ViewPagerAdapter.LIST_FRAGMENT)
             (listFragment as ListFragment).scrollToItemPosition(coffeeShop)
@@ -375,7 +375,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
     }
 
-    override fun onMarkerClicked(coffeeShop: Shop) {
+    override fun onMarkerClicked(coffeeShop: CoffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop)
         presenter.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromMap(coffeeShop)
@@ -383,7 +383,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     //endregion
 
     //region ListFragment.Callback
-    override fun onItemTapped(coffeeShop: Shop) {
+    override fun onItemTapped(coffeeShop: CoffeeShop) {
         presenter.setLastTappedCoffeeShop(coffeeShop)
         presenter.showDetailView()
         detailViewState = ViewState.EnterDetailInfoFromList(coffeeShop)

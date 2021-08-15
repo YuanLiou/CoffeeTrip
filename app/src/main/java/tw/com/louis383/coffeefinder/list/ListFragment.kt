@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
@@ -29,9 +29,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     companion object {
-        fun newInstance(coffeeShops: List<Shop>): ListFragment {
+        fun newInstance(coffeeShops: List<CoffeeShop>): ListFragment {
             return ListFragment().apply {
-                this.coffeeShops = coffeeShops as ArrayList<Shop>
+                this.coffeeShops = coffeeShops as ArrayList<CoffeeShop>
             }
         }
     }
@@ -41,7 +41,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
 
     private val coffeeListAdapter: CoffeeListAdapter = CoffeeListAdapter(this)
     private var callback: Callback? = null
-    private var coffeeShops by FragmentArgumentDelegate<ArrayList<Shop>>()
+    private var coffeeShops by FragmentArgumentDelegate<ArrayList<CoffeeShop>>()
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -97,7 +97,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         this.callback = callback
     }
 
-    fun scrollToItemPosition(coffeeShop: Shop) {
+    fun scrollToItemPosition(coffeeShop: CoffeeShop) {
         val position = coffeeListAdapter.findPositionInList(coffeeShop)
         if (position > -1 && position < coffeeListAdapter.getItemCount()) {
             recyclerView.smoothScrollToPosition(position)
@@ -109,7 +109,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         Snackbar.make(recyclerView, message, Snackbar.LENGTH_INDEFINITE).show()
     }
 
-    override fun setItems(items: List<Shop>) {
+    override fun setItems(items: List<CoffeeShop>) {
         coffeeListAdapter.setItems(items)
     }
 
@@ -127,13 +127,13 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     }
 
     //region BaseFragment
-    override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
+    override fun prepareCoffeeShops(coffeeShops: List<CoffeeShop>) {
         presenter.prepareToShowCoffeeShops(coffeeShops)
     }
     //endregion
 
     //region ListAdapterHandler
-    override fun onItemTapped(coffeeShop: Shop, index: Int) {
+    override fun onItemTapped(coffeeShop: CoffeeShop, index: Int) {
         callback?.onItemTapped(coffeeShop)
     }
 
@@ -144,6 +144,6 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     //endregion
 
     interface Callback {
-        fun onItemTapped(coffeeShop: Shop)
+        fun onItemTapped(coffeeShop: CoffeeShop)
     }
 }

@@ -23,7 +23,7 @@ import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.model.domain.usecase.GetCoffeeShopsUseCase
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
@@ -51,7 +51,7 @@ class MainPresenter @Inject constructor(
             field = value
         }
 
-    private var lastTappedCoffeeShop: Shop? = null
+    private var lastTappedCoffeeShop: CoffeeShop? = null
 
     override fun attachView(view: MainView) {
         super.attachView(view)
@@ -159,10 +159,10 @@ class MainPresenter @Inject constructor(
             return
         }
 
-        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: Shop ->
+        ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: CoffeeShop ->
             val urlString = String.format(
                 Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
-                lastTappedCoffeeShop.latitude, lastTappedCoffeeShop.longitude,
+                lastTappedCoffeeShop.location.latitude, lastTappedCoffeeShop.location.longitude,
                 currentLocation.latitude, currentLocation.longitude
             )
 
@@ -188,7 +188,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: Shop) {
+    fun setLastTappedCoffeeShop(lastTappedCoffeeShop: CoffeeShop) {
         this.lastTappedCoffeeShop = lastTappedCoffeeShop
     }
 

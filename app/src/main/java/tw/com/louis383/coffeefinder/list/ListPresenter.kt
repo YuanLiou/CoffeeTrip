@@ -4,7 +4,7 @@ import android.location.Location
 import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import javax.inject.Inject
 
 /**
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @FragmentScoped
 class ListPresenter @Inject constructor(private val currentLocationCarrier: CurrentLocationCarrier) : BasePresenter<CoffeeShopListView>() {
 
-    fun prepareToShowCoffeeShops(coffeeShops: List<Shop>) {
+    fun prepareToShowCoffeeShops(coffeeShops: List<CoffeeShop>) {
         if (coffeeShops.isNotEmpty()) {
             view?.setItems(coffeeShops)
             view?.setRecyclerViewVisibility(true)

@@ -10,7 +10,7 @@ import com.google.android.libraries.maps.model.Marker
 import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import javax.inject.Inject
 
 /**
@@ -38,7 +38,7 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
         this.temporaryLatlang = latLng
     }
 
-    fun activeMarker(coffeeShop: Shop) {
+    fun activeMarker(coffeeShop: CoffeeShop) {
         if (markerMap.isNotEmpty()) {
             val marker = markerMap[coffeeShop.id]
             marker?.run {
@@ -89,7 +89,7 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
     override fun onMarkerClick(marker: Marker): Boolean {
         moveCameraToMarker(marker)
 
-        val coffeeShop = marker.tag as? Shop
+        val coffeeShop = marker.tag as? CoffeeShop
         coffeeShop?.run {
             view?.openDetailView(this)
         }
@@ -97,17 +97,15 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
     }
     //endregion
 
-    fun prepareToShowCoffeeShops(coffeeShops: List<Shop>) {
+    fun prepareToShowCoffeeShops(coffeeShops: List<CoffeeShop>) {
         if (coffeeShops.isNotEmpty()) {
             view?.cleanMap()
 
             val normalMarker = getDrawableBitmapDescriptor(R.drawable.ic_map_pin)
             for (coffeeShop in coffeeShops) {
-                val latLng = LatLng(coffeeShop.latitude, coffeeShop.longitude)
-
                 val distance = coffeeShop.distance.toString()
                 normalMarker?.run {
-                    val generatedMarker = view?.addMakers(latLng, coffeeShop.name, distance, coffeeShop, this)
+                    val generatedMarker = view?.addMakers(coffeeShop.location, coffeeShop.name, distance, coffeeShop, this)
                     generatedMarker?.let {
                         markerMap[coffeeShop.id] = it
                     }

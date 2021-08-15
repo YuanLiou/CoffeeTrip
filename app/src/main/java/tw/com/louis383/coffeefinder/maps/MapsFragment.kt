@@ -22,7 +22,7 @@ import com.google.android.libraries.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import javax.inject.Inject
 
@@ -80,11 +80,11 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         this.handler = handler
     }
 
-    fun setMarkerActive(coffeeShop: Shop) {
+    fun setMarkerActive(coffeeShop: CoffeeShop) {
         presenter.activeMarker(coffeeShop)
     }
 
-    override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
+    override fun prepareCoffeeShops(coffeeShops: List<CoffeeShop>) {
         presenter.prepareToShowCoffeeShops(coffeeShops)
     }
 
@@ -113,7 +113,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         }
     }
 
-    override fun addMakers(latLng: LatLng, title: String, snippet: String, coffeeShop: Shop, icon: BitmapDescriptor): Marker? {
+    override fun addMakers(latLng: LatLng, title: String, snippet: String, coffeeShop: CoffeeShop, icon: BitmapDescriptor): Marker? {
         if (!isMapReady) {
             return null
         }
@@ -146,7 +146,7 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
         googleMap?.animateCamera(cameraUpdate)
     }
 
-    override fun openDetailView(coffeeShop: Shop) {
+    override fun openDetailView(coffeeShop: CoffeeShop) {
         ifNotNull(handler, coffeeShop) { first, second ->
             first.onMarkerClicked(second)
         }

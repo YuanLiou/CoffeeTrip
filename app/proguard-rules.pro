@@ -18,7 +18,7 @@
 
 -keep class tw.com.louis383.coffeefinder.model.entity.** { *; }
 -keep class tw.com.louis383.coffeefinder.model.domain.** { *; }
--keep interface tw.com.louis383.coffeefinder.model.data.CoffeeTripService { *; }
+-keep interface tw.com.louis383.coffeefinder.model.data.api.CoffeeTripService { *; }
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
