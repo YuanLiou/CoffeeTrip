@@ -18,7 +18,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
+import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -98,8 +98,8 @@ class DetailsFragment: Fragment() {
         distanceText = view.findViewById<TextView>(R.id.detail_view_distance)
     }
 
-    fun setDetailInfo(viewModel: CoffeeShopViewModel) {
-        with(viewModel) {
+    fun setDetailInfo(uiModel: CoffeeShopUiModel) {
+        with(uiModel) {
             titleText.text = shopName
             cheapRating.rating = cheapPoints
 

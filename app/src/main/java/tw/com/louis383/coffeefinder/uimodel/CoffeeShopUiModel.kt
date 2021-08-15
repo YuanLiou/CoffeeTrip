@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.viewmodel
+package tw.com.louis383.coffeefinder.uimodel
 
 import android.content.Context
 import android.net.Uri
@@ -10,7 +10,7 @@ import tw.com.louis383.coffeefinder.model.entity.Shop
 /**
  * Created by louis383 on 2017/1/24.
  */
-class CoffeeShopViewModel(private val coffeeShop: Shop) {
+class CoffeeShopUiModel(private val coffeeShop: Shop) {
     companion object {
         private const val CAFE_NOMAD_PATH = "https://cafenomad.tw/shop/"
     }

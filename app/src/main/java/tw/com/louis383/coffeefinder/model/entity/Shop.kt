@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import tw.com.louis383.coffeefinder.utils.MathUtils.calculateDistance
-import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
+import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 
 @Parcelize
 @Serializable
@@ -31,8 +31,8 @@ data class Shop(
     val mrt: String?,
     @SerialName("open_time") val openTime: String?
 ): Parcelable {
-    fun getViewModel(): CoffeeShopViewModel {
-        return CoffeeShopViewModel(this)
+    fun getViewModel(): CoffeeShopUiModel {
+        return CoffeeShopUiModel(this)
     }
 
     fun calculateDistanceFromLocation(fromLatLng: LatLng): Int {
