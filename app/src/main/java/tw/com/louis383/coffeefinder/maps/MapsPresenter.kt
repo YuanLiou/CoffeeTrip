@@ -7,25 +7,23 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.BitmapDescriptorFactory
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
+import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.entity.Shop
+import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/1/13.
  */
 
-class MapsPresenter(private val coffeeShopListManager: CoffeeShopListManager) : BasePresenter<MapsView>(), GoogleMap.OnMarkerClickListener {
+@FragmentScoped
+class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap.OnMarkerClickListener {
 
     private var lastMarker: Marker? = null
 
     private var temporaryLatlang: LatLng? = null
     private val markerMap = mutableMapOf<String, Marker>()
-
-    override fun attachView(view: MapsView) {
-        super.attachView(view)
-    }
 
     fun setGoogleMap(googleMap: GoogleMap) {
         googleMap.setOnMarkerClickListener(this)

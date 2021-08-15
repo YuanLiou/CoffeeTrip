@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
@@ -37,7 +36,9 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
         }
     }
 
-    private var presenter: ListPresenter? = null
+    @Inject
+    protected lateinit var presenter: ListPresenter
+
     private val coffeeListAdapter: CoffeeListAdapter = CoffeeListAdapter(this)
     private var callback: Callback? = null
     private var coffeeShops by FragmentArgumentDelegate<ArrayList<Shop>>()
@@ -54,11 +55,6 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             styledAttribute?.recycle()
             return actionBarSize
         }
-
-    @Inject
-    fun initPresenter(currentLocationCarrier: CurrentLocationCarrier) {
-        presenter = ListPresenter(currentLocationCarrier)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(layout.fragment_list, container, false)
@@ -79,8 +75,8 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             adapter = coffeeListAdapter
         }
 
-        presenter?.attachView(this)
-        presenter?.prepareToShowCoffeeShops(coffeeShops)
+        presenter.attachView(this)
+        presenter.prepareToShowCoffeeShops(coffeeShops)
 
         val anchorOffset = resources.getDimensionPixelOffset(R.dimen.store_panel_anchor_offset)
         view.setPadding(0, 0, 0, anchorOffset)
@@ -132,7 +128,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
 
     //region BaseFragment
     override fun prepareCoffeeShops(coffeeShops: List<Shop>) {
-        presenter?.prepareToShowCoffeeShops(coffeeShops)
+        presenter.prepareToShowCoffeeShops(coffeeShops)
     }
     //endregion
 
@@ -142,7 +138,7 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     }
 
     override fun requestCurrentLocation(): Location? {
-        return presenter?.getCurrentLocation()
+        return presenter.getCurrentLocation()
     }
 
     //endregion

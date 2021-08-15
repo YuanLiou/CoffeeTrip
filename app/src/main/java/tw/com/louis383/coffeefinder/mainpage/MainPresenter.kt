@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.gms.common.api.ResolvableApiException
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
+import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
@@ -18,20 +19,22 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.CoffeeShopRepository
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
-class MainPresenter(
-    private val coffeeShopListManager: CoffeeShopListManager,
+@ActivityScoped
+class MainPresenter @Inject constructor(
+    private val coffeeShopRepository: CoffeeShopRepository,
     private val connectivityChecker: ConnectivityChecker,
     private val userLocationListener: UserLocationListener
 ) : BasePresenter<MainView>(),
@@ -128,7 +131,7 @@ class MainPresenter(
         }
 
         uiScope.launch(errorHandler) {
-            val coffeeShops = coffeeShopListManager.getNearByCoffeeShopsAsync(location, range)
+            val coffeeShops = coffeeShopRepository.getNearByCoffeeShopsAsync(location, range)
             if (coffeeShops != null) {
                 val copiedShops = coffeeShops.map { it.copy() }
                 view?.updateListPage(copiedShops)

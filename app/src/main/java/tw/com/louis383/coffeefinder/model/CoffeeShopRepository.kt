@@ -6,12 +6,15 @@ import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.model.comparator.DistanceComparator
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by louis383 on 2017/2/23.
  */
 
-class CoffeeShopListManager(private val coffeeTripAPI: CoffeeTripAPI) {
+@Singleton
+class CoffeeShopRepository @Inject constructor(private val coffeeTripApi: CoffeeTripService) {
 
     var coffeeShops: List<Shop> = emptyList()
         private set
@@ -20,12 +23,12 @@ class CoffeeShopListManager(private val coffeeTripAPI: CoffeeTripAPI) {
         get() = coffeeShops.size
 
     suspend fun getNearByCoffeeShopsAsync(location: Location, range: Int) = withContext(Dispatchers.IO) {
-        val listResult = coffeeTripAPI.getCoffeeShops(location.latitude, location.longitude, range)
+        val listResult = coffeeTripApi.getCoffeeShops(location.latitude, location.longitude, range)
         if (listResult.isSuccessful) {
             val shops = listResult.body()?.apply {
                 sortWithDistance(this)
             } ?: emptyList()
-            this@CoffeeShopListManager.coffeeShops = shops
+            this@CoffeeShopRepository.coffeeShops = shops
             shops
         } else {
             null

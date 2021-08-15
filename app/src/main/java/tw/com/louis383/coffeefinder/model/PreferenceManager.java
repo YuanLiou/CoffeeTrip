@@ -1,7 +1,8 @@
 package tw.com.louis383.coffeefinder.model;
 
-import android.content.Context;
 import android.content.SharedPreferences;
+
+import javax.inject.Inject;
 
 /**
  * Created by louis383 on 2017/3/16.
@@ -9,15 +10,13 @@ import android.content.SharedPreferences;
 
 public class PreferenceManager {
 
-    private static final String PREFERENCE_NAME = "coffeeTrip_preference";
-    // lables
     private static final String BOSS_TROPHY = "BOSS_TROPHY";
 
     private SharedPreferences preferences;
 
-    public PreferenceManager(Context context) {
-        context = context.getApplicationContext();
-        preferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+    @Inject
+    public PreferenceManager(SharedPreferences preferences) {
+        this.preferences = preferences;
     }
 
     public boolean isMetBoss() {
