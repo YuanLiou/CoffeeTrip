@@ -13,7 +13,7 @@ import dagger.hilt.components.SingletonComponent
  */
 @InstallIn(SingletonComponent::class)
 @Module
-class AppModule {
+object AppModule {
 
     @Provides
     fun provideDefaultPreference(

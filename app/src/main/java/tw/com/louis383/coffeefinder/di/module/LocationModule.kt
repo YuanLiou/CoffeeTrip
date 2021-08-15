@@ -17,7 +17,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class LocationModule {
+object LocationModule {
 
     @Singleton
     @Provides

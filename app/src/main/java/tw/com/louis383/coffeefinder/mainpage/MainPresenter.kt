@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.domain.repository.CoffeeShopRepository
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
 import tw.com.louis383.coffeefinder.model.data.entity.Shop
+import tw.com.louis383.coffeefinder.model.domain.repository.CoffeeShopRepository
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
@@ -124,7 +124,7 @@ class MainPresenter @Inject constructor(
         }
     }
 
-    fun fetchCoffeeShops(location: Location) {
+    private fun fetchCoffeeShops(location: Location) {
         val errorHandler = CoroutineExceptionHandler { _, throwable ->
             view?.makeSnackBar(R.string.network_error_fetching_api)
             Log.d("MainPresenter", Log.getStackTraceString(throwable))
@@ -132,7 +132,7 @@ class MainPresenter @Inject constructor(
 
         uiScope.launch(errorHandler) {
             val coffeeShops = coffeeShopRepository.getNearByCoffeeShopsAsync(location, range)
-            if (coffeeShops != null) {
+            if (coffeeShops.isNotEmpty()) {
                 val copiedShops = coffeeShops.map { it.copy() }
                 view?.updateListPage(copiedShops)
                 view?.onCoffeeShopFetched(copiedShops)
@@ -148,9 +148,11 @@ class MainPresenter @Inject constructor(
         }
 
         ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: Shop ->
-            val urlString = String.format(Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
-                    lastTappedCoffeeShop.latitude, lastTappedCoffeeShop.longitude,
-                    currentLocation.latitude, currentLocation.longitude)
+            val urlString = String.format(
+                Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
+                lastTappedCoffeeShop.latitude, lastTappedCoffeeShop.longitude,
+                currentLocation.latitude, currentLocation.longitude
+            )
 
             val intent = Intent()
             intent.`package` = googleMapPackage
