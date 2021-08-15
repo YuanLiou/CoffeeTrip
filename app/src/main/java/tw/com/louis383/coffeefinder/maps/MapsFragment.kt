@@ -19,14 +19,15 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
 import com.google.android.libraries.maps.model.MarkerOptions
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
-import tw.com.louis383.coffeefinder.CoffeeTripApplication
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnMapClickListener {
     companion object {
         const val TAG = "MAP_FRAGMENT"
@@ -62,7 +63,6 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        (requireActivity().application as CoffeeTripApplication).appComponent?.inject(this)
         presenter?.attachView(this)
     }
 

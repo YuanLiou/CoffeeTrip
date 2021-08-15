@@ -12,8 +12,8 @@ import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import androidx.appcompat.app.AlertDialog
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -24,12 +24,11 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
-import tw.com.louis383.coffeefinder.CoffeeTripApplication
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
 import tw.com.louis383.coffeefinder.details.DetailsFragment
 import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
-import tw.com.louis383.coffeefinder.di.components.AppComponent
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
@@ -45,6 +44,7 @@ import javax.inject.Inject
  * Created by louis383 on 2017/2/17.
  */
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback,
     DetailsItemClickListener, View.OnClickListener {
     private val locationSettingResolution = 1001
@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getAppComponent()?.inject(this)
 
         initMapFragment()
         bottomSheetViewPager = findViewById(R.id.main_bottom_sheet)
@@ -90,10 +89,6 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
         presenter?.attachView(this)
         myLocationButton.setOnClickListener(this)
-    }
-
-    fun getAppComponent(): AppComponent? {
-        return (application as CoffeeTripApplication).appComponent
     }
 
     private fun initMapFragment() {

@@ -1,23 +1,27 @@
 package tw.com.louis383.coffeefinder.details
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.RatingBar
+import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import com.google.android.libraries.maps.model.LatLng
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.viewmodel.CoffeeShopViewModel
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class DetailsFragment: Fragment() {
     companion object {
         fun newInstance(coffeeShop: Shop) = DetailsFragment().apply {
@@ -48,11 +52,6 @@ class DetailsFragment: Fragment() {
 
     @Inject
     lateinit var currentLocationCarrier: CurrentLocationCarrier
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as? MainActivity)?.getAppComponent()?.inject(this)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_detail, container, false)

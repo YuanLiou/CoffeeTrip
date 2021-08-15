@@ -1,6 +1,5 @@
 package tw.com.louis383.coffeefinder.list
 
-import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,22 +12,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.R.layout
-import tw.com.louis383.coffeefinder.mainpage.MainActivity
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
 import tw.com.louis383.coffeefinder.model.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.utils.RecyclerViewDividerHelper
 import tw.com.louis383.coffeefinder.view.CoffeeListAdapter
-import java.util.*
 import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/21.
  */
 
+@AndroidEntryPoint
 class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
     companion object {
         fun newInstance(coffeeShops: List<Shop>): ListFragment {
@@ -55,11 +54,6 @@ class ListFragment : BaseFragment(), CoffeeShopListView, ListAdapterHandler {
             styledAttribute?.recycle()
             return actionBarSize
         }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context as? MainActivity)?.getAppComponent()?.inject(this)
-    }
 
     @Inject
     fun initPresenter(currentLocationCarrier: CurrentLocationCarrier) {

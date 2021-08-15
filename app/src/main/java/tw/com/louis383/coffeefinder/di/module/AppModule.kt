@@ -1,24 +1,24 @@
 package tw.com.louis383.coffeefinder.di.module
 
-import android.app.Application
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import tw.com.louis383.coffeefinder.di.ApplicationContext
-import tw.com.louis383.coffeefinder.model.*
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import tw.com.louis383.coffeefinder.model.CoffeeShopListManager
+import tw.com.louis383.coffeefinder.model.CoffeeTripAPI
+import tw.com.louis383.coffeefinder.model.ConnectivityChecker
+import tw.com.louis383.coffeefinder.model.PermissionChecker
+import tw.com.louis383.coffeefinder.model.PreferenceManager
 import javax.inject.Singleton
 
 /**
  * Created by louis383 on 2017/2/22.
  */
+@InstallIn(SingletonComponent::class)
 @Module
-class AppModule(private val application: Application) {
-
-    @ApplicationContext
-    @Provides
-    fun provideApplicationContext(): Context {
-        return application
-    }
+class AppModule {
 
     @Provides
     @Singleton
@@ -33,7 +33,6 @@ class AppModule(private val application: Application) {
     }
 
     @Provides
-    @Singleton
     fun providePreferenceManager(
         @ApplicationContext context: Context
     ): PreferenceManager {
