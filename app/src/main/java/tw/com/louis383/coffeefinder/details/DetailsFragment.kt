@@ -16,7 +16,7 @@ import com.google.android.libraries.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 import javax.inject.Inject
@@ -61,7 +61,7 @@ class DetailsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         retrieveViews(view)
         nestedScrollView = view.findViewById(R.id.detail_view_scrollview)
-        setDetailInfo(coffeeShop.getViewModel())
+        setDetailInfo(coffeeShop.getUiModel())
 
         view.findViewById<Button>(R.id.detail_view_button_navigate).setOnClickListener {
             detailsItemClickListener?.onNavigationButtonClicked()

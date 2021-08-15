@@ -8,7 +8,7 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.maps.model.LatLng
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import tw.com.louis383.coffeefinder.BaseView
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 
 interface MainView : BaseView {
     fun isApplicationInstalled(packageName: String): Boolean

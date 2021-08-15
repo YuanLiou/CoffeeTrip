@@ -5,7 +5,7 @@ import android.net.Uri
 import android.text.TextUtils
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 
 /**
  * Created by louis383 on 2017/1/24.

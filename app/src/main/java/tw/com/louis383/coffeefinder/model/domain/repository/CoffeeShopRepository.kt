@@ -1,10 +1,11 @@
-package tw.com.louis383.coffeefinder.model
+package tw.com.louis383.coffeefinder.model.domain.repository
 
 import android.location.Location
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import tw.com.louis383.coffeefinder.model.comparator.DistanceComparator
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.CoffeeTripService
+import tw.com.louis383.coffeefinder.model.domain.comparator.DistanceComparator
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton

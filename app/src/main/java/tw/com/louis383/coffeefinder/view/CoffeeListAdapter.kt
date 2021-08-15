@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.libraries.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 
 /**
  * Created by louis383 on 2017/2/26.
@@ -30,7 +30,7 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val index = holder.adapterPosition
         val coffeeShop = coffeeShops[index]
-        val coffeeShopViewModel = coffeeShop.getViewModel()
+        val coffeeShopViewModel = coffeeShop.getUiModel()
 
         val context = holder.rootView.context
 

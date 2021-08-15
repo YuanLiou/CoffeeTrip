@@ -32,7 +32,7 @@ import tw.com.louis383.coffeefinder.details.DetailsItemClickListener
 import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject
@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         if (this::bottomSheetViewPager.isInitialized) {
             if (viewPagerAdapter.isDetailPageInitiated) {
                 val detailsFragment = viewPagerAdapter.getItem(ViewPagerAdapter.DETAIL_FRAGMENT)
-                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.getViewModel())
+                (detailsFragment as DetailsFragment).setDetailInfo(coffeeShop.getUiModel())
             } else {
                 val detailsFragment = DetailsFragment.newInstance(coffeeShop)
                 detailsFragment.detailsItemClickListener = this

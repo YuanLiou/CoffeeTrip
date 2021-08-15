@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CoffeeShopRepository
+import tw.com.louis383.coffeefinder.model.domain.repository.CoffeeShopRepository
 import tw.com.louis383.coffeefinder.model.ConnectivityChecker
 import tw.com.louis383.coffeefinder.model.UserLocationListener
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
@@ -161,7 +161,7 @@ class MainPresenter @Inject constructor(
     }
 
     fun share(context: Context) {
-        lastTappedCoffeeShop?.getViewModel()?.run {
+        lastTappedCoffeeShop?.getUiModel()?.run {
             val subject = context.resources.getString(R.string.share_subject)
             val message = context.resources.getString(R.string.share_message, shopName, address)
 

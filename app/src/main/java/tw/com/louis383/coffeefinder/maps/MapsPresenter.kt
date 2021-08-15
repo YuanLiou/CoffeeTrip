@@ -10,7 +10,7 @@ import com.google.android.libraries.maps.model.Marker
 import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 import javax.inject.Inject
 
 /**

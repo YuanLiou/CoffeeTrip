@@ -1,12 +1,12 @@
-package tw.com.louis383.coffeefinder.model.entity
+package tw.com.louis383.coffeefinder.model.data.entity
 
 import android.os.Parcelable
 import com.google.android.libraries.maps.model.LatLng
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import tw.com.louis383.coffeefinder.utils.MathUtils.calculateDistance
 import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
+import tw.com.louis383.coffeefinder.utils.MathUtils.calculateDistance
 
 @Parcelize
 @Serializable
@@ -31,7 +31,7 @@ data class Shop(
     val mrt: String?,
     @SerialName("open_time") val openTime: String?
 ): Parcelable {
-    fun getViewModel(): CoffeeShopUiModel {
+    fun getUiModel(): CoffeeShopUiModel {
         return CoffeeShopUiModel(this)
     }
 

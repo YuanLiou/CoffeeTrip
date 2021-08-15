@@ -1,9 +1,9 @@
-package tw.com.louis383.coffeefinder.model
+package tw.com.louis383.coffeefinder.model.data
 
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
-import tw.com.louis383.coffeefinder.model.entity.Shop
+import tw.com.louis383.coffeefinder.model.data.entity.Shop
 
 /**
  * Created by louis383 on 2017/1/16.
