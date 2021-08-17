@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.di.module
+package tw.com.louis383.coffeefinder.core.di
 
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient

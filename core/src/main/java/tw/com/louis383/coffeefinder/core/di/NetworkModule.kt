@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.di.module
+package tw.com.louis383.coffeefinder.core.di
 
 import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -14,7 +14,7 @@ import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import tw.com.louis383.coffeefinder.BuildConfig
+import tw.com.louis383.coffeefinder.core.BuildConfig
 import tw.com.louis383.coffeefinder.core.ConnectivityChecker
 import tw.com.louis383.coffeefinder.core.data.api.CoffeeTripService
 import java.util.concurrent.TimeUnit
@@ -36,9 +36,7 @@ object NetworkModule {
         return ConnectivityChecker(context)
     }
 
-    @Provides
-    @InternalNetworkApi
-    fun provideLogInterceptor(): HttpLoggingInterceptor {
+    private fun provideLogInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().also {
             if (BuildConfig.DEBUG) {
                 it.level = HttpLoggingInterceptor.Level.HEADERS
@@ -51,11 +49,9 @@ object NetworkModule {
 
     @Provides
     @InternalNetworkApi
-    fun provideHttpClient(
-        @InternalNetworkApi logInterceptor: HttpLoggingInterceptor
-    ): OkHttpClient {
+    fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(logInterceptor)
+            .addInterceptor(provideLogInterceptor())
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)

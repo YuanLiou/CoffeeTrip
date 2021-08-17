@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.di.module
+package tw.com.louis383.coffeefinder.di
 
 import android.content.Context
 import android.content.SharedPreferences

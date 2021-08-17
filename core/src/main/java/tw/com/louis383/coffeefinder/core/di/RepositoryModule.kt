@@ -1,4 +1,4 @@
-package tw.com.louis383.coffeefinder.di.module
+package tw.com.louis383.coffeefinder.core.di
 
 import dagger.Binds
 import dagger.Module
