@@ -1,1 +1,2 @@
 include ':app', ':anchor-bottom-sheet-behavior'
+include ':core'

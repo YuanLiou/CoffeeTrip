@@ -22,7 +22,7 @@ import com.google.android.libraries.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import javax.inject.Inject
 

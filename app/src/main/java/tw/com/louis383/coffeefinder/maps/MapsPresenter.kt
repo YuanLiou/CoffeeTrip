@@ -10,7 +10,8 @@ import com.google.android.libraries.maps.model.Marker
 import dagger.hilt.android.scopes.FragmentScoped
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.toLatLng
 import javax.inject.Inject
 
 /**
@@ -105,7 +106,7 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
             for (coffeeShop in coffeeShops) {
                 val distance = coffeeShop.distance.toString()
                 normalMarker?.run {
-                    val generatedMarker = view?.addMakers(coffeeShop.location, coffeeShop.name, distance, coffeeShop, this)
+                    val generatedMarker = view?.addMakers(coffeeShop.mapLocation.toLatLng(), coffeeShop.name, distance, coffeeShop, this)
                     generatedMarker?.let {
                         markerMap[coffeeShop.id] = it
                     }

@@ -15,9 +15,10 @@ import androidx.lifecycle.Lifecycle
 import com.google.android.libraries.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.CurrentLocationCarrier
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.CurrentLocationCarrier
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
+import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
 import javax.inject.Inject
 

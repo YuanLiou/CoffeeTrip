@@ -1,7 +1,7 @@
 package tw.com.louis383.coffeefinder.list
 
 import tw.com.louis383.coffeefinder.BaseView
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 
 interface CoffeeShopListView : BaseView {
     fun setLoadingProgressBarVisibility(visible: Boolean)

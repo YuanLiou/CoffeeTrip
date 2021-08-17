@@ -21,10 +21,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
-import tw.com.louis383.coffeefinder.model.ConnectivityChecker
-import tw.com.louis383.coffeefinder.model.UserLocationListener
-import tw.com.louis383.coffeefinder.model.domain.model.CoffeeShop
-import tw.com.louis383.coffeefinder.model.domain.usecase.GetCoffeeShopsUseCase
+import tw.com.louis383.coffeefinder.core.ConnectivityChecker
+import tw.com.louis383.coffeefinder.core.UserLocationListener
+import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.core.domain.usecase.GetCoffeeShopsUseCase
+import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.ifNotNull
 import tw.com.louis383.coffeefinder.utils.toLatLng
 import java.util.*
@@ -139,11 +140,9 @@ class MainPresenter @Inject constructor(
 
             coffeeShops.fold(
                 success = { result ->
-                    if (result.isNotEmpty()) {
-                        val copiedShops = result.map { it.copy() }
-                        view?.updateListPage(copiedShops)
-                        view?.onCoffeeShopFetched(copiedShops)
-                    }
+                    val copiedShops = result.map { it.copy() }
+                    view?.updateListPage(copiedShops)
+                    view?.onCoffeeShopFetched(copiedShops)
                 },
                 failed = {
                     view?.makeSnackBar(R.string.generic_network_error)
@@ -162,7 +161,7 @@ class MainPresenter @Inject constructor(
         ifNotNull(currentLocation, lastTappedCoffeeShop) { currentLocation: Location, lastTappedCoffeeShop: CoffeeShop ->
             val urlString = String.format(
                 Locale.getDefault(), "http://maps.google.com/maps?daddr=%f,%f&saddr=%f,%f&mode=w",
-                lastTappedCoffeeShop.location.latitude, lastTappedCoffeeShop.location.longitude,
+                lastTappedCoffeeShop.mapLocation.latitude, lastTappedCoffeeShop.mapLocation.longitude,
                 currentLocation.latitude, currentLocation.longitude
             )
 
