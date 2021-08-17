@@ -140,11 +140,9 @@ class MainPresenter @Inject constructor(
 
             coffeeShops.fold(
                 success = { result ->
-                    if (result.isNotEmpty()) {
-                        val copiedShops = result.map { it.copy() }
-                        view?.updateListPage(copiedShops)
-                        view?.onCoffeeShopFetched(copiedShops)
-                    }
+                    val copiedShops = result.map { it.copy() }
+                    view?.updateListPage(copiedShops)
+                    view?.onCoffeeShopFetched(copiedShops)
                 },
                 failed = {
                     view?.makeSnackBar(R.string.generic_network_error)
