@@ -12,6 +12,14 @@ class PermissionChecker @Inject constructor(
 ) {
 
     fun isLocationPermissionGranted(): Boolean {
+        return isPreciseLocationPermissionGranted() || isApproximateLocationPermission()
+    }
+
+    fun isApproximateLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun isPreciseLocationPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 }

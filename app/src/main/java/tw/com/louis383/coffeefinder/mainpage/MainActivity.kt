@@ -34,7 +34,6 @@ import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
-import tw.com.louis383.coffeefinder.utils.Utils
 import tw.com.louis383.coffeefinder.utils.bindView
 import javax.inject.Inject
 
@@ -126,45 +125,66 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     override fun checkLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                hasApproximateLocationPermission()
+    }
+
+    override fun hasApproximateLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     private val locationPermissionCallback = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            presenter.requestUserLocation()
-            hideSnackBar()
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog.Builder(this)
-                    .setMessage(Utils.getResourceString(this, R.string.request_location))
-                    .setPositiveButton(Utils.getResourceString(this, R.string.dialog_auth))
-                    { _, _ -> requestLocationPermission() }
-                    .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
-                    { _, _ -> showPermissionNeedSnackBar() }
-                    .create()
-                    .show()
-            } else {
-                showPermissionNeedSnackBar()
-                val appName = Utils.getResourceString(this, R.string.app_name)
-                val permissionName = Utils.getResourceString(this, R.string.auth_location)
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        when {
+            permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                // Precise location access granted.
+                presenter.requestUserLocation()
+                hideSnackBar()
+            }
+            permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                // Only approximate location access granted.
+                presenter.requestUserLocation()
+                hideSnackBar()
+            }
+            else -> {
+                // No location access granted.
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(this)
+                        .setMessage(getResourceString(R.string.request_location))
+                        .setPositiveButton(getResourceString(R.string.dialog_auth))
+                        { _, _ -> presenter.requestLocationPermission() }
+                        .setNegativeButton(getResourceString(R.string.dialog_cancel))
+                        { _, _ -> showPermissionNeedSnackBar() }
+                        .create()
+                        .show()
+                } else {
+                    showPermissionNeedSnackBar()
+                    val appName = getResourceString(R.string.app_name)
+                    val permissionName = getResourceString(R.string.auth_location)
 
-                AlertDialog.Builder(this)
-                    .setTitle(Utils.getResourceString(this, R.string.dialog_auth))
-                    .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
-                    .setPositiveButton(Utils.getResourceString(this, R.string.auto_go))
-                    { _, _ -> openApplicationSetting() }
-                    .setNegativeButton(Utils.getResourceString(this, R.string.dialog_cancel))
-                    { _, _ -> }
-                    .create()
-                    .show()
+                    AlertDialog.Builder(this)
+                        .setTitle(getResourceString(R.string.dialog_auth))
+                        .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
+                        .setPositiveButton(getResourceString(R.string.auto_go))
+                        { _, _ -> openApplicationSetting() }
+                        .setNegativeButton(getResourceString(R.string.dialog_cancel))
+                        { _, _ -> }
+                        .create()
+                        .show()
+                }
             }
         }
     }
 
     override fun requestLocationPermission() {
-        locationPermissionCallback.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        locationPermissionCallback.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
 
     override fun locationSettingNeedsResolution(resolvable: ResolvableApiException) {

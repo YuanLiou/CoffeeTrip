@@ -28,4 +28,5 @@ interface MainView : BaseView {
     fun updateListPage(coffeeShops : List<CoffeeShop>)
     fun moveMapView(offset: Float)
     fun getViewPagerBottomSheetBehavior(): AnchorBottomSheetBehavior<ViewPager>
+    fun hasApproximateLocationPermission(): Boolean
 }
