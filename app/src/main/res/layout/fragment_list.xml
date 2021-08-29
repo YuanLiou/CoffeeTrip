@@ -20,16 +20,16 @@
         tools:visibility="gone"
         />
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/list_progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        tools:visibility="gone"
-        style="?android:attr/progressBarStyle"
+        android:indeterminate="true"
+        tools:visibility="visible"
         />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/list_none_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         tools:visibility="visible"
         />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_none_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

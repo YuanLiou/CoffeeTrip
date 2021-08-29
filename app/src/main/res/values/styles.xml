@@ -1,33 +1,4 @@
 <resources>
-
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorAccent">@color/primary_orange</item>
-        <item name="android:alertDialogTheme">@style/CoffeeDialogTheme</item>
-        <item name="alertDialogTheme">@style/CoffeeDialogTheme</item>
-        <item name="materialAlertDialogTheme">@style/CoffeeDialogTheme</item>
-        <item name="android:textColorPrimary">@color/gray</item>
-    </style>
-
-    <!-- Translucent UI -->
-    <style name="AppTheme.Translucent" parent="AppTheme">
-        <item name="android:statusBarColor">@color/white_a75</item>
-    </style>
-
-    <!-- Splash -->
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/splash</item>
-    </style>
-
-    <!-- Dialog theme -->
-    <style name="CoffeeDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
-    </style>
-
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
@@ -47,6 +18,6 @@
 
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/round_corner</item>
+        <item name="cornerSize">6dp</item>
     </style>
 </resources>
