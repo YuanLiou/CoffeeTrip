@@ -13,7 +13,6 @@ import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -22,6 +21,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.libraries.maps.model.LatLng
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                 // No location access granted.
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
                     ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    AlertDialog.Builder(this)
+                    MaterialAlertDialogBuilder(this)
                         .setMessage(getResourceString(R.string.request_location))
                         .setPositiveButton(getResourceString(R.string.dialog_auth))
                         { _, _ -> presenter.requestLocationPermission() }
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                     val appName = getResourceString(R.string.app_name)
                     val permissionName = getResourceString(R.string.auth_location)
 
-                    AlertDialog.Builder(this)
+                    MaterialAlertDialogBuilder(this)
                         .setTitle(getResourceString(R.string.dialog_auth))
                         .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
                         .setPositiveButton(getResourceString(R.string.auto_go))
@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     }
 
     override fun requestInternetConnection() {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(getResourceString(R.string.internet_request_title))
             .setMessage(getResourceString(R.string.internet_request_message))
             .setPositiveButton(getResourceString(R.string.auto_go)) { _, _ ->

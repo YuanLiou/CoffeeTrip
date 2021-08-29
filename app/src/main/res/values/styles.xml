@@ -1,11 +1,12 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="colorAccent">@color/primary_orange</item>
-        <item name="android:alertDialogTheme">@style/LightDialogTheme</item>
-        <item name="alertDialogTheme">@style/LightDialogTheme</item>
+        <item name="android:alertDialogTheme">@style/CoffeeDialogTheme</item>
+        <item name="alertDialogTheme">@style/CoffeeDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="android:textColorPrimary">@color/gray</item>
     </style>
 
@@ -20,7 +21,32 @@
     </style>
 
     <!-- Dialog theme -->
-    <style name="LightDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="CoffeeDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
     </style>
 
+    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+    </style>
+
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/gray_21</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary_orange</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/round_corner</item>
+    </style>
+
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/round_corner</item>
+    </style>
 </resources>
