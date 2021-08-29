@@ -1,6 +1,7 @@
 package tw.com.louis383.coffeefinder.mainpage
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,13 +11,18 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+import android.view.animation.AnticipateInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.splashscreen.SplashScreenViewProvider
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
@@ -76,8 +82,9 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme_Translucent)
         super.onCreate(savedInstanceState)
+        val splashScreen = installSplashScreen()
+        handleSplashScreen(splashScreen)
         setContentView(R.layout.activity_main)
 
         initMapFragment()
@@ -88,6 +95,26 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
         presenter.attachView(this)
         myLocationButton.setOnClickListener(this)
+    }
+
+    private fun handleSplashScreen(splashScreen: SplashScreen) {
+        splashScreen.setOnExitAnimationListener(object : SplashScreen.OnExitAnimationListener {
+            override fun onSplashScreenExit(splashScreenViewProvider: SplashScreenViewProvider) {
+                val slideUp = ObjectAnimator.ofFloat(
+                    splashScreenViewProvider.view,
+                    View.TRANSLATION_Y,
+                    0f,
+                    splashScreenViewProvider.view.height.toFloat() * -1f
+                )
+                slideUp.interpolator = AnticipateInterpolator()
+                slideUp.duration = 200L
+
+                slideUp.doOnEnd {
+                    splashScreenViewProvider.remove()
+                }
+                slideUp.start()
+            }
+        })
     }
 
     private fun initMapFragment() {
