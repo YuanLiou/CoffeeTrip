@@ -65,9 +65,9 @@ class UserLocationListener(
     }
 
     private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
+        override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            locationResult?.locations?.takeIf { it.isNotEmpty() }?.run {
+            locationResult.locations.takeIf { it.isNotEmpty() }?.run {
                 // The last one in the List<> is the latest location result
                 val currentLocation = last()
                 currentLocationCarrier.currentLocation = currentLocation
