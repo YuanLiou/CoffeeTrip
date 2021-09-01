@@ -1,26 +1,23 @@
 <resources>
-
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorAccent">@color/primary_orange</item>
-        <item name="android:alertDialogTheme">@style/LightDialogTheme</item>
-        <item name="alertDialogTheme">@style/LightDialogTheme</item>
-        <item name="android:textColorPrimary">@color/gray</item>
+    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
 
-    <!-- Translucent UI -->
-    <style name="AppTheme.Translucent" parent="AppTheme">
-        <item name="android:statusBarColor">@color/white_a75</item>
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/gray_21</item>
     </style>
 
-    <!-- Splash -->
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/splash</item>
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary_orange</item>
     </style>
 
-    <!-- Dialog theme -->
-    <style name="LightDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/round_corner</item>
     </style>
 
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">6dp</item>
+    </style>
 </resources>

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.libraries.maps.CameraUpdateFactory
@@ -19,6 +18,7 @@ import com.google.android.libraries.maps.model.BitmapDescriptor
 import com.google.android.libraries.maps.model.LatLng
 import com.google.android.libraries.maps.model.Marker
 import com.google.android.libraries.maps.model.MarkerOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.BaseFragment
 import tw.com.louis383.coffeefinder.R
@@ -168,14 +168,12 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     }
 
     override fun showNoCoffeeShopDialog() {
-        context?.run {
-            AlertDialog.Builder(this).also {
-                it.setTitle(resources.getString(R.string.dialog_no_coffeeshop_title))
-                it.setMessage(resources.getString(R.string.dialog_no_coffeeshop_message))
-                it.setPositiveButton(resources.getString(R.string.dialog_no_coffeeshop_ok)) { _, _ -> }
-                it.create()
-            }.show()
-        }
+        MaterialAlertDialogBuilder(requireContext()).also {
+            it.setTitle(resources.getString(R.string.dialog_no_coffeeshop_title))
+            it.setMessage(resources.getString(R.string.dialog_no_coffeeshop_message))
+            it.setPositiveButton(resources.getString(R.string.dialog_no_coffeeshop_ok)) { _, _ -> }
+            it.create()
+        }.show()
     }
 
     override fun cleanMap() {

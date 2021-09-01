@@ -1,54 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="DialogTitle">
-        <item name="android:textColor">@color/gray_21</item>
-    </style>
-
-    <style name="Distance">
-        <item name="android:textColor">@color/gray_75</item>
-    </style>
-
-    <style name="ProgressValue">
-        <item name="android:textSize">@dimen/textSizeSmaller</item>
-        <item name="android:textColor">@color/gray_75</item>
-    </style>
-
-    <style name="TabBar" parent="Widget.Design.TabLayout">
-        <item name="tabMode">fixed</item>
-        <item name="tabGravity">fill</item>
-        <item name="tabIndicatorColor">@color/primary_orange</item>
-        <item name="tabIndicatorHeight">2dp</item>
-        <item name="tabBackground">?selectableItemBackground</item>
-        <item name="tabTextAppearance">@style/TabBar.Text</item>
-        <item name="tabSelectedTextColor">@color/primary_orange</item>
-    </style>
-
-    <style name="TabBar.Text" parent="TextAppearance.Design.Tab">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="Toolbar">
-        <item name="titleTextAppearance">@style/ToolbarTitle</item>
-    </style>
-
-    <style name="ToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">20sp</item>
-    </style>
-
-    <style name="OrangeToolbar">
-        <item name="titleTextAppearance">@style/OrangeToolbarTitle</item>
-    </style>
-
-    <style name="OrangeToolbarTitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">20sp</item>
-    </style>
-
     <style name="ExpenseRateBar" parent="@android:style/Widget.RatingBar">
         <item name="android:progressDrawable">@drawable/cheap_bar_ratingbar</item>
         <item name="android:minHeight">16dp</item>
@@ -63,16 +14,26 @@
         <item name="android:progressDrawable">@drawable/progress_rate_bar</item>
     </style>
 
-    <style name="WhiteColorButton" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:colorButtonNormal">@color/white</item>
+    <!-- Buttons -->
+    <style name="WhiteColorButton" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.White.Button</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+    </style>
+
+    <style name="OrangeColorButton" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Orange.Button</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+    </style>
+
+    <style name="ThemeOverlay.White.Button" parent="">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/gray</item>
         <item name="android:elevation">2dp</item>
     </style>
 
-    <style name="OrangeColorButton" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:textColor">@color/white</item>
-        <item name="colorButtonNormal">@color/primary_orange</item>
+    <style name="ThemeOverlay.Orange.Button" parent="">
+        <item name="colorPrimary">@color/primary_orange</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="android:elevation">2dp</item>
     </style>
-
 </resources>

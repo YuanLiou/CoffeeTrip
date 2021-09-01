@@ -6,11 +6,23 @@ import android.os.HandlerThread
 import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import kotlinx.coroutines.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.gms.location.SettingsClient
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class UserLocationListener(
@@ -44,14 +56,18 @@ class UserLocationListener(
         LocationRequest.create().apply {
             interval = updateInterval.toLong()
             fastestInterval = fastestUpdateInterval.toLong()
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            priority = if (permissionChecker.isPreciseLocationPermissionGranted()) {
+                LocationRequest.PRIORITY_HIGH_ACCURACY
+            } else {
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            }
         }
     }
 
     private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
+        override fun onLocationResult(locationResult: LocationResult) {
             super.onLocationResult(locationResult)
-            locationResult?.locations?.takeIf { it.isNotEmpty() }?.run {
+            locationResult.locations.takeIf { it.isNotEmpty() }?.run {
                 // The last one in the List<> is the latest location result
                 val currentLocation = last()
                 currentLocationCarrier.currentLocation = currentLocation

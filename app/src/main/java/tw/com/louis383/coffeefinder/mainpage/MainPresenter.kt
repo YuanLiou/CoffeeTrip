@@ -57,18 +57,21 @@ class MainPresenter @Inject constructor(
     override fun attachView(view: MainView) {
         super.attachView(view)
         collectUserLocationChange()
-        with(view) {
-            setStatusBarDarkIndicator()
+        view.setStatusBarDarkIndicator()
 
-            if (!checkLocationPermission()) {
-                requestLocationPermission()
-            }
+        if (!view.checkLocationPermission()) {
+            requestLocationPermission()
+        }
 
-            if (!isNetworkAvailable()) {
-                requestInternetConnection()
-            }
+        if (!isNetworkAvailable()) {
+            view.requestInternetConnection()
+        }
+        anchorHeight = view.getViewPagerBottomSheetBehavior().anchorOffset
+    }
 
-            anchorHeight = getViewPagerBottomSheetBehavior().anchorOffset
+    fun requestLocationPermission() {
+        if (view?.hasApproximateLocationPermission() == false) {
+            view?.requestLocationPermission()
         }
     }
 
@@ -203,7 +206,7 @@ class MainPresenter @Inject constructor(
 
     //region UserLocationListener.OnLocationRequestErrorListener
     override fun onRequestLocationPermission() {
-        view?.requestLocationPermission()
+        requestLocationPermission()
     }
 
     override fun onLocationSettingNeedsResolution(resolvable: ResolvableApiException) {

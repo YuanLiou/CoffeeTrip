@@ -39,7 +39,7 @@
             android:paddingEnd="16dp"
             >
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_bookmark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 tools:visibility="visible"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
                 style="@style/ExpenseRateBar"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
                 tools:text="200"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/detail_view_distance"
@@ -106,7 +106,7 @@
                 android:text="@string/unit_m_words"
                 />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_wifi_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                 app:srcCompat="@drawable/ic_wifi"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_wifi_quality_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
                 style="@style/RateProgressBar"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_wifi_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -152,7 +152,7 @@
                 tools:text="4.5"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_wifi_unit"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
@@ -165,7 +165,7 @@
                 android:text="@string/rating_progress_unit"
                 />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_seat_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
                 app:srcCompat="@drawable/ic_seat"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_seat_quality_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -200,7 +200,7 @@
                 style="@style/RateProgressBar"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_seat_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                 tools:text="3.0"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_seat_unit"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
@@ -228,44 +228,44 @@
                 />
 
             <LinearLayout
-                android:id="@+id/detail_view_button_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp"
-                android:gravity="center_horizontal"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:layout_below="@id/detail_view_seat_quality"
-                android:paddingBottom="20dp"
-                android:weightSum="2"
-                >
-
-                <Button
-                    android:id="@+id/detail_view_button_navigate"
-                    android:layout_width="0dp"
+                    android:id="@+id/detail_view_button_layout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableStart="@drawable/ic_directions_grey"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/dialog_navigate"
-                    android:theme="@style/WhiteColorButton"
-                    />
+                    android:layout_below="@id/detail_view_seat_quality"
+                    android:layout_marginTop="20dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingBottom="20dp"
+                    android:weightSum="2">
+
+                <com.google.android.material.button.MaterialButton
+                        android:id="@+id/detail_view_button_navigate"
+                        style="@style/WhiteColorButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_directions_grey"
+                        android:insetTop="3dp"
+                        android:insetBottom="3dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:text="@string/dialog_navigate" />
 
                 <!--<Button-->
-                    <!--android:id="@+id/detail_view_button_favorite"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:drawableStart="@drawable/ic_bookmark_grey"-->
-                    <!--android:paddingStart="16dp"-->
-                    <!--android:paddingEnd="16dp"-->
-                    <!--android:text="@string/add_to_bookmark"-->
-                    <!--android:theme="@style/WhiteColorButton"-->
-                    <!--android:visibility="gone"-->
-                    <!--tools:visibility="invisible"-->
-                    <!--/>-->
+                <!--android:id="@+id/detail_view_button_favorite"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:drawableStart="@drawable/ic_bookmark_grey"-->
+                <!--android:paddingStart="16dp"-->
+                <!--android:paddingEnd="16dp"-->
+                <!--android:text="@string/add_to_bookmark"-->
+                <!--android:theme="@style/WhiteColorButton"-->
+                <!--android:visibility="gone"-->
+                <!--tools:visibility="invisible"-->
+                <!--/>-->
 
             </LinearLayout>
         </RelativeLayout>
@@ -280,16 +280,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:clipChildren="false"
             >
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_share"
                 />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/im_here"
@@ -298,14 +300,16 @@
                 android:paddingEnd="16dp"
                 />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/detail_view_button_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="25dp"
                 android:layout_gravity="bottom|center_horizontal"
-                android:theme="@style/OrangeColorButton"
                 android:text="@string/share_this_shop"
+                android:insetTop="3dp"
+                android:insetBottom="3dp"
+                style="@style/OrangeColorButton"
                 />
 
         </FrameLayout>
@@ -323,7 +327,7 @@
             android:paddingStart="16dp"
             android:paddingTop="26dp">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_coffeeshop_info_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -331,7 +335,7 @@
                 android:textColor="@color/gray"
                 android:textSize="16sp" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_limited_time_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -351,7 +355,7 @@
                 tools:background="#00FF00"
                 tools:visibility="visible" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_limited_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -367,7 +371,7 @@
                 android:textSize="16sp"
                 tools:text="不限時" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_socket_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -377,7 +381,7 @@
                 android:layout_marginTop="18dp"
                 app:srcCompat="@drawable/ic_socket" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_socket"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -393,7 +397,7 @@
                 android:textSize="16sp"
                 tools:text="到處都是插座" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_standing_desk_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -403,7 +407,7 @@
                 android:layout_marginTop="18dp"
                 app:srcCompat="@drawable/ic_standing_desk" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_standing_desk"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -428,7 +432,7 @@
                 android:layout_toEndOf="@id/coffeeshop_info_left_margin"
                 android:background="@color/gray_cd" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_website_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -439,7 +443,7 @@
                 android:paddingTop="1dp"
                 app:srcCompat="@drawable/ic_house" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_website"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -465,7 +469,7 @@
                 android:layout_toEndOf="@id/coffeeshop_info_left_margin"
                 android:background="@color/gray_cd" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_opentime_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -476,7 +480,7 @@
                 android:paddingTop="1dp"
                 app:srcCompat="@drawable/ic_open_time" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_opentime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -499,7 +503,7 @@
                 android:layout_toEndOf="@id/coffeeshop_info_left_margin"
                 android:background="@color/gray_cd" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_mrt_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -509,7 +513,7 @@
                 android:layout_marginTop="25dp"
                 app:srcCompat="@drawable/ic_mass_transit" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_mrt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

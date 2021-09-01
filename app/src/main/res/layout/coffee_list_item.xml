@@ -13,7 +13,7 @@
     android:background="?selectableItemBackground"
     >
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         tools:text="小破爛 Café Junkies"
         />
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@id/list_bookmark_icon"
         android:layout_width="16dp"
         android:layout_height="16dp"
@@ -39,7 +39,7 @@
         tools:visibility="gone"
         />
     
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@id/list_wifi_icon"
         android:layout_width="16dp"
         android:layout_height="16dp"
@@ -48,7 +48,7 @@
         app:srcCompat="@drawable/ic_wifi"
         />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,7 +76,7 @@
         style="@style/ExpenseRateBar"
         />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/list_chart_money_nodata"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
