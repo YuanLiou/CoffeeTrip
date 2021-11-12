@@ -13,6 +13,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="30dp"
         >
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -70,16 +71,16 @@
                 />
 
             <androidx.appcompat.widget.AppCompatRatingBar
-                    android:id="@+id/detail_view_expense"
-                    style="@style/ExpenseRateBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/detail_view_title"
-                    android:layout_marginTop="26dp"
-                    android:layout_toEndOf="@id/left_margin"
-                    android:max="5"
-                    android:numStars="5"
-                    android:stepSize="0.1" />
+                android:id="@+id/detail_view_expense"
+                style="@style/ExpenseRateBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/detail_view_title"
+                android:layout_marginTop="26dp"
+                android:layout_toEndOf="@id/left_margin"
+                android:max="5"
+                android:numStars="5"
+                android:stepSize="0.1" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_distance"
@@ -278,6 +279,7 @@
             >
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/detail_view_share_background_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"

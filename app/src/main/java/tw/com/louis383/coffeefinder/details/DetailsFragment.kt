@@ -1,5 +1,9 @@
 package tw.com.louis383.coffeefinder.details
 
+import android.content.res.ColorStateList
+import android.graphics.BlendMode
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +13,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -20,6 +25,7 @@ import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
+import tw.com.louis383.coffeefinder.utils.canApplyDynamicColor
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -50,6 +56,7 @@ class DetailsFragment: Fragment() {
     private lateinit var standingDestText: TextView
 
     private lateinit var distanceText: TextView
+    private lateinit var shareBackground: ImageView
 
     @Inject
     lateinit var currentLocationCarrier: CurrentLocationCarrier
@@ -61,6 +68,10 @@ class DetailsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         retrieveViews(view)
+        if (canApplyDynamicColor()) {
+            applyColorThemes()
+        }
+
         nestedScrollView = view.findViewById(R.id.detail_view_scrollview)
         setDetailInfo(coffeeShop.getUiModel())
 
@@ -80,23 +91,39 @@ class DetailsFragment: Fragment() {
     }
 
     private fun retrieveViews(view: View) {
-        titleText = view.findViewById<TextView>(R.id.detail_view_title)
-        cheapRating = view.findViewById<RatingBar>(R.id.detail_view_expense)
+        titleText = view.findViewById(R.id.detail_view_title)
+        cheapRating = view.findViewById(R.id.detail_view_expense)
 
-        wiFiPointBar = view.findViewById<ProgressBar>(R.id.detail_view_wifi_quality)
-        wiFiScoreText = view.findViewById<TextView>(R.id.detail_view_wifi_score)
-        seatPointBar = view.findViewById<ProgressBar>(R.id.detail_view_seat_quality)
-        seatScoreText = view.findViewById<TextView>(R.id.detail_view_seat_score)
+        wiFiPointBar = view.findViewById(R.id.detail_view_wifi_quality)
+        wiFiScoreText = view.findViewById(R.id.detail_view_wifi_score)
+        seatPointBar = view.findViewById(R.id.detail_view_seat_quality)
+        seatScoreText = view.findViewById(R.id.detail_view_seat_score)
 
-        webSiteText = view.findViewById<TextView>(R.id.detail_view_website)
-        openTimeText = view.findViewById<TextView>(R.id.detail_view_opentime)
-        mrtText = view.findViewById<TextView>(R.id.detail_view_mrt)
+        webSiteText = view.findViewById(R.id.detail_view_website)
+        openTimeText = view.findViewById(R.id.detail_view_opentime)
+        mrtText = view.findViewById(R.id.detail_view_mrt)
 
-        limitedTimeText = view.findViewById<TextView>(R.id.detail_view_limited_time)
-        socketText = view.findViewById<TextView>(R.id.detail_view_socket)
-        standingDestText = view.findViewById<TextView>(R.id.detail_view_standing_desk)
+        limitedTimeText = view.findViewById(R.id.detail_view_limited_time)
+        socketText = view.findViewById(R.id.detail_view_socket)
+        standingDestText = view.findViewById(R.id.detail_view_standing_desk)
 
-        distanceText = view.findViewById<TextView>(R.id.detail_view_distance)
+        distanceText = view.findViewById(R.id.detail_view_distance)
+        shareBackground = view.findViewById(R.id.detail_view_share_background_image)
+    }
+
+    private fun applyColorThemes() {
+        cheapRating.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_primary))
+        wiFiPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_tertiary))
+        wiFiPointBar.progressTintBlendMode = BlendMode.HUE
+        seatPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_tertiary))
+        seatPointBar.progressTintBlendMode = BlendMode.HUE
+
+        // set share background to monochrome
+        shareBackground.colorFilter = ColorMatrixColorFilter(
+            ColorMatrix().also {
+                it.setSaturation(0f)
+            }
+        )
     }
 
     fun setDetailInfo(uiModel: CoffeeShopUiModel) {
