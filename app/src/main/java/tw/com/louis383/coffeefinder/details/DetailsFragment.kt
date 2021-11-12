@@ -113,9 +113,9 @@ class DetailsFragment: Fragment() {
 
     private fun applyColorThemes() {
         cheapRating.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_primary))
-        wiFiPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_tertiary))
+        wiFiPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_secondary))
         wiFiPointBar.progressTintBlendMode = BlendMode.HUE
-        seatPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_tertiary))
+        seatPointBar.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.dynamic_light_secondary))
         seatPointBar.progressTintBlendMode = BlendMode.HUE
 
         // set share background to monochrome

@@ -98,10 +98,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/detail_view_distance"
+                android:layout_marginStart="4dp"
                 android:layout_toEndOf="@id/detail_view_distance"
-                android:layout_marginStart="1dp"
-                android:text="@string/unit_m_words"
-                />
+                android:text="@string/unit_m_words" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/detail_view_wifi_icon"

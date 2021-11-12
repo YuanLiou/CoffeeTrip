@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +42,7 @@ import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.bindView
+import tw.com.louis383.coffeefinder.utils.canApplyDynamicColor
 import javax.inject.Inject
 
 /**
@@ -92,6 +94,10 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         bottomSheetViewPager.adapter = viewPagerAdapter
         bottomSheetBehavior = getViewPagerBottomSheetBehavior()
         bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
+
+        if (canApplyDynamicColor()) {
+            myLocationButton.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.dynamic_light_primary))
+        }
 
         presenter.attachView(this)
         myLocationButton.setOnClickListener(this)

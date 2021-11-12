@@ -1,5 +1,6 @@
 package tw.com.louis383.coffeefinder.view
 
+import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
+import tw.com.louis383.coffeefinder.utils.canApplyDynamicColor
 
 /**
  * Created by louis383 on 2017/2/26.
@@ -45,7 +47,11 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
             distance.text = distanceString
             expenseChart.rating = coffeeShopUiModel.cheapPoints
             if (coffeeShopUiModel.wifiPoints > 0) {
-                wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN)
+                if (canApplyDynamicColor()) {
+                    wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.dynamic_light_primary), PorterDuff.Mode.SRC_IN)
+                } else {
+                    wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN)
+                }
             } else {
                 wifiIcon.setColorFilter(0)
             }
@@ -54,6 +60,10 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
                 if (index != RecyclerView.NO_POSITION) {
                     handler.onItemTapped(coffeeShop, index)
                 }
+            }
+
+            if (canApplyDynamicColor()) {
+                expenseChart.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dynamic_light_primary))
             }
         }
     }
@@ -73,11 +83,11 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
     }
 
     class ViewHolder(internal val rootView: View) : RecyclerView.ViewHolder(rootView) {
-        internal val title: TextView = rootView.findViewById(R.id.list_title)
-        internal val distance: TextView = rootView.findViewById(R.id.list_distance)
-        internal val expenseNoData: TextView = rootView.findViewById(R.id.list_chart_money_nodata)
-        internal val wifiIcon: ImageView = rootView.findViewById(R.id.list_wifi_icon)
-        internal val bookmarkIcon: ImageView = rootView.findViewById(R.id.list_bookmark_icon)
-        internal val expenseChart: RatingBar = rootView.findViewById(R.id.list_chart_money)
+        val title: TextView = rootView.findViewById(R.id.list_title)
+        val distance: TextView = rootView.findViewById(R.id.list_distance)
+        val expenseNoData: TextView = rootView.findViewById(R.id.list_chart_money_nodata)
+        val wifiIcon: ImageView = rootView.findViewById(R.id.list_wifi_icon)
+        val bookmarkIcon: ImageView = rootView.findViewById(R.id.list_bookmark_icon)
+        val expenseChart: RatingBar = rootView.findViewById(R.id.list_chart_money)
     }
 }
