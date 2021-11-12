@@ -31,7 +31,7 @@
         android:id="@+id/main_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="?android:attr/colorBackground"
         app:layout_behavior="@string/anchor_bottom_sheet_behaviour"
         app:behavior_peekHeight="170dp"
         app:behavior_hideable="false"

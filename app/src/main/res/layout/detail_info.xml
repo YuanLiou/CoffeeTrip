@@ -10,9 +10,6 @@
     >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,17 +70,16 @@
                 />
 
             <androidx.appcompat.widget.AppCompatRatingBar
-                android:id="@+id/detail_view_expense"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
-                android:layout_toEndOf="@id/left_margin"
-                android:layout_below="@id/detail_view_title"
-                android:numStars="5"
-                android:stepSize="0.1"
-                android:max="5"
-                style="@style/ExpenseRateBar"
-                />
+                    android:id="@+id/detail_view_expense"
+                    style="@style/ExpenseRateBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_view_title"
+                    android:layout_marginTop="26dp"
+                    android:layout_toEndOf="@id/left_margin"
+                    android:max="5"
+                    android:numStars="5"
+                    android:stepSize="0.1" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_distance"
@@ -128,29 +124,27 @@
                 />
 
             <ProgressBar
-                android:id="@+id/detail_view_wifi_quality"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/detail_view_wifi_quality_title"
-                android:layout_toEndOf="@id/left_margin"
-                tools:progress="75"
-                style="@style/RateProgressBar"
-                />
+                    android:id="@+id/detail_view_wifi_quality"
+                    style="@style/RateProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/detail_view_wifi_quality_title"
+                    android:layout_marginTop="5dp"
+                    android:layout_toEndOf="@id/left_margin"
+                    tools:progress="75" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/detail_view_wifi_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textColor="@color/secondary_blue"
-                android:gravity="bottom"
-                android:layout_alignTop="@id/detail_view_wifi_icon"
-                android:layout_marginTop="7dp"
-                android:layout_marginStart="@dimen/margin_next_to_progress"
-                android:layout_toEndOf="@id/detail_view_wifi_quality"
-                tools:text="4.5"
-                />
+                    android:id="@+id/detail_view_wifi_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/detail_view_wifi_icon"
+                    android:layout_marginStart="@dimen/margin_next_to_progress"
+                    android:layout_marginTop="7dp"
+                    android:layout_toEndOf="@id/detail_view_wifi_quality"
+                    android:gravity="bottom"
+                    android:textColor="?attr/secondaryAccentColor"
+                    android:textSize="22sp"
+                    tools:text="4.5" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_wifi_unit"
@@ -201,18 +195,17 @@
                 />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/detail_view_seat_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textColor="@color/secondary_blue"
-                android:gravity="bottom"
-                android:layout_toEndOf="@id/detail_view_seat_quality"
-                android:layout_alignTop="@id/detail_view_seat_icon"
-                android:layout_marginTop="7dp"
-                android:layout_marginStart="@dimen/margin_next_to_progress"
-                tools:text="3.0"
-                />
+                    android:id="@+id/detail_view_seat_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/detail_view_seat_icon"
+                    android:layout_marginStart="@dimen/margin_next_to_progress"
+                    android:layout_marginTop="7dp"
+                    android:layout_toEndOf="@id/detail_view_seat_quality"
+                    android:gravity="bottom"
+                    android:textColor="?attr/secondaryAccentColor"
+                    android:textSize="22sp"
+                    tools:text="3.0" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/detail_view_seat_unit"

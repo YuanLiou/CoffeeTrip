@@ -8,6 +8,9 @@
         <item name="alertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="materialAlertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="android:textColorPrimary">@color/gray</item>
+        <item name="android:colorBackground">@color/white</item>
+
+        <item name="secondaryAccentColor">@color/secondary_blue</item>
     </style>
 
     <!-- Translucent UI -->
