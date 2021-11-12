@@ -309,6 +309,8 @@
                 android:text="@string/share_this_shop"
                 android:insetTop="3dp"
                 android:insetBottom="3dp"
+                android:insetLeft="16dp"
+                android:insetRight="16dp"
                 style="@style/OrangeColorButton"
                 />
 

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/dynamic_light_primary</item>
+        <item name="colorOnPrimary">@color/dynamic_light_on_primary</item>
+        <item name="colorSecondary">@color/dynamic_light_secondary</item>
+        <item name="android:alertDialogTheme">@style/CoffeeDialogTheme</item>
+        <item name="alertDialogTheme">@style/CoffeeDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/CoffeeDialogTheme</item>
+        <item name="android:textColorPrimary">@color/gray</item>
+    </style>
+
+    <!-- Translucent UI -->
+    <style name="AppTheme.Translucent" parent="AppTheme">
+        <item name="android:statusBarColor">@color/white_a75</item>
+    </style>
+
+    <!-- Splash -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowSplashScreenBrandingImage" tools:targetApi="s">@drawable/splash</item>
+        <item name="windowSplashScreenBackground">@color/gray_f5</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.Translucent</item>
+    </style>
+
+    <!-- Dialog theme -->
+    <style name="CoffeeDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
+    </style>
+</resources>
