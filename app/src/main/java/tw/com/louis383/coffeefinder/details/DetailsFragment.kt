@@ -25,7 +25,7 @@ import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.uimodel.CoffeeShopUiModel
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
 import tw.com.louis383.coffeefinder.utils.FragmentArgumentDelegate
-import tw.com.louis383.coffeefinder.utils.canApplyDynamicColor
+import tw.com.louis383.coffeefinder.utils.QuickCheckUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -68,7 +68,7 @@ class DetailsFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         retrieveViews(view)
-        if (canApplyDynamicColor()) {
+        if (QuickCheckUtils.canApplyDynamicColor()) {
             applyColorThemes()
         }
 

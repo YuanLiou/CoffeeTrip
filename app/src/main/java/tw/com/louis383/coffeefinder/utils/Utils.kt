@@ -11,6 +11,9 @@ fun Context.getResourceString(@StringRes stringId: Int): String {
     return resources.getString(stringId)
 }
 
-fun canApplyDynamicColor(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+object QuickCheckUtils {
+    fun canApplyDynamicColor(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    }
 }
+

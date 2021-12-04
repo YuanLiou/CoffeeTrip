@@ -183,9 +183,11 @@ class MapsFragment : BaseFragment(), OnMapReadyCallback, MapsView, GoogleMap.OnM
     }
 
     override fun getResourceDrawable(resId: Int): Drawable? {
-        return context?.run {
-            ContextCompat.getDrawable(this, resId)
-        }
+        return ContextCompat.getDrawable(requireContext(), resId)
+    }
+
+    override fun getColorInt(colorResId: Int): Int {
+        return ContextCompat.getColor(requireContext(), colorResId)
     }
 
     fun moveToMyLocation(currentLocation: Location?) {

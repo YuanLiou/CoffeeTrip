@@ -15,7 +15,7 @@ import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.list.ListAdapterHandler
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
-import tw.com.louis383.coffeefinder.utils.canApplyDynamicColor
+import tw.com.louis383.coffeefinder.utils.QuickCheckUtils
 
 /**
  * Created by louis383 on 2017/2/26.
@@ -47,7 +47,7 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
             distance.text = distanceString
             expenseChart.rating = coffeeShopUiModel.cheapPoints
             if (coffeeShopUiModel.wifiPoints > 0) {
-                if (canApplyDynamicColor()) {
+                if (QuickCheckUtils.canApplyDynamicColor()) {
                     wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.dynamic_light_primary), PorterDuff.Mode.SRC_IN)
                 } else {
                     wifiIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_orange), PorterDuff.Mode.SRC_IN)
@@ -62,7 +62,7 @@ class CoffeeListAdapter(private val handler: ListAdapterHandler) : RecyclerView.
                 }
             }
 
-            if (canApplyDynamicColor()) {
+            if (QuickCheckUtils.canApplyDynamicColor()) {
                 expenseChart.progressTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dynamic_light_primary))
             }
         }
