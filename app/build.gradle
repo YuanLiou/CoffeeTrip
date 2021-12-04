@@ -112,11 +112,8 @@ dependencies {
     implementation project(":core")
     implementation project(":anchor-bottom-sheet-behavior")
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
-    // FIXME:: map 3.1.0 use volley 1.1.0 which is not available on mavenCentral and google
-    //  so we include it explicitly
-    implementation 'com.google.maps.android:maps-v3-ktx:3.1.0'
-    implementation 'com.google.android.libraries.maps:maps:3.1.0-beta'
-    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.0'
+    implementation "com.google.android.gms:play-services-location:${gms_version}"
     // ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
 
     implementation platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.5.1")
