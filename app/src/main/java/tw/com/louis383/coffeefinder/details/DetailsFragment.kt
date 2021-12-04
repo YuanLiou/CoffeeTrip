@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import com.google.android.libraries.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.core.CurrentLocationCarrier

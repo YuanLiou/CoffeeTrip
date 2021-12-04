@@ -3,7 +3,7 @@ package tw.com.louis383.coffeefinder.uimodel
 import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
-import com.google.android.libraries.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLng
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
 import tw.com.louis383.coffeefinder.utils.toMapLocation
