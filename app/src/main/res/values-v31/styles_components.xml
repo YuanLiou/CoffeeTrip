@@ -15,13 +15,13 @@
     </style>
 
     <!-- Buttons -->
-    <style name="WhiteColorButton" parent="Widget.Material3.Button">
-<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.White.Button</item>-->
+    <style name="WhiteColorButton" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.White.Button</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 
-    <style name="OrangeColorButton" parent="Widget.Material3.Button">
-<!--        <item name="materialThemeOverlay">@style/ThemeOverlay.Orange.Button</item>-->
+    <style name="OrangeColorButton" parent="Widget.MaterialComponents.Button">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Orange.Button</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 
@@ -32,8 +32,8 @@
     </style>
 
     <style name="ThemeOverlay.Orange.Button" parent="">
-        <item name="colorPrimary">@color/primary_orange</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/dynamic_light_primary</item>
+        <item name="colorOnPrimary">@color/dynamic_light_background</item>
         <item name="android:elevation">2dp</item>
     </style>
 </resources>
