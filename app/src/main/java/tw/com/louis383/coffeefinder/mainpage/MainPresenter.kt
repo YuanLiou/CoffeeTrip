@@ -118,7 +118,7 @@ class MainPresenter @Inject constructor(
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
             if (slideOffset >= 0f) {
                 // negative values to move view up
-                val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, bottomSheet.resources.displayMetrics)
+                val additionalDistances = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.7f, bottomSheet.resources.displayMetrics)
                 view?.moveMapView((anchorHeight * slideOffset) * (additionalDistances * -1))
             }
         }

@@ -1,6 +1,7 @@
 package tw.com.louis383.coffeefinder.utils
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.StringRes
 
 /**
@@ -9,3 +10,10 @@ import androidx.annotation.StringRes
 fun Context.getResourceString(@StringRes stringId: Int): String {
     return resources.getString(stringId)
 }
+
+object QuickCheckUtils {
+    fun canApplyDynamicColor(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    }
+}
+

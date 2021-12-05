@@ -5,11 +5,13 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.view.animation.AnticipateInterpolator
 import android.widget.FrameLayout
@@ -23,14 +25,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
+import androidx.core.view.*
 import androidx.lifecycle.LifecycleOwner
 import androidx.viewpager.widget.ViewPager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.rd.PageIndicatorView
 import com.trafi.anchorbottomsheetbehavior.AnchorBottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.adapter.ViewPagerAdapter
 import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
@@ -40,16 +45,21 @@ import tw.com.louis383.coffeefinder.list.ListFragment
 import tw.com.louis383.coffeefinder.maps.MapsClickHandler
 import tw.com.louis383.coffeefinder.maps.MapsFragment
 import tw.com.louis383.coffeefinder.uimodel.getUiModel
+import tw.com.louis383.coffeefinder.utils.QuickCheckUtils
 import tw.com.louis383.coffeefinder.utils.bindView
-import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/2/17.
  */
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragment.Callback,
-    DetailsItemClickListener, View.OnClickListener {
+class MainActivity :
+    AppCompatActivity(),
+    MainView,
+    MapsClickHandler,
+    ListFragment.Callback,
+    DetailsItemClickListener,
+    View.OnClickListener {
     private val locationSettingResolution = 1001
 
     @Inject
@@ -61,6 +71,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
     private val rootView: CoordinatorLayout by bindView(R.id.main_rootview)
     private val mainContainer: FrameLayout by bindView(R.id.main_container)
     private val myLocationButton: ImageButton by bindView(R.id.main_my_location_button)
+    private val indicatorView: PageIndicatorView by bindView(R.id.main_view_pager_indicator)
 
     // Bottom Sheet
     private lateinit var bottomSheetViewPager: ViewPager
@@ -69,9 +80,9 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     // View States
     sealed class ViewState {
-        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop): ViewState()
-        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop): ViewState()
-        object Browsing: ViewState()
+        data class EnterDetailInfoFromMap(val coffeeshop: CoffeeShop) : ViewState()
+        data class EnterDetailInfoFromList(val coffeeshop: CoffeeShop) : ViewState()
+        object Browsing : ViewState()
     }
     private var detailViewState: ViewState = ViewState.Browsing
 
@@ -92,6 +103,11 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
         bottomSheetViewPager.adapter = viewPagerAdapter
         bottomSheetBehavior = getViewPagerBottomSheetBehavior()
         bottomSheetBehavior.state = AnchorBottomSheetBehavior.STATE_COLLAPSED
+
+        if (QuickCheckUtils.canApplyDynamicColor()) {
+            myLocationButton.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.dynamic_light_primary))
+            indicatorView.selectedColor = ContextCompat.getColor(this, R.color.dynamic_light_primary)
+        }
 
         presenter.attachView(this)
         myLocationButton.setOnClickListener(this)
@@ -153,7 +169,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
 
     override fun checkLocationPermission(): Boolean {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                hasApproximateLocationPermission()
+            hasApproximateLocationPermission()
     }
 
     override fun hasApproximateLocationPermission(): Boolean {
@@ -177,13 +193,12 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
             else -> {
                 // No location access granted.
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) &&
-                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                ) {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(getResourceString(R.string.request_location))
-                        .setPositiveButton(getResourceString(R.string.dialog_auth))
-                        { _, _ -> presenter.requestLocationPermission() }
-                        .setNegativeButton(getResourceString(R.string.dialog_cancel))
-                        { _, _ -> showPermissionNeedSnackBar() }
+                        .setPositiveButton(getResourceString(R.string.dialog_auth)) { _, _ -> presenter.requestLocationPermission() }
+                        .setNegativeButton(getResourceString(R.string.dialog_cancel)) { _, _ -> showPermissionNeedSnackBar() }
                         .create()
                         .show()
                 } else {
@@ -194,10 +209,8 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                     MaterialAlertDialogBuilder(this)
                         .setTitle(getResourceString(R.string.dialog_auth))
                         .setMessage(resources.getString(R.string.auth_yourself, appName, permissionName))
-                        .setPositiveButton(getResourceString(R.string.auto_go))
-                        { _, _ -> openApplicationSetting() }
-                        .setNegativeButton(getResourceString(R.string.dialog_cancel))
-                        { _, _ -> }
+                        .setPositiveButton(getResourceString(R.string.auto_go)) { _, _ -> openApplicationSetting() }
+                        .setNegativeButton(getResourceString(R.string.dialog_cancel)) { _, _ -> }
                         .create()
                         .show()
                 }
@@ -249,9 +262,32 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
             window.insetsController?.setSystemBarsAppearance(APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS)
         } else {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
+        fixBottomUiHeight()
+    }
+
+    private fun fixBottomUiHeight() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+            window.decorView,
+            object : OnApplyWindowInsetsListener {
+                override fun onApplyWindowInsets(
+                    v: View,
+                    insets: WindowInsetsCompat
+                ): WindowInsetsCompat {
+                    val navigationBarHeight =
+                        insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                    bottomSheetViewPager.setPadding(0, 0, 0, navigationBarHeight)
+
+                    val indicatorLayoutParams = indicatorView.layoutParams as ViewGroup.MarginLayoutParams
+                    indicatorLayoutParams.updateMargins(bottom = navigationBarHeight + indicatorView.marginBottom)
+
+                    ViewCompat.setOnApplyWindowInsetsListener(window.decorView, null)
+                    return insets
+                }
+            }
+        )
     }
 
     private val internetRequestCallback = registerForActivityResult(
@@ -460,7 +496,7 @@ class MainActivity : AppCompatActivity(), MainView, MapsClickHandler, ListFragme
                 presenter.let {
                     val myLocation = it.currentLocation
                     val mapFragment = supportFragmentManager.findFragmentByTag(MapsFragment.TAG)
-                            as MapsFragment
+                        as MapsFragment
                     mapFragment.moveToMyLocation(myLocation)
                 }
             }

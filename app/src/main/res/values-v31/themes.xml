@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorAccent">@color/primary_orange</item>
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/dynamic_light_primary</item>
+        <item name="colorOnPrimary">@color/dynamic_light_on_primary</item>
+        <item name="colorSecondary">@color/dynamic_light_secondary</item>
         <item name="android:alertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="alertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="materialAlertDialogTheme">@style/CoffeeDialogTheme</item>
         <item name="android:textColorPrimary">@color/gray</item>
-        <item name="android:colorBackground">@color/white</item>
-
-        <item name="secondaryAccentColor">@color/secondary_blue</item>
+        <item name="android:colorBackground">@color/dynamic_light_background</item>
+        <item name="secondaryAccentColor">@color/dynamic_light_secondary</item>
     </style>
 
     <!-- Translucent UI -->

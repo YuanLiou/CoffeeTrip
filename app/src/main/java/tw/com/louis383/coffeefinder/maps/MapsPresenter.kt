@@ -2,17 +2,21 @@ package tw.com.louis383.coffeefinder.maps
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.LightingColorFilter
+import android.graphics.Paint
+import androidx.annotation.ColorRes
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.scopes.FragmentScoped
+import javax.inject.Inject
 import tw.com.louis383.coffeefinder.BasePresenter
 import tw.com.louis383.coffeefinder.R
 import tw.com.louis383.coffeefinder.core.domain.model.CoffeeShop
+import tw.com.louis383.coffeefinder.utils.QuickCheckUtils
 import tw.com.louis383.coffeefinder.utils.toLatLng
-import javax.inject.Inject
 
 /**
  * Created by louis383 on 2017/1/13.
@@ -49,18 +53,16 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
     }
 
     private fun getDrawableBitmapDescriptor(resId: Int): BitmapDescriptor? {
-        val drawable = view?.getResourceDrawable(resId)
-        drawable?.run {
-            val width = intrinsicWidth
-            val height = intrinsicHeight
-            setBounds(0, 0, width, height)
+        val drawable = view?.getResourceDrawable(resId) ?: return null
 
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            draw(canvas)
+        val width = drawable.intrinsicWidth
+        val height = drawable.intrinsicHeight
+        drawable.setBounds(0, 0, width, height)
 
-            return BitmapDescriptorFactory.fromBitmap(bitmap)
-        } ?: return null
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     private fun highlightMarker(marker: Marker, highlight: Boolean) {
@@ -94,7 +96,7 @@ class MapsPresenter @Inject constructor() : BasePresenter<MapsView>(), GoogleMap
         coffeeShop?.run {
             view?.openDetailView(this)
         }
-        return true    // disable snippet
+        return true // disable snippet
     }
     //endregion
 
